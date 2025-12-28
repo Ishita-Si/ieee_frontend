@@ -318,6 +318,7 @@ const EventCard = ({ event, onClick, index }) => {
 };
 
 const EventModal = ({ event, onClose }) => {
+  const router = useRouter();
   const [isClosing, setIsClosing] = useState(false);
 
   const handleClose = () => {
@@ -437,11 +438,11 @@ const EventModal = ({ event, onClose }) => {
                 onClick={() => {
                   try {
                     if (!authService.isAuthenticated()) {
-                      router.push(`/signin?redirect=${selectedEvent.route || `/events#${selectedEvent.id}`}`);
+                      router.push(`/signin?redirect=${event.route || `/events#${event.id}`}`);
                       return;
                     }
-                    if (selectedEvent.route) {
-                      router.push(selectedEvent.route);
+                    if (event.route) {
+                      router.push(event.route);
                     } else {
                       alert("Registration Logic Here");
                     }

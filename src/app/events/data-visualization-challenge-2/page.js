@@ -261,6 +261,14 @@ export default function DataVisualizationChallengePage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [user, setUser] = useState(null);
   const [loadingUser, setLoadingUser] = useState(true);
+  
+  // Form State - MUST be declared before any early returns
+  const [teamName, setTeamName] = useState("");
+  const [teamSize, setTeamSize] = useState(1);
+  const [feedback, setFeedback] = useState("");
+  const [members, setMembers] = useState([
+    { name: "", email: "", mobile: "" }
+  ]);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -283,14 +291,6 @@ export default function DataVisualizationChallengePage() {
       </div>
     );
   }
-   
-  // Form State
-  const [teamName, setTeamName] = useState("");
-  const [teamSize, setTeamSize] = useState(1);
-  const [feedback, setFeedback] = useState("");
-  const [members, setMembers] = useState([
-    { name: "", email: "", mobile: "" }
-  ]);
 
   // Load user data on mount
   useEffect(() => {
