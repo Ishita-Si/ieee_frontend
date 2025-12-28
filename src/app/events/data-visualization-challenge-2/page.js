@@ -256,6 +256,7 @@ const MemberFormSection = ({ index, data, onChange, isLeader = false }) => {
 export default function DataVisualizationChallengePage() {
   const router = useRouter();
   const [authChecked, setAuthChecked] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [view, setView] = useState("landing"); // 'landing' | 'registration' | 'success'
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [user, setUser] = useState(null);
@@ -263,7 +264,10 @@ export default function DataVisualizationChallengePage() {
 
   useEffect(() => {
     const checkAuth = async () => {
-      if (!authService.isAuthenticated()) {
+      const authenticated = authService.isAuthenticated();
+      setIsAuthenticated(authenticated);
+      
+      if (!authenticated) {
         router.push('/signin?redirect=/events/data-visualization-challenge-2');
         return;
       }
@@ -290,27 +294,28 @@ export default function DataVisualizationChallengePage() {
 
   // Load user data on mount
   useEffect(() => {
+    if (!authChecked || !isAuthenticated) return;
+    
     const loadUser = async () => {
-      if (authService.isAuthenticated()) {
-        try {
-          const userData = await authService.getCurrentUser();
-          if (userData) {
-            setUser(userData);
-            // Pre-fill team leader data if user is logged in
-            setMembers([{
-              name: userData.full_name || "",
-              email: userData.email || "",
-              mobile: userData.phone_number || ""
-            }]);
-          }
-        } catch (error) {
-          console.error('Error loading user:', error);
+      try {
+        const userData = await authService.getCurrentUser();
+        if (userData) {
+          setUser(userData);
+          // Pre-fill team leader data if user is logged in
+          setMembers([{
+            name: userData.full_name || "",
+            email: userData.email || "",
+            mobile: userData.phone_number || ""
+          }]);
         }
+      } catch (error) {
+        console.error('Error loading user:', error);
+      } finally {
+        setLoadingUser(false);
       }
-      setLoadingUser(false);
     };
     loadUser();
-  }, []);
+  }, [authChecked, isAuthenticated]);
 
   // Handle team size change
   const handleTeamSizeChange = (newSize) => {
@@ -500,7 +505,7 @@ export default function DataVisualizationChallengePage() {
               </p>
             </div>
 
-            {!authService.isAuthenticated() && (
+            {!isAuthenticated && (
               <div className="max-w-4xl mx-auto mb-8">
                 <div className="glass-panel rounded-2xl p-6 border border-yellow-500/30 bg-yellow-500/10">
                   <div className="flex items-start gap-3">
@@ -530,7 +535,7 @@ export default function DataVisualizationChallengePage() {
               </div>
             )}
 
-            {authService.isAuthenticated() && (
+            {isAuthenticated && (
               <form onSubmit={handleSubmit} className="max-w-4xl mx-auto space-y-8">
                 {/* Team Info */}
                 <GlassCard className="p-6 md:p-8">
@@ -741,7 +746,7 @@ export default function DataVisualizationChallengePage() {
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                 <button 
                   onClick={() => { 
-                    if (!authService.isAuthenticated()) {
+                    if (!isAuthenticated) {
                       // Redirect to signin if not logged in
                       router.push('/signin?redirect=/events/data-visualization-challenge-2');
                     } else {
@@ -753,7 +758,7 @@ export default function DataVisualizationChallengePage() {
                 >
                   <span className="absolute inset-[-1000%] animate-[spin_2s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#67E8F9_0%,#3B82F6_50%,#67E8F9_100%)]" />
                   <span className="inline-flex h-full w-full cursor-pointer items-center justify-center rounded-full bg-slate-950 px-8 py-1 text-sm font-medium text-white backdrop-blur-3xl transition group-hover:bg-slate-900">
-                    {authService.isAuthenticated() ? 'Register Now' : 'Login to Register'} <ArrowRight className="ml-2 w-4 h-4" />
+                    {isAuthenticated ? 'Register Now' : 'Login to Register'} <ArrowRight className="ml-2 w-4 h-4" />
                   </span>
                 </button>
                 <a href="#structure" className="inline-flex h-14 items-center justify-center rounded-full px-8 text-sm font-bold text-white/70 border border-white/10 hover:bg-white/5 transition-colors">
@@ -1138,7 +1143,7 @@ export default function DataVisualizationChallengePage() {
             </p>
             <button 
               onClick={() => { 
-                if (!authService.isAuthenticated()) {
+                if (!isAuthenticated) {
                   router.push('/signin?redirect=/events/data-visualization-challenge-2');
                 } else {
                   setView("registration"); 
@@ -1148,7 +1153,7 @@ export default function DataVisualizationChallengePage() {
               className="inline-block group relative px-8 py-4 bg-white text-black font-bold text-lg rounded-full overflow-hidden hover:scale-105 transition-transform"
             >
               <span className="relative z-10 group-hover:text-white transition-colors">
-                {authService.isAuthenticated() ? 'REGISTER NOW' : 'LOGIN TO REGISTER'}
+                {isAuthenticated ? 'REGISTER NOW' : 'LOGIN TO REGISTER'}
               </span>
               <div className="absolute inset-0 bg-cyan-600 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
             </button>
