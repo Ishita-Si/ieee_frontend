@@ -4,6 +4,8 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { gsap } from 'gsap';
 import { handleAnchorClick, smoothScrollTo } from '@/lib/smoothScroll';
+import { authService } from '@/lib/auth';
+import { User, LogIn } from 'lucide-react';
 import './PillNav.css';
 
 const PillNav = ({
@@ -21,6 +23,8 @@ const PillNav = ({
   const router = useRouter();
   const resolvedPillTextColor = pillTextColor ?? baseColor;
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState(null);
   
   // Separate IEEE (home) item from other items
   const ieeeItem = items?.find(item => item.href === "/" || item.label === "IEEE");
@@ -125,6 +129,23 @@ const PillNav = ({
 
     return () => window.removeEventListener('resize', onResize);
   }, [items, ease, initialLoadAnimation]);
+
+  // Check authentication status
+  useEffect(() => {
+    const checkAuth = async () => {
+      const authenticated = authService.isAuthenticated();
+      setIsAuthenticated(authenticated);
+      if (authenticated) {
+        try {
+          const userData = await authService.getCurrentUser();
+          setUser(userData);
+        } catch (error) {
+          console.error('Error fetching user:', error);
+        }
+      }
+    };
+    checkAuth();
+  }, [pathname]);
 
   const handleEnter = i => {
     const tl = tlRefs.current[i];
@@ -343,6 +364,34 @@ const PillNav = ({
                 </li>
               );
             })}
+            {/* Profile/Login Link - Desktop */}
+            <li role="none">
+              {isAuthenticated ? (
+                <Link
+                  role="menuitem"
+                  href="/dashboard"
+                  className={`pill${pathname === '/dashboard' ? ' is-active' : ''}`}
+                  aria-label="Profile"
+                >
+                  <span className="pill-label flex items-center gap-1.5">
+                    <User className="w-3.5 h-3.5" />
+                    {user?.full_name?.split(' ')[0] || 'Profile'}
+                  </span>
+                </Link>
+              ) : (
+                <Link
+                  role="menuitem"
+                  href="/signin"
+                  className={`pill${pathname === '/signin' ? ' is-active' : ''}`}
+                  aria-label="Login"
+                >
+                  <span className="pill-label flex items-center gap-1.5">
+                    <LogIn className="w-3.5 h-3.5" />
+                    Login
+                  </span>
+                </Link>
+              )}
+            </li>
           </ul>
         </div>
 
@@ -394,6 +443,28 @@ const PillNav = ({
               </li>
             );
           })}
+          {/* Profile/Login Link */}
+          <li>
+            {isAuthenticated ? (
+              <Link
+                href="/dashboard"
+                className="mobile-menu-link flex items-center gap-2"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <User className="w-4 h-4" />
+                {user?.full_name?.split(' ')[0] || 'Profile'}
+              </Link>
+            ) : (
+              <Link
+                href="/signin"
+                className="mobile-menu-link flex items-center gap-2"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <LogIn className="w-4 h-4" />
+                Login
+              </Link>
+            )}
+          </li>
         </ul>
       </div>
     </div>

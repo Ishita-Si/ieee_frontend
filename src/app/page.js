@@ -131,6 +131,7 @@ const chapterCards = [
 ];
 
 export default function Home() {
+  const router = useRouter();
   const [isVideoMuted, setIsVideoMuted] = useState(true);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [isVideoHovered, setIsVideoHovered] = useState(false);
@@ -139,8 +140,12 @@ export default function Home() {
   const announcementIntervalRef = useRef(null);
   const chaptersContainerRef = useRef(null);
 
-  const handleAboutClick = () => {
-    window.location.href = "/about";
+  const handleRegisterClick = () => {
+    if (!authService.isAuthenticated()) {
+      router.push('/signup');
+    } else {
+      router.push('/dashboard');
+    }
   };
 
   const handleEventsClick = () => {
@@ -333,8 +338,8 @@ export default function Home() {
           subtitle="Rajiv Gandhi Institute Of Petroleum Technology"
           buttons={{
             primary: {
-              text: "About Us",
-              onClick: handleAboutClick,
+              text: "Register as User",
+              onClick: handleRegisterClick,
             },
             secondary: {
               text: "Explore Events",
