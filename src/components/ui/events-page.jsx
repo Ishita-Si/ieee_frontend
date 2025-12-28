@@ -435,14 +435,18 @@ const EventModal = ({ event, onClose }) => {
               <button 
                 className="flex-1 py-3.5 rounded-xl bg-white text-black font-bold hover:bg-purple-400 hover:text-white transition-colors flex items-center justify-center gap-2 group"
                 onClick={() => {
-                  if (!authService.isAuthenticated()) {
-                    router.push(`/signin?redirect=${selectedEvent.route || `/events#${selectedEvent.id}`}`);
-                    return;
-                  }
-                  if (selectedEvent.route) {
-                    router.push(selectedEvent.route);
-                  } else {
-                    alert("Registration Logic Here");
+                  try {
+                    if (!authService.isAuthenticated()) {
+                      router.push(`/signin?redirect=${selectedEvent.route || `/events#${selectedEvent.id}`}`);
+                      return;
+                    }
+                    if (selectedEvent.route) {
+                      router.push(selectedEvent.route);
+                    } else {
+                      alert("Registration Logic Here");
+                    }
+                  } catch (error) {
+                    console.error('Error in registration click:', error);
                   }
                 }}
               >
@@ -479,13 +483,19 @@ const EventsPage = ({ isOpen, onClose, isFullPage = false }) => {
   });
 
   const handleEventClick = (event) => {
-    if (!authService.isAuthenticated()) {
-      router.push(`/signin?redirect=${event.route || '/events'}`);
-      return;
-    }
-    if (event.route) {
-      router.push(event.route);
-    } else {
+    try {
+      if (!authService.isAuthenticated()) {
+        router.push(`/signin?redirect=${event.route || '/events'}`);
+        return;
+      }
+      if (event.route) {
+        router.push(event.route);
+      } else {
+        setSelectedEvent(event);
+      }
+    } catch (error) {
+      console.error('Error handling event click:', error);
+      // Fallback to showing event details
       setSelectedEvent(event);
     }
   };

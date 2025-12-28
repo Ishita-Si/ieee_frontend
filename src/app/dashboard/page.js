@@ -35,7 +35,8 @@ const Dashboard = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!authService.isAuthenticated()) {
+      const authenticated = authService.isAuthenticated();
+      if (!authenticated) {
         router.push('/');
         return;
       }

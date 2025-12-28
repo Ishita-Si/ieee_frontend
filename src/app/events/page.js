@@ -18,10 +18,14 @@ const navItems = [
 export default function EventsRoute() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
     const checkAuth = async () => {
-      if (!authService.isAuthenticated()) {
+      const authenticated = authService.isAuthenticated();
+      setIsAuthenticated(authenticated);
+      
+      if (!authenticated) {
         router.push('/signin?redirect=/events');
         return;
       }

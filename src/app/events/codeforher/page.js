@@ -303,12 +303,16 @@ const MemberFormSection = ({ index, data, onChange }) => {
 export default function CodeForHerPage() {
   const router = useRouter();
   const [authChecked, setAuthChecked] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [view, setView] = useState("landing"); // 'landing' | 'registration' | 'success'
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const checkAuth = async () => {
-      if (!authService.isAuthenticated()) {
+      const authenticated = authService.isAuthenticated();
+      setIsAuthenticated(authenticated);
+      
+      if (!authenticated) {
         router.push('/signin?redirect=/events/codeforher');
         return;
       }
