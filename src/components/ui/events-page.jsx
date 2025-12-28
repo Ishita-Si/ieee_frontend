@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
+import { authService } from '@/lib/auth';
 import { 
   Calendar, 
   Zap, 
@@ -23,7 +25,7 @@ import {
 // import Link from 'next/link'; // Using <a> for standalone compatibility
 
 // --- Dummy Data with Images ---
-const EVENTS_DATA = [
+export const EVENTS_DATA = [
   {
     id: '1',
     category: 'Competitions',
@@ -38,7 +40,7 @@ const EVENTS_DATA = [
     seatsLimited: true,
     totalSeats: 150,
     registeredSeats: 142,
-    image: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1000&auto=format&fit=crop',
+    image: '/images/posters/10.png',
     requirements: ['HackerRank Account', 'Laptop', 'C++ Knowledge'],
     prizes: ['₹10,000 First Prize', 'TechFest Entry', 'Certificates']
   },
@@ -56,7 +58,7 @@ const EVENTS_DATA = [
     seatsLimited: true,
     totalSeats: 200,
     registeredSeats: 134,
-    image: 'https://images.unsplash.com/photo-1504384308090-c54be3855833?q=80&w=1000&auto=format&fit=crop',
+    image: '/images/posters/13.png',
     requirements: ['Team (2-4)', 'Laptop', 'GitHub'],
     prizes: ['₹25,000 Winner', 'Internship Opps', 'Swag Kits']
   },
@@ -74,7 +76,7 @@ const EVENTS_DATA = [
     seatsLimited: false,
     totalSeats: 100,
     registeredSeats: 45,
-    image: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?q=80&w=1000&auto=format&fit=crop',
+    image: '/images/posters/14.png',
     requirements: ['None'],
     prizes: ['Best Bot Award', 'Certificates']
   },
@@ -131,6 +133,26 @@ const EVENTS_DATA = [
     image: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=1000&auto=format&fit=crop',
     requirements: ['CodeChef Account'],
     prizes: ['Global Ranking', 'Rating Points']
+  },
+  {
+    id: '7',
+    category: 'Competitions',
+    date: 'Jan 01-09, 2025',
+    time: '10:00 AM',
+    location: 'Online',
+    difficulty: 'Intermediate',
+    title: 'Data Visualisation Challenge 2.0',
+    description: 'A theme-anchored, case-driven data visualization challenge. Navigate real-world datasets across healthcare, agriculture, and urban infrastructure.',
+    fullDescription: 'Data Visualisation Challenge 2.0 is a competition where participants analyze datasets and create innovative, insightful visualizations. Use tools like Tableau, Power BI, Python (Matplotlib/Seaborn), or D3.js to tell compelling data stories. Winners will be judged on creativity, clarity, and impact.',
+    language: 'Any',
+    seatsLimited: true,
+    totalSeats: 100,
+    registeredSeats: 23,
+    expectedParticipants: 77,
+    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1000&auto=format&fit=crop',
+    requirements: ['Data Analysis Tool', 'Laptop', 'Basic Data Skills'],
+    prizes: ['₹15,000 First Prize', 'Certificates', 'Portfolio Showcase'],
+    route: '/events/data-visualization-challenge-2'
   }
 ];
 
@@ -412,7 +434,17 @@ const EventModal = ({ event, onClose }) => {
             <div className="mt-8 pt-6 border-t border-white/10 flex gap-4">
               <button 
                 className="flex-1 py-3.5 rounded-xl bg-white text-black font-bold hover:bg-purple-400 hover:text-white transition-colors flex items-center justify-center gap-2 group"
-                onClick={() => alert("Registration Logic Here")}
+                onClick={() => {
+                  if (!authService.isAuthenticated()) {
+                    router.push(`/signin?redirect=${selectedEvent.route || `/events#${selectedEvent.id}`}`);
+                    return;
+                  }
+                  if (selectedEvent.route) {
+                    router.push(selectedEvent.route);
+                  } else {
+                    alert("Registration Logic Here");
+                  }
+                }}
               >
                 Register Now
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -429,6 +461,7 @@ const EventModal = ({ event, onClose }) => {
 };
 
 const EventsPage = ({ isOpen, onClose, isFullPage = false }) => {
+  const router = useRouter();
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedEvent, setSelectedEvent] = useState(null);
@@ -444,6 +477,18 @@ const EventsPage = ({ isOpen, onClose, isFullPage = false }) => {
                           event.description.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCategory && matchesSearch;
   });
+
+  const handleEventClick = (event) => {
+    if (!authService.isAuthenticated()) {
+      router.push(`/signin?redirect=${event.route || '/events'}`);
+      return;
+    }
+    if (event.route) {
+      router.push(event.route);
+    } else {
+      setSelectedEvent(event);
+    }
+  };
 
   if (!isFullPage && !isOpen) return null;
 
@@ -534,7 +579,7 @@ const EventsPage = ({ isOpen, onClose, isFullPage = false }) => {
               key={event.id} 
               event={event} 
               index={index}
-              onClick={() => setSelectedEvent(event)} 
+              onClick={() => handleEventClick(event)} 
             />
           ))}
         </div>

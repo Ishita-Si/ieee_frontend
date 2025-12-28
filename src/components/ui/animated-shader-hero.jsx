@@ -1,7 +1,10 @@
 "use client"
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
-import { ArrowRight, Calendar } from 'lucide-react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { ArrowRight, Calendar, User, LogIn } from 'lucide-react';
+import { authService } from '@/lib/auth';
 
 const Beams = dynamic(
   () => import('@/components/ui/Beams'),
@@ -16,6 +19,25 @@ const Hero = ({
   className = ""
 }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const authenticated = authService.isAuthenticated();
+      setIsAuthenticated(authenticated);
+      if (authenticated) {
+        try {
+          const userData = await authService.getCurrentUser();
+          setUser(userData);
+        } catch (error) {
+          console.error('Error fetching user:', error);
+        }
+      }
+    };
+    checkAuth();
+  }, []);
 
   return (
     <div 
@@ -215,6 +237,29 @@ const Hero = ({
           100% { background-position: 0% 50%; }
         }
       `}</style>
+
+      {/* Login/Profile Button - Top Right */}
+      <div className="absolute top-4 right-4 sm:top-6 sm:right-6 md:top-8 md:right-8 z-20">
+        {isAuthenticated ? (
+          <Link
+            href="/dashboard"
+            className="group relative flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/30 hover:border-white/50 rounded-full backdrop-blur-md transition-all duration-300 hover:scale-105"
+          >
+            <User className="w-5 h-5 text-white" />
+            <span className="text-white text-sm font-medium hidden sm:inline">
+              {user?.full_name?.split(' ')[0] || 'Profile'}
+            </span>
+          </Link>
+        ) : (
+          <Link
+            href="/signin"
+            className="group relative flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 rounded-full transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-purple-500/50"
+          >
+            <LogIn className="w-5 h-5 text-white" />
+            <span className="text-white text-sm font-medium hidden sm:inline">Login</span>
+          </Link>
+        )}
+      </div>
 
       <div className="relative z-10 flex flex-col items-center justify-center text-white w-full px-3 sm:px-4 md:px-6 lg:px-8 py-6 sm:py-8 md:py-12 lg:py-16">
         {trustBadge && (

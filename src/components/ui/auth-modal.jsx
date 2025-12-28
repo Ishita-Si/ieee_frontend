@@ -9,6 +9,10 @@ const AuthModal = ({ isOpen, onClose, mode, onSwitchMode }) => {
     full_name: '',
     email: '',
     phone_number: '',
+    college: '',
+    branch: '',
+    year: '',
+    roll_no: '',
     password: '',
     confirmPassword: '',
     membership_type: '', // 'ieee_member' or 'non_member'
@@ -30,6 +34,10 @@ const AuthModal = ({ isOpen, onClose, mode, onSwitchMode }) => {
         full_name: '',
         email: '',
         phone_number: '',
+        college: '',
+        branch: '',
+        year: '',
+        roll_no: '',
         password: '',
         confirmPassword: '',
         membership_type: '',
@@ -121,6 +129,36 @@ const AuthModal = ({ isOpen, onClose, mode, onSwitchMode }) => {
       return;
     }
 
+    if (!formData.phone_number || formData.phone_number.trim().length < 10) {
+      setError('Please enter a valid phone number');
+      setLoading(false);
+      return;
+    }
+
+    if (!formData.college || formData.college.trim().length < 2) {
+      setError('Please enter your college name');
+      setLoading(false);
+      return;
+    }
+
+    if (!formData.branch) {
+      setError('Please select your branch');
+      setLoading(false);
+      return;
+    }
+
+    if (!formData.year) {
+      setError('Please select your year');
+      setLoading(false);
+      return;
+    }
+
+    if (!formData.roll_no || formData.roll_no.trim().length < 1) {
+      setError('Please enter your roll number');
+      setLoading(false);
+      return;
+    }
+
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
       setLoading(false);
@@ -160,6 +198,10 @@ const AuthModal = ({ isOpen, onClose, mode, onSwitchMode }) => {
         full_name: formData.full_name.trim(),
         email: formData.email.trim().toLowerCase(),
         phone_number: formData.phone_number?.trim() || '',
+        college: formData.college.trim(),
+        branch: formData.branch,
+        year: formData.year,
+        roll_no: formData.roll_no.trim(),
         password: formData.password,
         membership_type: formData.membership_type,
         membership_code: formData.membership_type === 'ieee_member' ? formData.membership_code.trim() : null,
@@ -424,6 +466,80 @@ const AuthModal = ({ isOpen, onClose, mode, onSwitchMode }) => {
                           onChange={handleChange}
                           className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder-purple-200/60 transition ring-offset-0 focus:border-purple-400/60 focus:outline-none focus:ring-2 focus:ring-purple-500/40"
                           placeholder="Enter mobile number"
+                          required
+                        />
+                      </div>
+                      <div>
+                        <label className="mb-2 block text-sm font-medium text-purple-100/90">
+                          College Name
+                        </label>
+                        <input
+                          type="text"
+                          name="college"
+                          value={formData.college}
+                          onChange={handleChange}
+                          className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder-purple-200/60 transition ring-offset-0 focus:border-purple-400/60 focus:outline-none focus:ring-2 focus:ring-purple-500/40"
+                          placeholder="Enter your college name"
+                          required
+                        />
+                      </div>
+                      <div>
+                        <label className="mb-2 block text-sm font-medium text-purple-100/90">
+                          Branch
+                        </label>
+                        <select
+                          name="branch"
+                          value={formData.branch}
+                          onChange={handleChange}
+                          className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white transition ring-offset-0 focus:border-purple-400/60 focus:outline-none focus:ring-2 focus:ring-purple-500/40"
+                          required
+                        >
+                          <option value="">Select Branch</option>
+                          <option value="CSE">CSE</option>
+                          <option value="CSD">CSD</option>
+                          <option value="ECE">ECE</option>
+                          <option value="EV">EV</option>
+                          <option value="MnC">MnC</option>
+                          <option value="IT">IT</option>
+                          <option value="Mechanical">Mechanical</option>
+                          <option value="Chemical">Chemical</option>
+                          <option value="Petroleum">Petroleum</option>
+                          <option value="Civil">Civil</option>
+                          <option value="Biotech">Biotech</option>
+                          <option value="Other">Other</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="mb-2 block text-sm font-medium text-purple-100/90">
+                          Year
+                        </label>
+                        <select
+                          name="year"
+                          value={formData.year}
+                          onChange={handleChange}
+                          className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white transition ring-offset-0 focus:border-purple-400/60 focus:outline-none focus:ring-2 focus:ring-purple-500/40"
+                          required
+                        >
+                          <option value="">Select Year</option>
+                          <option value="1st Year">1st Year</option>
+                          <option value="2nd Year">2nd Year</option>
+                          <option value="3rd Year">3rd Year</option>
+                          <option value="4th Year">4th Year</option>
+                          <option value="5th Year">5th Year</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="mb-2 block text-sm font-medium text-purple-100/90">
+                          Roll Number
+                        </label>
+                        <input
+                          type="text"
+                          name="roll_no"
+                          value={formData.roll_no}
+                          onChange={handleChange}
+                          className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder-purple-200/60 transition ring-offset-0 focus:border-purple-400/60 focus:outline-none focus:ring-2 focus:ring-purple-500/40"
+                          placeholder="Enter your roll number"
+                          required
                         />
                       </div>
                     </>

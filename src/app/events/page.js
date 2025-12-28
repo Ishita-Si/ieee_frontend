@@ -1,6 +1,10 @@
 "use client"
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import PillNav from "@/components/ui/PillNav";
 import EventsPage from "@/components/ui/events-page";
+import { authService } from "@/lib/auth";
+import { Loader2 } from "lucide-react";
 
 const navItems = [
   { label: "IEEE", href: "/" },
@@ -12,6 +16,28 @@ const navItems = [
 ];
 
 export default function EventsRoute() {
+  const router = useRouter();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      if (!authService.isAuthenticated()) {
+        router.push('/signin?redirect=/events');
+        return;
+      }
+      setLoading(false);
+    };
+    checkAuth();
+  }, [router]);
+
+  if (loading) {
+    return (
+      <div className="w-full min-h-screen bg-black text-white flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-purple-400" />
+      </div>
+    );
+  }
+
   return (
     <div className="w-full min-h-screen bg-black text-white relative overflow-x-hidden">
       <div className="relative z-10 w-full bg-black">

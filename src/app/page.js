@@ -3,9 +3,11 @@
 import { Suspense, useRef, useState, useEffect, useCallback, useMemo } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import PillNav from "@/components/ui/PillNav";
 import Footer from "@/components/ui/Footer";
+import { authService } from "@/lib/auth";
 
 // Lazy load heavy components
 const Hero = dynamic(() => import("@/components/ui/animated-shader-hero"), { 
@@ -24,16 +26,7 @@ const PastEventsTimeline = dynamic(() => import("@/components/ui/past-events-tim
 const ContainerScroll = dynamic(() => import("@/components/ui/container-scroll-animation").then(mod => ({ default: mod.ContainerScroll })), { 
   ssr: false 
 });
-const Lanyard = dynamic(() => import("@/components/ui/Lanyard"), { 
-  ssr: false,
-  loading: () => <div className="h-[50vh] md:h-[60vh] flex items-center justify-center text-white/60">Loading...</div>
-});
-const DomeGallery = dynamic(() => import("@/components/ui/DomeGallery"), { 
-  ssr: false,
-  loading: () => <div className="h-[600px] flex items-center justify-center text-white/60">Loading gallery...</div>
-});
 
-import picturesData from "@/data/pictures.json";
 import { sponsorsData } from "@/data/sponsors-data";
 
 const navItems = [
@@ -48,7 +41,7 @@ const navItems = [
 const announcements = [
   {
     id: 1,
-    image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=800&q=80",
+    image: "/images/posters/6.png",
     badge: "Hackathon",
     title: "CodeForHer Hackathon 2025",
     description: "Join us for CodeForHer, a hackathon aimed at encouraging innovation, creativity, and problem-solving among students through technology-driven solutions. Focused on promoting women participation in tech and inclusive innovation.",
@@ -58,7 +51,7 @@ const announcements = [
   },
   {
     id: 2,
-    image: "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?auto=format&fit=crop&w=800&q=80",
+    image: "/images/posters/4.png",
     badge: "Announcement",
     title: "Join Our Upcoming Event",
     description: "We're excited to announce our upcoming IEEE event that brings together students, professionals, and innovators from across the region. This is an opportunity to network, learn, and be part of the future of technology.",
@@ -68,7 +61,7 @@ const announcements = [
   },
   {
     id: 3,
-    image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=800&q=80",
+    image: "/images/posters/9.png",
     badge: "Workshop",
     title: "Technical Workshop Series",
     description: "Join us for an intensive technical workshop series covering the latest trends in robotics, AI, and automation. Learn from industry experts and get hands-on experience with cutting-edge technologies.",
@@ -78,13 +71,23 @@ const announcements = [
   },
   {
     id: 4,
-    image: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=800&q=80",
+    image: "/images/posters/2.png",
     badge: "Competition",
     title: "IEEE Robotics Competition 2025",
     description: "Showcase your robotics skills in our annual competition. Compete with teams from across the region and win exciting prizes. Registration is now open!",
     description2: "This year's competition features new challenges and categories. Whether you're a beginner or an expert, there's a category for you.",
     primaryButton: { text: "Register", href: "/events" },
     secondaryButton: { text: "Learn More", href: "/events" }
+  },
+  {
+    id: 5,
+    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1000&auto=format&fit=crop",
+    badge: "Competition",
+    title: "Data Visualisation Challenge 2.0",
+    description: "A theme-anchored, case-driven data visualization challenge where participants navigate real-world datasets across healthcare, agriculture, and urban infrastructure to derive meaningful, high-impact insights.",
+    description2: "Transform data into decisions. Navigate complexities of real-world datasets using professional-grade statistical and analytical techniques. Registration opens 31st December.",
+    primaryButton: { text: "Learn More", href: "/events/data-visualization-challenge-2" },
+    secondaryButton: { text: "Register Now", href: "/contact" }
   }
 ];
 
@@ -129,6 +132,8 @@ const chapterCards = [
 
 export default function Home() {
   const [isVideoMuted, setIsVideoMuted] = useState(true);
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+  const [isVideoHovered, setIsVideoHovered] = useState(false);
   const videoRef = useRef(null);
   const [currentAnnouncement, setCurrentAnnouncement] = useState(0);
   const announcementIntervalRef = useRef(null);
@@ -139,7 +144,11 @@ export default function Home() {
   };
 
   const handleEventsClick = () => {
-    window.location.href = "/events";
+    if (!authService.isAuthenticated()) {
+      router.push('/signin?redirect=/events');
+      return;
+    }
+    router.push('/events');
   };
 
   const toggleVideoAudio = () => {
@@ -157,6 +166,38 @@ export default function Home() {
       }
       return nextState;
     });
+  };
+
+  const handleVideoPlay = () => {
+    if (videoRef.current) {
+      setIsVideoPlaying(true);
+      videoRef.current.play().catch(() => {
+        /* noop */
+      });
+    }
+  };
+
+  const handleVideoPause = () => {
+    if (videoRef.current && !isVideoHovered) {
+      setIsVideoPlaying(false);
+      videoRef.current.pause();
+    }
+  };
+
+  const handleVideoMouseEnter = () => {
+    setIsVideoHovered(true);
+    if (videoRef.current) {
+      videoRef.current.play().catch(() => {
+        /* noop */
+      });
+    }
+  };
+
+  const handleVideoMouseLeave = () => {
+    setIsVideoHovered(false);
+    if (videoRef.current && !isVideoPlaying) {
+      videoRef.current.pause();
+    }
   };
 
   // Auto-play announcements
@@ -400,19 +441,36 @@ export default function Home() {
 
         {/* Immersive IEEE video - Reduced padding */}
         <section className="w-full py-6 sm:py-8 md:py-12 px-4 sm:px-6 md:px-8 lg:px-12">
-          <div className="relative rounded-2xl md:rounded-3xl overflow-hidden border border-white/10 shadow-[0_0_60px_rgba(0,0,0,0.5)] bg-black flex justify-center items-center">
+          <div 
+            className="relative rounded-2xl md:rounded-3xl overflow-hidden border border-white/10 shadow-[0_0_60px_rgba(0,0,0,0.5)] bg-black flex justify-center items-center"
+            onMouseEnter={handleVideoMouseEnter}
+            onMouseLeave={handleVideoMouseLeave}
+          >
             <video
               ref={videoRef}
               className="w-full min-h-[40vh] md:min-h-[60vh] object-contain mx-auto"
               src="/videos/ieee_v2.mp4"
-              autoPlay
               loop
               playsInline
               muted={isVideoMuted}
+              preload="metadata"
             />
+            {!isVideoPlaying && !isVideoHovered && (
+              <button
+                onClick={handleVideoPlay}
+                className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm transition-opacity hover:bg-black/30 group"
+                aria-label="Play video"
+              >
+                <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-white/20 backdrop-blur-md border-2 border-white/30 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <svg className="w-8 h-8 md:w-10 md:h-10 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M8 5v14l11-7z"/>
+                  </svg>
+                </div>
+              </button>
+            )}
             <button
               onClick={toggleVideoAudio}
-              className="absolute bottom-4 right-4 md:bottom-6 md:right-6 px-4 py-2.5 md:px-5 md:py-3 rounded-full bg-white/15 backdrop-blur-md border border-white/30 text-sm font-semibold tracking-wide hover:bg-white/25 transition"
+              className="absolute bottom-4 right-4 md:bottom-6 md:right-6 px-4 py-2.5 md:px-5 md:py-3 rounded-full bg-white/15 backdrop-blur-md border border-white/30 text-sm font-semibold tracking-wide hover:bg-white/25 transition z-10"
             >
               {isVideoMuted ? "🔊 Audio" : "🔇 Mute"}
             </button>
@@ -519,19 +577,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Interactive Lanyard - Reduced padding */}
-        <section className="w-full py-6 sm:py-8 md:py-12 px-4 sm:px-6 md:px-8 lg:px-12">
-          <div className="rounded-2xl md:rounded-3xl border border-white/10 bg-black/60 backdrop-blur-xl overflow-hidden shadow-[0_20px_80px_rgba(0,0,0,0.6)]">
-            <Suspense fallback={
-              <div className="h-[50vh] md:h-[60vh] flex items-center justify-center text-white/60 text-base">
-                Loading interactive badge…
-              </div>
-            }>
-              <Lanyard />
-            </Suspense>
-          </div>
-        </section>
-
         {/* Membership CTA - Reduced padding and tighter internal spacing */}
         <section className="w-full py-6 sm:py-8 md:py-12 px-4 sm:px-6 md:px-8 lg:px-12">
           <div className="max-w-5xl mx-auto rounded-2xl md:rounded-3xl border border-white/15 bg-white/5 backdrop-blur-2xl p-6 md:p-8 space-y-4 md:space-y-6 text-center">
@@ -581,41 +626,6 @@ export default function Home() {
           <EventsSection />
         </div>
 
-        {/* Gallery section - Added after 
-         IEEE events */}
-        <section className="w-full py-6 sm:py-8 md:py-12 px-4 sm:px-6 md:px-8 lg:px-12">
-          <div className="text-center mb-8 sm:mb-12 md:mb-16">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-semibold mb-4">
-              Gallery
-            </h2>
-            <p className="text-white/70 text-base md:text-lg max-w-3xl mx-auto">
-              Explore our collection of moments and memories from IEEE events and activities.
-            </p>
-          </div>
-          <div className="w-full h-[600px] md:h-[700px] lg:h-[800px] rounded-2xl md:rounded-3xl overflow-hidden border border-white/10">
-            <Suspense fallback={
-              <div className="h-full flex items-center justify-center text-white/60 text-base">
-                Loading gallery…
-              </div>
-            }>
-              <Suspense fallback={<div className="h-[600px] flex items-center justify-center text-white/60">Loading gallery...</div>}>
-                <DomeGallery 
-                images={picturesData.images.slice(0, 20)}
-                fit={0.8}
-                minRadius={600}
-                maxRadius={800}
-                grayscale={false}
-                openedImageWidth="600px"
-                openedImageHeight="600px"
-                segments={18}
-                autoRotateSpeed={0.06}
-                />
-              </Suspense>
-            </Suspense>
-          </div>
-        </section>
-
-           
         
         <div className="py-6 sm:py-8 md:py-12 px-4 sm:px-6 md:px-8 lg:px-12">
           <PastEventsTimeline />

@@ -86,14 +86,14 @@ export const authService = {
 
       const data = await response.json()
 
-      if (response.ok) {
+      if (response.ok && data.success) {
         authService.setToken(data.access_token, remember)
         if (data.user) {
           localStorage.setItem('userData', JSON.stringify(data.user))
         }
         return { success: true, user: data.user, token: data.access_token }
       } else {
-        return { success: false, error: data.detail || data.message || 'Login failed' }
+        return { success: false, error: data.error || data.message || 'Login failed' }
       }
     } catch (error) {
       return { success: false, error: 'Network error' }
@@ -113,10 +113,10 @@ export const authService = {
 
       const data = await response.json()
 
-      if (response.ok) {
+      if (response.ok && data.success) {
         return { success: true, data }
       } else {
-        return { success: false, error: data.detail || data.message || 'Registration failed' }
+        return { success: false, error: data.error || data.message || 'Registration failed' }
       }
     } catch (error) {
       return { success: false, error: 'Network error' }
@@ -136,10 +136,16 @@ export const authService = {
 
       const data = await response.json()
 
-      if (response.ok) {
-        return { success: true, user: data }
+      if (response.ok && data.success) {
+        if (data.access_token) {
+          authService.setToken(data.access_token)
+        }
+        if (data.user) {
+          localStorage.setItem('userData', JSON.stringify(data.user))
+        }
+        return { success: true, user: data.user, token: data.access_token }
       } else {
-        return { success: false, error: data.detail || data.message || 'Verification failed' }
+        return { success: false, error: data.error || data.message || 'Verification failed' }
       }
     } catch (error) {
       return { success: false, error: 'Network error' }
@@ -159,10 +165,10 @@ export const authService = {
 
       const data = await response.json()
 
-      if (response.ok) {
+      if (response.ok && data.success) {
         return { success: true, data }
       } else {
-        return { success: false, error: data.detail || data.message || 'Failed to resend OTP' }
+        return { success: false, error: data.error || data.message || 'Failed to resend OTP' }
       }
     } catch (error) {
       return { success: false, error: 'Network error' }
@@ -197,13 +203,14 @@ export const authService = {
       })
 
       if (response.ok) {
-        const user = await response.json()
-        localStorage.setItem('userData', JSON.stringify(user))
-        return user
-      } else {
-        authService.removeToken()
-        return null
+        const result = await response.json()
+        if (result.success && result.user) {
+          localStorage.setItem('userData', JSON.stringify(result.user))
+          return result.user
+        }
       }
+      authService.removeToken()
+      return null
     } catch (error) {
       console.error('Get user error:', error)
       return null

@@ -19,7 +19,7 @@
   "announcements": [
     {
       "id": 1,
-      "image": "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=800&q=80",
+      "image": "/images/posters/6.png",
       "badge": "Hackathon",
       "title": "CodeForHer Hackathon 2025",
       "description": "Join us for CodeForHer, a hackathon aimed at encouraging innovation, creativity, and problem-solving among students through technology-driven solutions. Focused on promoting women participation in tech and inclusive innovation.",
@@ -35,7 +35,7 @@
     },
     {
       "id": 2,
-      "image": "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?auto=format&fit=crop&w=800&q=80",
+      "image": "/images/posters/4.png",
       "badge": "Announcement",
       "title": "Join Our Upcoming Event",
       "description": "We're excited to announce our upcoming IEEE event that brings together students, professionals, and innovators from across the region. This is an opportunity to network, learn, and be part of the future of technology.",
@@ -51,7 +51,7 @@
     },
     {
       "id": 3,
-      "image": "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=800&q=80",
+      "image": "/images/posters/9.png",
       "badge": "Workshop",
       "title": "Technical Workshop Series",
       "description": "Join us for an intensive technical workshop series covering the latest trends in robotics, AI, and automation. Learn from industry experts and get hands-on experience with cutting-edge technologies.",
@@ -67,7 +67,7 @@
     },
     {
       "id": 4,
-      "image": "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=800&q=80",
+      "image": "/images/posters/2.png",
       "badge": "Competition",
       "title": "IEEE Robotics Competition 2025",
       "description": "Showcase your robotics skills in our annual competition. Compete with teams from across the region and win exciting prizes. Registration is now open!",
@@ -128,9 +128,6 @@
         "href": "/chapters/comsoc"
       }
     ]
-  },
-  "lanyard": {
-    "loadingText": "Loading interactive badge…"
   },
   "membership": {
     "label": "Become A Member",

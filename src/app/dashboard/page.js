@@ -1,8 +1,10 @@
 "use client"
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import PillNav from "@/components/ui/PillNav";
 import { authService } from '@/lib/auth';
+import { EVENTS_DATA } from '@/components/ui/events-page';
 
 const navItems = [
   { label: "IEEE", href: "/" },
@@ -17,7 +19,7 @@ import {
   User, Calendar, BookOpen, Users, Award, Bell, 
   ArrowRight, Loader2, FileText, Code, Briefcase, 
   TrendingUp, ExternalLink, LogOut, Edit, Save, X,
-  Linkedin, Github, Instagram, Image as ImageIcon
+  Linkedin, Github, Instagram, Image as ImageIcon, MapPin
 } from 'lucide-react';
 
 const Dashboard = () => {
@@ -222,10 +224,64 @@ const Dashboard = () => {
             <div className="lg:col-span-2 space-y-6">
               {/* Upcoming Events */}
               <SectionCard title="Upcoming Events" icon={Calendar}>
-                {dashboardData.upcoming_events && dashboardData.upcoming_events.length > 0 ? (
+                {EVENTS_DATA && EVENTS_DATA.length > 0 ? (
                   <div className="space-y-4">
-                    {dashboardData.upcoming_events.map((event) => (
-                      <EventCard key={event.id} event={event} />
+                    {EVENTS_DATA.map((event) => (
+                      <Link
+                        key={event.id}
+                        href={event.route || `/events#${event.id}`}
+                        className="block p-4 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all group"
+                      >
+                        <div className="flex items-start gap-4">
+                          {event.image && (
+                            <img
+                              src={event.image}
+                              alt={event.title}
+                              className="w-20 h-20 rounded-lg object-cover flex-shrink-0"
+                            />
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-start justify-between gap-2 mb-2">
+                              <h3 className="text-white font-semibold group-hover:text-purple-300 transition-colors">
+                                {event.title}
+                              </h3>
+                              <span className="text-xs px-2 py-1 rounded-full bg-purple-500/20 text-purple-300 flex-shrink-0">
+                                {event.category}
+                              </span>
+                            </div>
+                            <p className="text-white/70 text-sm mb-2 line-clamp-2">
+                              {event.description}
+                            </p>
+                            <div className="flex items-center gap-4 text-xs text-white/50">
+                              <span className="flex items-center gap-1">
+                                <Calendar className="w-3 h-3" />
+                                {event.date}
+                              </span>
+                              {event.location && (
+                                <span className="flex items-center gap-1">
+                                  <MapPin className="w-3 h-3" />
+                                  {event.location}
+                                </span>
+                              )}
+                            </div>
+                            {event.seatsLimited && (
+                              <div className="mt-2">
+                                <div className="flex items-center justify-between text-xs text-white/60 mb-1">
+                                  <span>Seats Available</span>
+                                  <span>{event.totalSeats - event.registeredSeats} / {event.totalSeats}</span>
+                                </div>
+                                <div className="w-full bg-white/10 rounded-full h-1.5">
+                                  <div
+                                    className="bg-purple-500 h-1.5 rounded-full transition-all"
+                                    style={{ width: `${(event.registeredSeats / event.totalSeats) * 100}%` }}
+                                  />
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                          <ArrowRight className="w-5 h-5 text-white/40 group-hover:text-purple-400 group-hover:translate-x-1 transition-all flex-shrink-0 mt-1" />
+                        </div>
+                      </Link>
                     ))}
                   </div>
                 ) : (

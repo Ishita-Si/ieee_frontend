@@ -2,13 +2,14 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import { authService } from '@/lib/auth';
 
 // Data for the events
 const events = [
   {
     name: 'CodeForHer Hackathon 2025',
     className: 'codeforher',
-    image: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=900&q=80',
+    image: '/images/posters/6.png',
     route: '/events/codeforher',
     color: '#ec4899',
     tag: 'WIE & CS',
@@ -18,7 +19,7 @@ const events = [
   {
     name: 'CodeQuest 2025',
     className: 'codequest',
-    image: 'https://images.unsplash.com/photo-1485579149621-3123dd979885?auto=format&fit=crop&w=900&q=80',
+    image: '/images/posters/10.png',
     route: '/events',
     color: '#7c3aed',
     tag: 'Computer Society',
@@ -28,7 +29,7 @@ const events = [
   {
     name: 'Hack RGIPT 8.0',
     className: 'hackrgipt',
-    image: 'https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?auto=format&fit=crop&w=900&q=80',
+    image: '/images/posters/13.png',
     route: '/events',
     color: '#3b82f6',
     tag: 'Kode Club',
@@ -38,7 +39,7 @@ const events = [
   {
     name: 'RoboQuest Grand Relay',
     className: 'roboquest',
-    image: 'https://images.unsplash.com/photo-1482192597420-4817fdd7e8b0?auto=format&fit=crop&w=900&q=80',
+    image: '/images/posters/14.png',
     route: '/events',
     color: '#f59e0b',
     tag: 'RAS',
@@ -48,7 +49,7 @@ const events = [
   {
     name: 'Quantum Sparks',
     className: 'quantum',
-    image: 'https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?auto=format&fit=crop&w=900&q=80',
+    image: '/images/posters/15.png',
     route: '/events',
     color: '#ef4444',
     tag: 'WIE',
@@ -56,14 +57,24 @@ const events = [
     timeline: 'Mar 2025'
   },
   {
-    name: 'COMSIC Signal Jam',
+    name: 'COMSOC Signal Jam',
     className: 'comsic',
-    image: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=900&q=80',
+    image: '/images/posters/16.png',
     route: '/events',
     color: '#10b981',
-    tag: 'COMSIC',
+    tag: 'COMSOC',
     attendees: '150+',
     timeline: 'Apr 2025'
+  },
+  {
+    name: 'Data Visualisation Challenge 2.0',
+    className: 'dataviz',
+    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=900&q=80',
+    route: '/events/data-visualization-challenge-2',
+    color: '#06b6d4',
+    tag: 'Competition',
+    attendees: '100+',
+    timeline: 'Jan 2025'
   }
 ];
 
@@ -187,7 +198,14 @@ const EventsSection = () => {
 
   const handleCardClick = (index) => {
     if (index === currentIndex) {
-      router.push(events[index].route);
+      const event = events[index];
+      if (event.route) {
+        if (!authService.isAuthenticated()) {
+          router.push(`/signin?redirect=${event.route}`);
+          return;
+        }
+        router.push(event.route);
+      }
     } else {
       stopAutoplay();
       updateSlider(index);

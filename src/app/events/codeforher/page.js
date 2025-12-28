@@ -2,7 +2,9 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import PillNav from "@/components/ui/PillNav";
+import { authService } from "@/lib/auth";
 import { 
   Calendar, 
   Users, 
@@ -299,8 +301,29 @@ const MemberFormSection = ({ index, data, onChange }) => {
 // --- Main Page Component ---
 
 export default function CodeForHerPage() {
+  const router = useRouter();
+  const [authChecked, setAuthChecked] = useState(false);
   const [view, setView] = useState("landing"); // 'landing' | 'registration' | 'success'
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      if (!authService.isAuthenticated()) {
+        router.push('/signin?redirect=/events/codeforher');
+        return;
+      }
+      setAuthChecked(true);
+    };
+    checkAuth();
+  }, [router]);
+
+  if (!authChecked) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-purple-400" />
+      </div>
+    );
+  }
   
   // Form State
   const [teamName, setTeamName] = useState("");
