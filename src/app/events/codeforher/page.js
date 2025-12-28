@@ -306,6 +306,16 @@ export default function CodeForHerPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [view, setView] = useState("landing"); // 'landing' | 'registration' | 'success'
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Form State - MUST be declared before any early returns
+  const [teamName, setTeamName] = useState("");
+  const [track, setTrack] = useState("");
+  const [previousExperience, setPreviousExperience] = useState("");
+  const [members, setMembers] = useState(
+    Array(4).fill(null).map(() => ({
+      name: "", email: "", mobile: "", college: "", course: "", branch: "", year: ""
+    }))
+  );
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -328,16 +338,6 @@ export default function CodeForHerPage() {
       </div>
     );
   }
-  
-  // Form State
-  const [teamName, setTeamName] = useState("");
-  const [track, setTrack] = useState("");
-  const [previousExperience, setPreviousExperience] = useState("");
-  const [members, setMembers] = useState(
-    Array(4).fill(null).map(() => ({
-      name: "", email: "", mobile: "", college: "", course: "", branch: "", year: ""
-    }))
-  );
 
   // Event Data for Landing Page
 const eventData = {

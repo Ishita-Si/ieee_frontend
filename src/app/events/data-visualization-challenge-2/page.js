@@ -284,15 +284,7 @@ export default function DataVisualizationChallengePage() {
     checkAuth();
   }, [router]);
 
-  if (!authChecked) {
-    return (
-      <div className="min-h-screen bg-[#050505] text-white flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-purple-400" />
-      </div>
-    );
-  }
-
-  // Load user data on mount
+  // Load user data on mount - MUST be before early return
   useEffect(() => {
     if (!authChecked || !isAuthenticated) return;
     
@@ -316,6 +308,14 @@ export default function DataVisualizationChallengePage() {
     };
     loadUser();
   }, [authChecked, isAuthenticated]);
+
+  if (!authChecked) {
+    return (
+      <div className="min-h-screen bg-[#050505] text-white flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-purple-400" />
+      </div>
+    );
+  }
 
   // Handle team size change
   const handleTeamSizeChange = (newSize) => {
