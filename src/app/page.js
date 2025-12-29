@@ -348,7 +348,7 @@ export default function Home() {
           }}
         />
 
-        {/* Announcement Section - Slider */}
+        {/* Announcement Section - Slider with 9:16 Images */}
         <section className="w-full py-6 sm:py-8 md:py-12 px-4 sm:px-6 md:px-8 lg:px-12">
           <div className="max-w-7xl mx-auto">
             <div className="relative">
@@ -363,13 +363,15 @@ export default function Home() {
                       key={announcement.id}
                       className="min-w-full grid md:grid-cols-2 gap-6 md:gap-8 lg:gap-12 items-center"
                     >
-                      {/* Image Poster - Left Side */}
-                      <div className="relative w-full h-[400px] md:h-[500px] rounded-2xl md:rounded-3xl overflow-hidden border border-white/10 shadow-lg">
-                        <img
-                          src={announcement.image}
-                          alt={announcement.title}
-                          className="w-full h-full object-cover"
-                        />
+                      {/* Image Poster - Left Side - 10:16 Aspect Ratio */}
+                      <div className="relative w-full mx-auto max-w-sm md:max-w-md">
+                        <div className="relative w-full" style={{ aspectRatio: '11/16' }}>
+                          <img
+                            src={announcement.image}
+                            alt={announcement.title}
+                            className="w-full h-full object-cover rounded-2xl md:rounded-3xl border border-white/10 shadow-lg"
+                          />
+                        </div>
                       </div>
 
                       {/* Text Content - Right Side */}
