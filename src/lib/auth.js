@@ -39,9 +39,17 @@ export const authService = {
   },
 
   // Get auth headers for API requests
-  getAuthHeaders: () => {
+  getAuthHeaders: (includeContentType = true) => {
     const token = authService.getToken()
-    return token ? { Authorization: `Bearer ${token}` } : {}
+    const headers = {}
+    if (token) {
+      headers.Authorization = `Bearer ${token}`
+    }
+    // Only include Content-Type if not FormData (browser will set it automatically with boundary)
+    if (includeContentType) {
+      headers['Content-Type'] = 'application/json'
+    }
+    return headers
   },
 
   // Refresh token
@@ -101,14 +109,26 @@ export const authService = {
   },
 
   // Register new user
-  register: async (userData) => {
+  register: async (userData, profilePicture = null) => {
     try {
+      const formData = new FormData();
+      
+      // Add all user data fields
+      Object.keys(userData).forEach(key => {
+        if (userData[key] !== null && userData[key] !== undefined) {
+          formData.append(key, userData[key]);
+        }
+      });
+      
+      // Add profile picture if provided
+      if (profilePicture) {
+        formData.append('profile_picture', profilePicture);
+      }
+
       const response = await fetch(`${API_BASE_URL}/auth/register/initiate`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(userData)
+        headers: authService.getAuthHeaders(false), // Don't set Content-Type, let browser set it with boundary for FormData
+        body: formData
       })
 
       const data = await response.json()

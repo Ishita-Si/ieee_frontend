@@ -32,6 +32,8 @@ export default function SignupPage() {
     membership_type: "",
     membership_code: ""
   });
+  const [profilePicture, setProfilePicture] = useState(null);
+  const [profilePicturePreview, setProfilePicturePreview] = useState(null);
   const [otpCode, setOtpCode] = useState('');
   const [step, setStep] = useState('form'); // 'form', 'otp', 'success'
   const [loading, setLoading] = useState(false);
@@ -42,6 +44,34 @@ export default function SignupPage() {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
     setError('');
+  };
+
+  const handleProfilePictureChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Validate file type
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+      if (!allowedTypes.includes(file.type)) {
+        setError('Please select a valid image file (JPEG, PNG, GIF, or WebP)');
+        return;
+      }
+      
+      // Validate file size (1MB max)
+      if (file.size > 1 * 1024 * 1024) {
+        setError('Image size must be less than 1MB');
+        return;
+      }
+
+      setProfilePicture(file);
+      
+      // Create preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setProfilePicturePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+      setError('');
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -117,6 +147,13 @@ export default function SignupPage() {
       return;
     }
 
+    // Profile picture is mandatory
+    if (!profilePicture) {
+      setError('Profile picture is required');
+      setLoading(false);
+      return;
+    }
+
     if (form.membership_type === 'ieee_member' && !form.membership_code) {
       setError('Membership code is required for IEEE members');
       setLoading(false);
@@ -137,7 +174,7 @@ export default function SignupPage() {
         membership_type: form.membership_type,
         membership_code: form.membership_type === 'ieee_member' ? form.membership_code.trim() : null,
         role: 'user'
-      });
+      }, profilePicture);
 
       if (result.success) {
         setStep('otp');
@@ -246,6 +283,51 @@ export default function SignupPage() {
             onSubmit={handleSubmit}
             className="rounded-3xl border border-white/10 bg-white/5 p-8 space-y-6 shadow-[0_30px_120px_rgba(15,23,42,0.4)]"
           >
+            {/* Profile Picture Upload */}
+            <div className="space-y-2">
+              <label htmlFor="profile_picture" className="text-sm uppercase tracking-[0.35em] text-white/60 flex items-center gap-2">
+                <User className="w-4 h-4" />
+                Profile Picture <span className="text-red-400">*</span> (Max 1MB)
+              </label>
+              <div className="flex items-center gap-4">
+                <label 
+                  htmlFor="profile_picture" 
+                  className="flex-1 cursor-pointer rounded-2xl bg-black/60 border-2 border-dashed border-white/30 hover:border-purple-400/60 transition-colors px-4 py-6 flex flex-col items-center justify-center gap-2"
+                >
+                  <input
+                    id="profile_picture"
+                    name="profile_picture"
+                    type="file"
+                    accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                    onChange={handleProfilePictureChange}
+                    className="hidden"
+                  />
+                  {profilePicture ? (
+                    <span className="text-white font-medium">{profilePicture.name}</span>
+                  ) : (
+                    <>
+                      <div className="text-purple-400">
+                        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                      </div>
+                      <span className="text-white/70 text-sm">Click to upload profile picture</span>
+                    </>
+                  )}
+                </label>
+                {profilePicturePreview && (
+                  <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-purple-400/60 flex-shrink-0">
+                    <img
+                      src={profilePicturePreview}
+                      alt="Profile preview"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                )}
+              </div>
+              <p className="text-xs text-white/50">Max file size: 5MB. Supported formats: JPEG, PNG, GIF, WebP</p>
+            </div>
+
             <div className="grid md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <label htmlFor="username" className="text-sm uppercase tracking-[0.35em] text-white/60 flex items-center gap-2">

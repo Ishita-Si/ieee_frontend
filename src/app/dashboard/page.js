@@ -30,6 +30,8 @@ const Dashboard = () => {
   const [error, setError] = useState('');
   const [showProfileForm, setShowProfileForm] = useState(false);
   const [profileFormData, setProfileFormData] = useState({});
+  const [profilePictureFile, setProfilePictureFile] = useState(null);
+  const [profilePicturePreview, setProfilePicturePreview] = useState(null);
   const [profileLoading, setProfileLoading] = useState(false);
   const [profileSuccess, setProfileSuccess] = useState('');
 
@@ -89,7 +91,6 @@ const Dashboard = () => {
 
   const handleOpenProfileForm = () => {
     setProfileFormData({
-      profile_image_url: user.profile_image_url || '',
       designation: user.designation || '',
       bio: user.bio || '',
       branch: user.branch || '',
@@ -98,6 +99,8 @@ const Dashboard = () => {
       github_url: user.github_url || '',
       instagram_url: user.instagram_url || '',
     });
+    setProfilePictureFile(null);
+    setProfilePicturePreview(user.profile_image_url || null);
     setShowProfileForm(true);
     setProfileSuccess('');
   };
@@ -110,26 +113,41 @@ const Dashboard = () => {
 
     try {
       const token = authService.getToken();
+      const formData = new FormData();
+      
+      // Add profile picture if selected
+      if (profilePictureFile) {
+        formData.append('profile_picture', profilePictureFile);
+      }
+      
+      // Add other form fields
+      Object.keys(profileFormData).forEach(key => {
+        if (profileFormData[key] !== undefined && profileFormData[key] !== null) {
+          formData.append(key, profileFormData[key]);
+        }
+      });
+
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/dashboard/profile`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
         },
-        body: JSON.stringify(profileFormData)
+        body: formData
       });
 
       if (response.ok) {
         const updatedUser = await response.json();
-        setUser(updatedUser);
+        setUser(updatedUser.user);
         setProfileSuccess('Profile updated successfully!');
+        setProfilePictureFile(null);
+        setProfilePicturePreview(null);
         setTimeout(() => {
           setShowProfileForm(false);
           setProfileSuccess('');
         }, 2000);
       } else {
         const errorData = await response.json();
-        setError(errorData.detail || 'Failed to update profile');
+        setError(errorData.error || 'Failed to update profile');
       }
     } catch (err) {
       console.error('Profile update error:', err);
@@ -485,11 +503,17 @@ const Dashboard = () => {
         <ProfileUpdateModal
           formData={profileFormData}
           setFormData={setProfileFormData}
+          profilePictureFile={profilePictureFile}
+          setProfilePictureFile={setProfilePictureFile}
+          profilePicturePreview={profilePicturePreview}
+          setProfilePicturePreview={setProfilePicturePreview}
           onSubmit={handleProfileUpdate}
           onClose={() => {
             setShowProfileForm(false);
             setProfileSuccess('');
             setError('');
+            setProfilePictureFile(null);
+            setProfilePicturePreview(null);
           }}
           loading={profileLoading}
           success={profileSuccess}
@@ -500,7 +524,7 @@ const Dashboard = () => {
   );
 };
 
-const ProfileUpdateModal = ({ formData, setFormData, onSubmit, onClose, loading, success, error }) => {
+const ProfileUpdateModal = ({ formData, setFormData, profilePictureFile, setProfilePictureFile, profilePicturePreview, setProfilePicturePreview, onSubmit, onClose, loading, success, error }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
       <div className="bg-black/95 border border-white/10 rounded-xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
@@ -530,20 +554,42 @@ const ProfileUpdateModal = ({ formData, setFormData, onSubmit, onClose, loading,
         )}
 
         <form onSubmit={onSubmit} className="space-y-4">
-          {/* Profile Image URL */}
+          {/* Profile Picture Upload */}
           <div>
             <label className="block text-sm font-medium text-white/80 mb-2 flex items-center gap-2">
               <ImageIcon className="w-4 h-4" />
-              Profile Photo URL
+              Profile Photo (Max 1MB)
             </label>
+            {profilePicturePreview && (
+              <div className="mb-3">
+                <img 
+                  src={profilePicturePreview} 
+                  alt="Profile preview" 
+                  className="w-24 h-24 rounded-full object-cover border-2 border-white/20"
+                />
+              </div>
+            )}
             <input
-              type="url"
-              value={formData.profile_image_url}
-              onChange={(e) => setFormData({ ...formData, profile_image_url: e.target.value })}
-              className="w-full px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white placeholder-white/40 focus:outline-none focus:border-purple-400/50"
-              placeholder="https://example.com/photo.jpg"
+              type="file"
+              accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+              onChange={(e) => {
+                const file = e.target.files[0];
+                if (file) {
+                  if (file.size > 1024 * 1024) {
+                    alert('File size must be less than 1MB');
+                    return;
+                  }
+                  setProfilePictureFile(file);
+                  const reader = new FileReader();
+                  reader.onloadend = () => {
+                    setProfilePicturePreview(reader.result);
+                  };
+                  reader.readAsDataURL(file);
+                }
+              }}
+              className="w-full px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white placeholder-white/40 focus:outline-none focus:border-purple-400/50 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-purple-500 file:text-white hover:file:bg-purple-600"
             />
-            <p className="mt-1 text-xs text-white/50">This photo will be displayed on the team page</p>
+            <p className="mt-1 text-xs text-white/50">Upload a new profile photo (JPEG, PNG, GIF, or WebP, max 1MB)</p>
           </div>
 
           {/* Designation (POR) */}
