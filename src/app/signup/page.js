@@ -154,11 +154,8 @@ export default function SignupPage() {
       return;
     }
 
-    if (form.membership_type === 'ieee_member' && !form.membership_code) {
-      setError('Membership code is required for IEEE members');
-      setLoading(false);
-      return;
-    }
+    // Note: IEEE membership ID will be auto-generated on the backend
+    // No need to require membership_code anymore
 
     try {
       const result = await authService.register({
@@ -172,7 +169,7 @@ export default function SignupPage() {
         roll_no: form.roll_no.trim(),
         password: form.password,
         membership_type: form.membership_type,
-        membership_code: form.membership_type === 'ieee_member' ? form.membership_code.trim() : null,
+        membership_code: form.membership_type === 'ieee_member' && form.membership_code ? form.membership_code.trim() : null,
         role: 'user'
       }, profilePicture);
 
@@ -526,20 +523,29 @@ export default function SignupPage() {
 
             {form.membership_type === 'ieee_member' && (
               <div className="space-y-2">
-                <label htmlFor="membership_code" className="text-sm uppercase tracking-[0.35em] text-white/60">
-                  Membership Code <span className="text-red-400">*</span>
-                </label>
-                <input
-                  id="membership_code"
-                  name="membership_code"
-                  type="text"
-                  value={form.membership_code}
-                  onChange={handleChange}
-                  required={form.membership_type === 'ieee_member'}
-                  className="w-full rounded-2xl bg-black/60 border border-white/20 px-4 py-3 focus:outline-none focus:border-white text-white"
-                  placeholder="Enter your IEEE membership code"
-                />
-                <p className="text-xs text-white/50">Contact admin to get your membership code</p>
+                <div className="rounded-2xl border border-purple-500/30 bg-purple-500/10 px-4 py-3">
+                  <p className="text-sm text-purple-300">
+                    <strong>IEEE Membership ID will be automatically generated</strong> upon successful registration.
+                  </p>
+                  <p className="text-xs text-white/60 mt-1">
+                    Your unique IEEE membership ID will be assigned and displayed on your profile and ID card.
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <label htmlFor="membership_code" className="text-sm uppercase tracking-[0.35em] text-white/60">
+                    Existing Membership Code (Optional)
+                  </label>
+                  <input
+                    id="membership_code"
+                    name="membership_code"
+                    type="text"
+                    value={form.membership_code}
+                    onChange={handleChange}
+                    className="w-full rounded-2xl bg-black/60 border border-white/20 px-4 py-3 focus:outline-none focus:border-white text-white"
+                    placeholder="If you have an existing IEEE membership code (optional)"
+                  />
+                  <p className="text-xs text-white/50">Only fill this if you already have an IEEE membership code</p>
+                </div>
               </div>
             )}
 

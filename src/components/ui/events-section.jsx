@@ -4,7 +4,31 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { authService } from '@/lib/auth';
 
-// Data for the events
+// Helper function to check if an event is upcoming or currently happening
+// Returns true if event is upcoming or currently ongoing (not completely ended)
+const isEventUpcoming = (timeline) => {
+  if (!timeline) return true; // If no timeline, show it as upcoming
+  
+  // Parse timeline like "Dec 2025", "Jan 2025", etc.
+  const parts = timeline.split(' ');
+  if (parts.length < 2) return true;
+  
+  const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const month = monthNames.indexOf(parts[0]);
+  const year = parseInt(parts[1]);
+  
+  if (month === -1 || isNaN(year)) return true;
+  
+  // Get the last day of the event month
+  const lastDayOfMonth = new Date(year, month + 1, 0, 23, 59, 59); // Last day of the month at end of day
+  const now = new Date();
+  
+  // Event is upcoming if we haven't passed the last day of that month
+  // This includes events that are currently happening
+  return lastDayOfMonth >= now;
+};
+
+// Data for the events - only upcoming events with open registrations
 const events = [
   {
     name: 'CodeForHer Hackathon 2025',
@@ -14,57 +38,8 @@ const events = [
     color: '#ec4899',
     tag: 'WIE & CS',
     attendees: '200+',
-    timeline: 'Dec 2025'
-  },
-  {
-    name: 'CodeQuest 2025',
-    className: 'codequest',
-    image: '/images/posters/10.png',
-    route: '/events',
-    color: '#7c3aed',
-    tag: 'Computer Society',
-    attendees: '800+',
-    timeline: 'Jan 2025'
-  },
-  {
-    name: 'Hack RGIPT 8.0',
-    className: 'hackrgipt',
-    image: '/images/posters/13.png',
-    route: '/events',
-    color: '#3b82f6',
-    tag: 'Kode Club',
-    attendees: '300+',
-    timeline: 'Feb 2025'
-  },
-  {
-    name: 'RoboQuest Grand Relay',
-    className: 'roboquest',
-    image: '/images/posters/14.png',
-    route: '/events',
-    color: '#f59e0b',
-    tag: 'RAS',
-    attendees: '120+',
-    timeline: 'Mar 2025'
-  },
-  {
-    name: 'Quantum Sparks',
-    className: 'quantum',
-    image: '/images/posters/15.png',
-    route: '/events',
-    color: '#ef4444',
-    tag: 'WIE',
-    attendees: '400+',
-    timeline: 'Mar 2025'
-  },
-  {
-    name: 'COMSOC Signal Jam',
-    className: 'comsic',
-    image: '/images/posters/16.png',
-    route: '/events',
-    color: '#10b981',
-    tag: 'COMSOC',
-    attendees: '150+',
-    timeline: 'Apr 2025'
+    timeline: 'Jan 10 - Feb 1, 2025',
+    registrationOpen: true
   },
   {
     name: 'Data Visualisation Challenge 2.0',
@@ -74,9 +49,13 @@ const events = [
     color: '#06b6d4',
     tag: 'Competition',
     attendees: '100+',
-    timeline: 'Jan 2025'
+    timeline: 'Jan 2025',
+    registrationOpen: true
   }
-];
+].filter(event => {
+  // Show events with open registrations that are upcoming or currently happening
+  return event.registrationOpen && isEventUpcoming(event.timeline);
+});
 
 // Minimal CSS for complex animations
 const styles = `

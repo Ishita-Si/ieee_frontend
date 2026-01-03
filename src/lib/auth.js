@@ -235,5 +235,51 @@ export const authService = {
       console.error('Get user error:', error)
       return null
     }
+  },
+
+  // Forgot password - Request password reset
+  forgotPassword: async (email) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/forgot-password`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email })
+      })
+
+      const data = await response.json()
+
+      if (response.ok && data.success) {
+        return { success: true, message: data.message || 'Password reset link sent to your email' }
+      } else {
+        return { success: false, error: data.error || data.message || 'Failed to send password reset email' }
+      }
+    } catch (error) {
+      return { success: false, error: 'Network error' }
+    }
+  },
+
+  // Reset password - Verify token and update password
+  resetPassword: async (email, token, newPassword) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/reset-password`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email, token, new_password: newPassword })
+      })
+
+      const data = await response.json()
+
+      if (response.ok && data.success) {
+        return { success: true, message: data.message || 'Password reset successfully' }
+      } else {
+        return { success: false, error: data.error || data.message || 'Failed to reset password' }
+      }
+    } catch (error) {
+      return { success: false, error: 'Network error' }
+    }
   }
 }

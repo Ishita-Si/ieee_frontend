@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import PillNav from "@/components/ui/PillNav";
 import { authService } from "@/lib/auth";
+import { eventService } from "@/lib/events";
 import { 
   Calendar, 
   Users, 
@@ -354,11 +355,11 @@ const eventData = {
     { title: "Network", desc: "Connect with industry mentors and peers.", icon: Users },
   ],
   timeline: [
-    { date: "15 Dec", title: "Problem Release", desc: "Theme announcement" },
-    { date: "22 Dec", title: "Round 1 Deadline", desc: "PPT Submission" },
-    { date: "26 Dec", title: "Presentations", desc: "Top 20 Teams" },
-    { date: "03 Jan", title: "Final Build", desc: "Prototype Submission" },
-    { date: "04 Jan", title: "Grand Finale", desc: "Winners Announced" },
+    { date: "10-14 Jan", title: "Phase 1", desc: "Development Phase" },
+    { date: "15-16 Jan", title: "Presentation", desc: "Team Presentations" },
+    { date: "17 Jan", title: "Results", desc: "Phase 1 Results Announcement" },
+    { date: "18-24 Jan", title: "Phase 2", desc: "Final Development Phase" },
+    { date: "31 Jan / 1 Feb", title: "Valedictory", desc: "Final Ceremony & Winners" },
   ]
 };
 
@@ -371,12 +372,44 @@ const eventData = {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    // Simulate API Submission
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    console.log({ teamName, track, previousExperience, members });
-    setIsSubmitting(false);
-    setView("success");
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    
+    try {
+      // Filter out empty members and ensure we have valid team size
+      const validMembers = members.filter(m => m.name && m.email && m.mobile).slice(0, 4);
+      
+      if (validMembers.length === 0) {
+        alert('Please add at least one team member with name, email, and mobile number.');
+        setIsSubmitting(false);
+        return;
+      }
+
+      const formData = {
+        event_name: "CodeForHer Hackathon 2025",
+        event_slug: "codeforher",
+        team_name: teamName,
+        team_size: validMembers.length,
+        members: validMembers.map(m => ({
+          name: m.name.trim(),
+          email: m.email.trim().toLowerCase(),
+          mobile: m.mobile.trim()
+        })),
+        feedback: `${track ? `Track: ${track}. ` : ''}${previousExperience || ''}`.trim()
+      };
+
+      const result = await eventService.register(formData);
+      
+      if (result.success) {
+        setView("success");
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        alert(result.error || 'Registration failed. Please try again.');
+      }
+    } catch (error) {
+      console.error('Registration error:', error);
+      alert('An error occurred. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   // --- RENDER LOGIC ---

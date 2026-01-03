@@ -205,6 +205,34 @@ export default function Home() {
     }
   };
 
+  // Track visitor
+  useEffect(() => {
+    const trackVisitor = async () => {
+      try {
+        const sessionId = sessionStorage.getItem('visitor_session_id') || 
+                         `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        sessionStorage.setItem('visitor_session_id', sessionId);
+        
+        await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/admin/visitors/track`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            page_visited: window.location.pathname,
+            referrer: document.referrer || '',
+            session_id: sessionId
+          })
+        });
+      } catch (error) {
+        // Silently fail - don't interrupt user experience
+        console.log('Visitor tracking failed:', error);
+      }
+    };
+    
+    trackVisitor();
+  }, []);
+
   // Auto-play announcements
   useEffect(() => {
     announcementIntervalRef.current = setInterval(() => {

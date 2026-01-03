@@ -16,7 +16,7 @@ const AuthModal = ({ isOpen, onClose, mode, onSwitchMode }) => {
     password: '',
     confirmPassword: '',
     membership_type: '', // 'ieee_member' or 'non_member'
-    membership_code: '', // Required for IEEE members
+    membership_code: '', // Optional - only for existing IEEE membership codes
   });
   const [otpCode, setOtpCode] = useState('');
   const [step, setStep] = useState('form'); // 'form', 'otp', 'success'
@@ -178,13 +178,9 @@ const AuthModal = ({ isOpen, onClose, mode, onSwitchMode }) => {
       return;
     }
 
-    // Validate membership code for IEEE members
-    if (formData.membership_type === 'ieee_member' && !formData.membership_code) {
-      setError('Membership code is required for IEEE members');
-      setLoading(false);
-      return;
-    }
-
+    // Note: IEEE membership ID will be auto-generated on the backend
+    // membership_code is optional (only for users who already have an existing code)
+    
     // Non-members should not provide membership code
     if (formData.membership_type === 'non_member' && formData.membership_code) {
       setError('Membership code should not be provided for non-members');
@@ -436,22 +432,31 @@ const AuthModal = ({ isOpen, onClose, mode, onSwitchMode }) => {
                       </div>
 
                       {formData.membership_type === 'ieee_member' && (
-                        <div>
-                          <label className="mb-2 block text-sm font-medium text-purple-100/90">
-                            Membership Code <span className="text-red-400">*</span>
-                          </label>
-                          <input
-                            type="text"
-                            name="membership_code"
-                            value={formData.membership_code}
-                            onChange={handleChange}
-                            className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder-purple-200/60 transition ring-offset-0 focus:border-purple-400/60 focus:outline-none focus:ring-2 focus:ring-purple-500/40"
-                            placeholder="Enter your IEEE membership code"
-                            required
-                          />
-                          <p className="mt-1 text-xs text-purple-200/60">
-                            Contact admin to get your membership code
-                          </p>
+                        <div className="space-y-3">
+                          <div className="rounded-xl border border-purple-500/30 bg-purple-500/10 px-4 py-3">
+                            <p className="text-sm text-purple-300">
+                              <strong>IEEE Membership ID will be automatically generated</strong> upon successful registration.
+                            </p>
+                            <p className="text-xs text-purple-200/60 mt-1">
+                              Your unique IEEE membership ID will be assigned and displayed on your profile and ID card.
+                            </p>
+                          </div>
+                          <div>
+                            <label className="mb-2 block text-sm font-medium text-purple-100/90">
+                              Existing Membership Code (Optional)
+                            </label>
+                            <input
+                              type="text"
+                              name="membership_code"
+                              value={formData.membership_code}
+                              onChange={handleChange}
+                              className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder-purple-200/60 transition ring-offset-0 focus:border-purple-400/60 focus:outline-none focus:ring-2 focus:ring-purple-500/40"
+                              placeholder="If you have an existing IEEE membership code (optional)"
+                            />
+                            <p className="mt-1 text-xs text-purple-200/60">
+                              Only fill this if you already have an IEEE membership code
+                            </p>
+                          </div>
                         </div>
                       )}
 

@@ -147,17 +147,25 @@ export default function SigninPage() {
             />
           </div>
 
-          <div className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              id="remember"
-              checked={rememberMe}
-              onChange={(e) => setRememberMe(e.target.checked)}
-              className="rounded border-white/20 bg-black/60 text-purple-500 focus:ring-purple-500/40"
-            />
-            <label htmlFor="remember" className="text-sm text-white/80">
-              Remember me
-            </label>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="remember"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+                className="rounded border-white/20 bg-black/60 text-purple-500 focus:ring-purple-500/40"
+              />
+              <label htmlFor="remember" className="text-sm text-white/80">
+                Remember me
+              </label>
+            </div>
+            <Link 
+              href="/forgot-password" 
+              className="text-sm text-white/60 hover:text-white underline"
+            >
+              Forgot password?
+            </Link>
           </div>
 
           <button

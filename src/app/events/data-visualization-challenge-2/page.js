@@ -364,6 +364,8 @@ export default function DataVisualizationChallengePage() {
       if (result.success) {
         setView("success");
         window.scrollTo({ top: 0, behavior: 'smooth' });
+        // Refresh registrations in dashboard if user navigates there
+        // The dashboard will fetch fresh data on mount
       } else {
         alert(result.error || 'Registration failed. Please try again.');
       }
@@ -815,23 +817,23 @@ export default function DataVisualizationChallengePage() {
         </section>
 
         {/* Core Concept */}
-        <section className="py-24 relative">
+        <section className="py-12 sm:py-16 md:py-24 relative">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-5xl font-bold mb-4">The Core Concept</h2>
-              <p className="text-white/60 max-w-3xl mx-auto leading-relaxed">
+            <div className="text-center mb-12 sm:mb-16">
+              <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold mb-4">The Core Concept</h2>
+              <p className="text-white/60 max-w-3xl mx-auto leading-relaxed text-sm sm:text-base">
                 Navigate the complexities of real-world datasets to derive meaningful, high-impact insights through professional-grade statistical and analytical techniques. Move beyond sterile simulations to tackle challenges at the forefront of climate resilience, public health, education, and industrial policy.
               </p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-6 mb-12">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 mb-12">
               {eventData.themes.map((theme, idx) => (
-                <GlassCard key={idx} className="p-6 group hover:bg-white/5">
-                  <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${theme.color} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>
-                    <theme.icon className="w-6 h-6 text-white" />
+                <GlassCard key={idx} className="p-4 sm:p-6 group hover:bg-white/5">
+                  <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br ${theme.color} flex items-center justify-center mb-3 sm:mb-4 group-hover:scale-110 transition-transform duration-300`}>
+                    <theme.icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                   </div>
-                  <h3 className="text-xl font-bold mb-2">{theme.name}</h3>
-                  <p className="text-white/60 text-sm leading-relaxed">
+                  <h3 className="text-lg sm:text-xl font-bold mb-2">{theme.name}</h3>
+                  <p className="text-white/60 text-xs sm:text-sm leading-relaxed">
                     Real-world datasets and challenges in {theme.name.toLowerCase()} domain
                   </p>
                 </GlassCard>
@@ -841,25 +843,25 @@ export default function DataVisualizationChallengePage() {
         </section>
 
         {/* Important Dates Timeline */}
-        <section id="timeline" className="py-24 relative border-t border-white/5 bg-black/20">
+        <section id="timeline" className="py-12 sm:py-16 md:py-24 relative border-t border-white/5 bg-black/20">
           <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-col md:flex-row gap-12">
-              <div className="md:w-1/3 sticky top-32 h-fit">
-                <h2 className="text-4xl font-bold mb-4 text-shimmer">Important Dates</h2>
-                <p className="text-white/60 mb-8">Mark your calendar and stay ahead of deadlines!</p>
+            <div className="flex flex-col md:flex-row gap-8 md:gap-12">
+              <div className="md:w-1/3 md:sticky md:top-32 h-fit">
+                <h2 className="text-3xl sm:text-4xl font-bold mb-4 text-shimmer">Important Dates</h2>
+                <p className="text-white/60 mb-6 md:mb-8 text-sm sm:text-base">Mark your calendar and stay ahead of deadlines!</p>
               </div>
-              <div className="md:w-2/3 space-y-8 relative">
-                <div className="absolute left-[21px] top-4 bottom-4 w-[2px] bg-gradient-to-b from-cyan-500 via-blue-900 to-transparent opacity-30" />
+              <div className="md:w-2/3 space-y-6 md:space-y-8 relative">
+                <div className="absolute left-[15px] sm:left-[21px] top-4 bottom-4 w-[2px] bg-gradient-to-b from-cyan-500 via-blue-900 to-transparent opacity-30 hidden sm:block" />
                 {eventData.importantDates.map((item, idx) => (
-                  <div key={idx} className="relative pl-16 group">
-                    <div className="absolute left-3 top-3 w-4 h-4 rounded-full border-2 border-cyan-500/50 bg-black group-hover:border-cyan-500 group-hover:scale-125 transition-all duration-300 z-10" />
-                    <GlassCard className="p-6 flex items-center justify-between gap-4">
-                      <div>
-                        <h4 className="text-lg font-bold text-white">{item.title}</h4>
-                        <p className="text-white/50 text-sm">{item.desc}</p>
+                  <div key={idx} className="relative pl-12 sm:pl-16 group">
+                    <div className="absolute left-2 sm:left-3 top-3 w-3 h-3 sm:w-4 sm:h-4 rounded-full border-2 border-cyan-500/50 bg-black group-hover:border-cyan-500 group-hover:scale-125 transition-all duration-300 z-10" />
+                    <GlassCard className="p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+                      <div className="flex-1">
+                        <h4 className="text-base sm:text-lg font-bold text-white">{item.title}</h4>
+                        <p className="text-white/50 text-xs sm:text-sm">{item.desc}</p>
                       </div>
-                      <div className="text-right">
-                        <span className="block text-2xl font-bold text-white/10 group-hover:text-cyan-500/50 transition-colors">{item.date.split(" ")[0]}</span>
+                      <div className="text-left sm:text-right">
+                        <span className="block text-xl sm:text-2xl font-bold text-white/10 group-hover:text-cyan-500/50 transition-colors">{item.date.split(" ")[0]}</span>
                         <span className="text-xs font-bold uppercase text-white/30">{item.date.split(" ").slice(1).join(" ")}</span>
                       </div>
                     </GlassCard>
@@ -871,92 +873,92 @@ export default function DataVisualizationChallengePage() {
         </section>
 
         {/* Phase 1 Details */}
-        <section id="structure" className="py-24 px-4">
+        <section id="structure" className="py-12 sm:py-16 md:py-24 px-4">
           <div className="max-w-7xl mx-auto">
-            <div className="bg-gradient-to-r from-cyan-900/20 to-blue-900/20 rounded-3xl p-8 md:p-16 border border-white/10 relative overflow-hidden">
+            <div className="bg-gradient-to-r from-cyan-900/20 to-blue-900/20 rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-16 border border-white/10 relative overflow-hidden">
               <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20" />
               
               <div className="relative z-10">
-                <h2 className="text-3xl md:text-5xl font-bold mb-6">Phase 1: Analysis, Visualization & Impact</h2>
-                <p className="text-lg text-white/70 mb-8">
+                <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold mb-4 sm:mb-6">Phase 1: Analysis, Visualization & Impact</h2>
+                <p className="text-base sm:text-lg text-white/70 mb-6 sm:mb-8">
                   Submission Round combining problem understanding, dataset exploration, analysis, visualization, dataset extension, and impact evaluation.
                 </p>
                 
-                <div className="grid md:grid-cols-2 gap-8 mb-8">
-                  <GlassCard className="p-6">
-                    <h3 className="text-xl font-bold mb-4 flex items-center gap-2 text-cyan-400">
-                      <Target className="w-5 h-5" />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 mb-6 sm:mb-8">
+                  <GlassCard className="p-4 sm:p-6">
+                    <h3 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 flex items-center gap-2 text-cyan-400">
+                      <Target className="w-4 h-4 sm:w-5 sm:h-5" />
                       Provided by Organizers
                     </h3>
-                    <ul className="space-y-3">
+                    <ul className="space-y-2 sm:space-y-3">
                       <li className="flex items-start gap-2">
-                        <CheckCircle2 className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
-                        <span className="text-white/80">Theme (Healthcare, Agriculture, or Urban Infrastructure)</span>
+                        <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-green-400 flex-shrink-0 mt-0.5" />
+                        <span className="text-white/80 text-sm sm:text-base">Theme (Healthcare, Agriculture, or Urban Infrastructure)</span>
                       </li>
                       <li className="flex items-start gap-2">
-                        <CheckCircle2 className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
-                        <span className="text-white/80">Realistic problem context</span>
+                        <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-green-400 flex-shrink-0 mt-0.5" />
+                        <span className="text-white/80 text-sm sm:text-base">Realistic problem context</span>
                       </li>
                     </ul>
-                    <div className="mt-4 p-3 rounded-lg bg-white/5 border border-white/10">
-                      <p className="text-sm text-white/60 italic">Example: "India faces uneven access to primary healthcare across districts."</p>
+                    <div className="mt-3 sm:mt-4 p-2 sm:p-3 rounded-lg bg-white/5 border border-white/10">
+                      <p className="text-xs sm:text-sm text-white/60 italic">Example: "India faces uneven access to primary healthcare across districts."</p>
                     </div>
                   </GlassCard>
 
-                  <GlassCard className="p-6">
-                    <h3 className="text-xl font-bold mb-4 flex items-center gap-2 text-blue-400">
-                      <Users className="w-5 h-5" />
+                  <GlassCard className="p-4 sm:p-6">
+                    <h3 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 flex items-center gap-2 text-blue-400">
+                      <Users className="w-4 h-4 sm:w-5 sm:h-5" />
                       What Participants Must Do
                     </h3>
-                    <ul className="space-y-3">
+                    <ul className="space-y-2 sm:space-y-3">
                       <li className="flex items-start gap-2">
-                        <ArrowRight className="w-5 h-5 text-cyan-400 flex-shrink-0 mt-0.5" />
-                        <span className="text-white/80">Explore multiple valid and credible dataset sources</span>
+                        <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 text-cyan-400 flex-shrink-0 mt-0.5" />
+                        <span className="text-white/80 text-sm sm:text-base">Explore multiple valid and credible dataset sources</span>
                       </li>
                       <li className="flex items-start gap-2">
-                        <ArrowRight className="w-5 h-5 text-cyan-400 flex-shrink-0 mt-0.5" />
-                        <span className="text-white/80">Identify patterns, trends, anomalies, and gaps</span>
+                        <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 text-cyan-400 flex-shrink-0 mt-0.5" />
+                        <span className="text-white/80 text-sm sm:text-base">Identify patterns, trends, anomalies, and gaps</span>
                       </li>
                       <li className="flex items-start gap-2">
-                        <ArrowRight className="w-5 h-5 text-cyan-400 flex-shrink-0 mt-0.5" />
-                        <span className="text-white/80">Visualize what the data objectively represents</span>
+                        <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 text-cyan-400 flex-shrink-0 mt-0.5" />
+                        <span className="text-white/80 text-sm sm:text-base">Visualize what the data objectively represents</span>
                       </li>
                       <li className="flex items-start gap-2">
-                        <ArrowRight className="w-5 h-5 text-cyan-400 flex-shrink-0 mt-0.5" />
-                        <span className="text-white/80">Propose insights, solutions, and real-world implications</span>
+                        <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 text-cyan-400 flex-shrink-0 mt-0.5" />
+                        <span className="text-white/80 text-sm sm:text-base">Propose insights, solutions, and real-world implications</span>
                       </li>
                     </ul>
                   </GlassCard>
                 </div>
 
-                <GlassCard className="p-6 mb-8">
-                  <h3 className="text-xl font-bold mb-4 flex items-center gap-2 text-purple-400">
-                    <Database className="w-5 h-5" />
+                <GlassCard className="p-4 sm:p-6 mb-6 sm:mb-8">
+                  <h3 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 flex items-center gap-2 text-purple-400">
+                    <Database className="w-4 h-4 sm:w-5 sm:h-5" />
                     Dataset Sources
                   </h3>
-                  <div className="grid md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     {eventData.datasetSources.map((source, idx) => (
-                      <div key={idx} className="p-3 rounded-lg bg-white/5 border border-white/10">
-                        <h4 className="font-bold text-white mb-1">{source.name}</h4>
-                        <p className="text-sm text-white/60">{source.desc}</p>
+                      <div key={idx} className="p-2 sm:p-3 rounded-lg bg-white/5 border border-white/10">
+                        <h4 className="font-bold text-white mb-1 text-sm sm:text-base">{source.name}</h4>
+                        <p className="text-xs sm:text-sm text-white/60">{source.desc}</p>
                       </div>
                     ))}
                   </div>
-                  <div className="mt-4 p-4 rounded-lg bg-yellow-500/10 border border-yellow-500/30">
-                    <p className="text-sm text-yellow-300 flex items-start gap-2">
-                      <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                  <div className="mt-3 sm:mt-4 p-3 sm:p-4 rounded-lg bg-yellow-500/10 border border-yellow-500/30">
+                    <p className="text-xs sm:text-sm text-yellow-300 flex items-start gap-2">
+                      <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 mt-0.5" />
                       <span><strong>All datasets must be:</strong> Real (no synthetic data), properly cited, and relevant to the chosen theme and problem context.</span>
                     </p>
                   </div>
                 </GlassCard>
 
-                <GlassCard className="p-6">
-                  <h3 className="text-xl font-bold mb-4 flex items-center gap-2 text-green-400">
-                    <TrendingUp className="w-5 h-5" />
+                <GlassCard className="p-4 sm:p-6">
+                  <h3 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 flex items-center gap-2 text-green-400">
+                    <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5" />
                     Impact & Feasibility Analysis
                   </h3>
-                  <p className="text-white/80 mb-4">Each team must address:</p>
-                  <div className="grid md:grid-cols-2 gap-3">
+                  <p className="text-white/80 mb-3 sm:mb-4 text-sm sm:text-base">Each team must address:</p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
                     {[
                       "What actions does the data suggest?",
                       "Is the proposed solution realistic and feasible?",
@@ -965,8 +967,8 @@ export default function DataVisualizationChallengePage() {
                       "Key assumptions, constraints, and risks"
                     ].map((item, idx) => (
                       <div key={idx} className="flex items-start gap-2">
-                        <ChevronRight className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
-                        <span className="text-white/70">{item}</span>
+                        <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-green-400 flex-shrink-0 mt-0.5" />
+                        <span className="text-white/70 text-sm sm:text-base">{item}</span>
                       </div>
                     ))}
                   </div>
@@ -977,20 +979,20 @@ export default function DataVisualizationChallengePage() {
         </section>
 
         {/* Phase 2 Details */}
-        <section className="py-24 relative">
+        <section className="py-12 sm:py-16 md:py-24 relative">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <GlassCard className="p-8 md:p-12">
-              <div className="flex items-center gap-4 mb-6">
-                <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center">
-                  <Presentation className="w-8 h-8 text-white" />
+            <GlassCard className="p-6 sm:p-8 md:p-12">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-6">
+                <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center flex-shrink-0">
+                  <Presentation className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
                 </div>
                 <div>
-                  <h2 className="text-3xl md:text-4xl font-bold">Phase 2: Live Presentation Round</h2>
-                  <p className="text-white/60">Top 5 teams shortlisted from Phase 1</p>
+                  <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold">Phase 2: Live Presentation Round</h2>
+                  <p className="text-white/60 text-sm sm:text-base">Top 5 teams shortlisted from Phase 1</p>
                 </div>
               </div>
               
-              <div className="grid md:grid-cols-2 gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
                 <div>
                   <h3 className="text-xl font-bold mb-4 text-cyan-400">Format</h3>
                   <ul className="space-y-3">
@@ -1023,22 +1025,22 @@ export default function DataVisualizationChallengePage() {
         </section>
 
         {/* Submission Requirements */}
-        <section className="py-24 relative border-t border-white/5">
+        <section className="py-12 sm:py-16 md:py-24 relative border-t border-white/5">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-5xl font-bold mb-4">Submission Requirements</h2>
-              <p className="text-white/60 max-w-2xl mx-auto">All submissions must include the following components</p>
+            <div className="text-center mb-12 sm:mb-16">
+              <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold mb-4">Submission Requirements</h2>
+              <p className="text-white/60 max-w-2xl mx-auto text-sm sm:text-base">All submissions must include the following components</p>
             </div>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               {eventData.submissionRequirements.map((req, idx) => (
-                <GlassCard key={idx} className="p-6">
-                  <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center mb-4">
-                    <req.icon className="w-6 h-6 text-cyan-400" />
+                <GlassCard key={idx} className="p-4 sm:p-6">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-white/5 flex items-center justify-center mb-3 sm:mb-4">
+                    <req.icon className="w-5 h-5 sm:w-6 sm:h-6 text-cyan-400" />
                   </div>
-                  <h3 className="text-lg font-bold mb-3">{req.title}</h3>
-                  <ul className="space-y-2">
+                  <h3 className="text-base sm:text-lg font-bold mb-2 sm:mb-3">{req.title}</h3>
+                  <ul className="space-y-1.5 sm:space-y-2">
                     {req.items.map((item, i) => (
-                      <li key={i} className="text-sm text-white/70 flex items-start gap-2">
+                      <li key={i} className="text-xs sm:text-sm text-white/70 flex items-start gap-2">
                         <span className="text-cyan-400 mt-1">•</span>
                         <span>{item}</span>
                       </li>
@@ -1051,23 +1053,23 @@ export default function DataVisualizationChallengePage() {
         </section>
 
         {/* Judging Criteria */}
-        <section className="py-24 relative">
+        <section className="py-12 sm:py-16 md:py-24 relative">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-5xl font-bold mb-4">Judging Criteria</h2>
-              <p className="text-white/60 mb-2">Total: <span className="text-cyan-400 font-bold text-2xl">150 Points</span></p>
+            <div className="text-center mb-8 sm:mb-12">
+              <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold mb-4">Judging Criteria</h2>
+              <p className="text-white/60 mb-2 text-sm sm:text-base">Total: <span className="text-cyan-400 font-bold text-xl sm:text-2xl">150 Points</span></p>
             </div>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               {eventData.judgingCriteria.map((criteria, idx) => (
-                <GlassCard key={idx} className="p-6 group hover:bg-white/5">
+                <GlassCard key={idx} className="p-4 sm:p-6 group hover:bg-white/5">
                   <div className="flex items-center justify-between mb-3">
-                    <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center font-bold text-white">
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center font-bold text-white text-sm sm:text-base">
                       {criteria.points}
                     </div>
                     <span className="text-xs text-white/40">pts</span>
                   </div>
-                  <h3 className="text-lg font-bold mb-2">{criteria.title}</h3>
-                  <p className="text-sm text-white/60">{criteria.desc}</p>
+                  <h3 className="text-base sm:text-lg font-bold mb-2">{criteria.title}</h3>
+                  <p className="text-xs sm:text-sm text-white/60">{criteria.desc}</p>
                 </GlassCard>
               ))}
             </div>
@@ -1075,19 +1077,19 @@ export default function DataVisualizationChallengePage() {
         </section>
 
         {/* Allowed Tools */}
-        <section className="py-24 relative border-t border-white/5">
+        <section className="py-12 sm:py-16 md:py-24 relative border-t border-white/5">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-5xl font-bold mb-4">Allowed Tools & Platforms</h2>
-              <p className="text-white/60">Tool choice does not affect scoring</p>
+            <div className="text-center mb-8 sm:mb-12">
+              <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold mb-4">Allowed Tools & Platforms</h2>
+              <p className="text-white/60 text-sm sm:text-base">Tool choice does not affect scoring</p>
             </div>
-            <div className="grid md:grid-cols-3 lg:grid-cols-6 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
               {eventData.allowedTools.map((tool, idx) => (
-                <GlassCard key={idx} className="p-6 text-center group hover:bg-white/5">
-                  <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
-                    <tool.icon className="w-6 h-6 text-cyan-400" />
+                <GlassCard key={idx} className="p-4 sm:p-6 text-center group hover:bg-white/5">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-white/5 flex items-center justify-center mx-auto mb-2 sm:mb-3 group-hover:scale-110 transition-transform">
+                    <tool.icon className="w-5 h-5 sm:w-6 sm:h-6 text-cyan-400" />
                   </div>
-                  <h3 className="text-sm font-bold">{tool.name}</h3>
+                  <h3 className="text-xs sm:text-sm font-bold">{tool.name}</h3>
                 </GlassCard>
               ))}
             </div>
@@ -1095,34 +1097,34 @@ export default function DataVisualizationChallengePage() {
         </section>
 
         {/* Strict Rules */}
-        <section className="py-24 relative">
+        <section className="py-12 sm:py-16 md:py-24 relative">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="bg-gradient-to-r from-red-900/20 to-orange-900/20 rounded-3xl p-8 md:p-12 border border-red-500/30 relative overflow-hidden">
+            <div className="bg-gradient-to-r from-red-900/20 to-orange-900/20 rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-12 border border-red-500/30 relative overflow-hidden">
               <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20" />
               <div className="relative z-10">
-                <div className="flex items-center gap-4 mb-8">
-                  <div className="w-16 h-16 rounded-xl bg-red-500/20 flex items-center justify-center border border-red-500/30">
-                    <Shield className="w-8 h-8 text-red-400" />
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-6 sm:mb-8">
+                  <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-xl bg-red-500/20 flex items-center justify-center border border-red-500/30 flex-shrink-0">
+                    <Shield className="w-6 h-6 sm:w-8 sm:h-8 text-red-400" />
                   </div>
                   <div>
-                    <h2 className="text-3xl md:text-4xl font-bold">Strict Rules & Ethical Constraints</h2>
-                    <p className="text-red-300/80">These are non-negotiable</p>
+                    <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold">Strict Rules & Ethical Constraints</h2>
+                    <p className="text-red-300/80 text-sm sm:text-base">These are non-negotiable</p>
                   </div>
                 </div>
-                <div className="grid md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   {eventData.strictRules.map((rule, idx) => (
-                    <div key={idx} className="p-4 rounded-lg bg-black/40 border border-red-500/20">
-                      <h3 className="font-bold text-red-400 mb-2 flex items-center gap-2">
-                        <X className="w-4 h-4" />
+                    <div key={idx} className="p-3 sm:p-4 rounded-lg bg-black/40 border border-red-500/20">
+                      <h3 className="font-bold text-red-400 mb-2 flex items-center gap-2 text-sm sm:text-base">
+                        <X className="w-3 h-3 sm:w-4 sm:h-4" />
                         {rule.rule}
                       </h3>
-                      <p className="text-sm text-white/70">{rule.desc}</p>
+                      <p className="text-xs sm:text-sm text-white/70">{rule.desc}</p>
                     </div>
                   ))}
                 </div>
-                <div className="mt-6 p-4 rounded-lg bg-yellow-500/10 border border-yellow-500/30">
-                  <p className="text-sm text-yellow-300 flex items-start gap-2">
-                    <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                <div className="mt-4 sm:mt-6 p-3 sm:p-4 rounded-lg bg-yellow-500/10 border border-yellow-500/30">
+                  <p className="text-xs sm:text-sm text-yellow-300 flex items-start gap-2">
+                    <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 mt-0.5" />
                     <span><strong>Data Integrity Requirement:</strong> Every visualization must be traceable to its dataset. Judges may ask teams to explain how a chart was derived. Any mismatch between visuals and data will result in disqualification.</span>
                   </p>
                 </div>
@@ -1132,13 +1134,13 @@ export default function DataVisualizationChallengePage() {
         </section>
 
         {/* Registration CTA */}
-        <section id="registration" className="py-32 px-4 text-center relative overflow-hidden">
+        <section id="registration" className="py-16 sm:py-24 md:py-32 px-4 text-center relative overflow-hidden">
           <div className="max-w-3xl mx-auto relative z-10">
-            <h2 className="text-5xl md:text-7xl font-black tracking-tighter mb-8">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-black tracking-tighter mb-6 sm:mb-8">
               READY TO <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 to-blue-600">VISUALIZE THE FUTURE?</span>
             </h2>
-            <p className="text-white/60 mb-8 text-lg">
+            <p className="text-white/60 mb-6 sm:mb-8 text-base sm:text-lg">
               Transform data into decisions. Register now and showcase your analytical skills!
             </p>
             <button 
@@ -1150,7 +1152,7 @@ export default function DataVisualizationChallengePage() {
                   window.scrollTo({ top: 0, behavior: 'smooth' }); 
                 }
               }}
-              className="inline-block group relative px-8 py-4 bg-white text-black font-bold text-lg rounded-full overflow-hidden hover:scale-105 transition-transform"
+              className="inline-block group relative px-6 sm:px-8 py-3 sm:py-4 bg-white text-black font-bold text-base sm:text-lg rounded-full overflow-hidden hover:scale-105 transition-transform"
             >
               <span className="relative z-10 group-hover:text-white transition-colors">
                 {isAuthenticated ? 'REGISTER NOW' : 'LOGIN TO REGISTER'}
@@ -1158,7 +1160,7 @@ export default function DataVisualizationChallengePage() {
               <div className="absolute inset-0 bg-cyan-600 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
             </button>
           </div>
-          <div className="absolute bottom-8 left-0 right-0 text-center text-white/20 text-sm">
+          <div className="absolute bottom-4 sm:bottom-8 left-0 right-0 text-center text-white/20 text-xs sm:text-sm">
             © 2025 IEEE RGIPT. Built for Data Analysts.
           </div>
         </section>

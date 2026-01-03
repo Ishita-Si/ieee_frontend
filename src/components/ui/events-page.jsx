@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { authService } from '@/lib/auth';
+import { eventService } from '@/lib/events';
 import { 
   Calendar, 
   Zap, 
@@ -24,118 +25,95 @@ import {
 } from 'lucide-react';
 // import Link from 'next/link'; // Using <a> for standalone compatibility
 
-// --- Dummy Data with Images ---
+// Helper function to check if an event is upcoming or currently happening
+// Returns true if event is upcoming or currently ongoing (not completely ended)
+export const isEventUpcoming = (dateString) => {
+  if (!dateString) return true; // If no date, show it as upcoming
+  
+  // Parse date string like "Jan 01-09, 2025" or "Nov 03, 2025" or "Dec 2025"
+  const parts = dateString.split(',');
+  if (parts.length < 2) {
+    // Handle format like "Dec 2025" (month and year only)
+    const monthYearParts = dateString.trim().split(' ');
+    if (monthYearParts.length === 2) {
+      const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const month = monthNames.indexOf(monthYearParts[0]);
+      const year = parseInt(monthYearParts[1]);
+      if (month === -1 || isNaN(year)) return true;
+      // Get last day of that month - event is upcoming if we haven't passed the last day
+      const lastDayOfMonth = new Date(year, month + 1, 0, 23, 59, 59);
+      return lastDayOfMonth >= new Date();
+    }
+    return true;
+  }
+  
+  const year = parseInt(parts[1].trim());
+  const monthDay = parts[0].trim();
+  
+  // Extract month
+  const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  let month = -1;
+  for (let i = 0; i < monthNames.length; i++) {
+    if (monthDay.includes(monthNames[i])) {
+      month = i;
+      break;
+    }
+  }
+  
+  if (month === -1 || isNaN(year)) return true;
+  
+  // Get the last day of the event (if range, use the end date)
+  let day = 1;
+  if (monthDay.includes('-')) {
+    const dayParts = monthDay.split('-');
+    const lastDayPart = dayParts[dayParts.length - 1].trim();
+    const dayMatch = lastDayPart.match(/\d+/);
+    if (dayMatch) day = parseInt(dayMatch[0]);
+  } else {
+    const dayMatch = monthDay.match(/\d+/);
+    if (dayMatch) day = parseInt(dayMatch[0]);
+  }
+  
+  // Use end of day for comparison (event ends at 23:59:59)
+  const eventEndDate = new Date(year, month, day, 23, 59, 59);
+  const now = new Date();
+  
+  // Event is upcoming if it hasn't completely ended (includes currently happening events)
+  return eventEndDate >= now;
+};
+
+// Helper function to check if timeline date has passed (for backward compatibility)
+// Returns true only if the event has completely ended
+const isTimelinePast = (dateString) => {
+  return !isEventUpcoming(dateString);
+};
+
+// --- Events Data (Current & Upcoming) ---
 export const EVENTS_DATA = [
   {
-    id: '1',
-    category: 'Competitions',
-    date: 'Nov 03, 2025',
-    time: '10:00 AM',
-    location: 'Computer Lab',
-    difficulty: 'Advanced',
-    title: 'CODEQUEST 2025',
-    description: 'Gear up with your coding skills for CODEQUEST 2025. Compete for IIT Bombay TECHFEST spots.',
-    fullDescription: 'CODEQUEST 2025 is a premier coding competition designed to test your algorithmic thinking and programming skills. Participants will solve challenging problems on HackerRank platform. Top performers will get direct entry to IIT Bombay TECHFEST.',
-    language: 'C++',
-    seatsLimited: true,
-    totalSeats: 150,
-    registeredSeats: 142,
-    image: '/images/posters/10.png',
-    requirements: ['HackerRank Account', 'Laptop', 'C++ Knowledge'],
-    prizes: ['₹10,000 First Prize', 'TechFest Entry', 'Certificates']
-  },
-  {
-    id: '2',
+    id: 'codeforher',
     category: 'Hackathons',
-    date: 'Nov 12-13, 2025',
-    time: '48 Hours',
-    location: 'Auditorium',
+    date: 'Jan 10 - Feb 1, 2025',
+    time: 'TBA',
+    location: 'TBA',
     difficulty: 'Intermediate',
-    title: 'Hack RGIPT 2025',
-    description: 'Flagship hackathon under Urjotsav. Build innovative solutions in 48 hours of non-stop coding.',
-    fullDescription: 'Hack RGIPT 2025 is a 48-hour hackathon where teams of 2-4 members will build innovative solutions to real-world problems. Includes mentorship, food, and swag.',
+    title: 'CodeForHer Hackathon 2025',
+    description: 'An empowering hackathon focused on encouraging women in technology. Build innovative solutions and showcase your coding skills.',
+    fullDescription: 'CodeForHer Hackathon 2025 is a flagship event designed to empower women in technology. Teams will work together to build innovative solutions addressing real-world challenges. This event provides a platform for networking, learning, and showcasing technical skills.',
     language: 'Any',
     seatsLimited: true,
     totalSeats: 200,
-    registeredSeats: 134,
-    image: '/images/posters/13.png',
-    requirements: ['Team (2-4)', 'Laptop', 'GitHub'],
-    prizes: ['₹25,000 Winner', 'Internship Opps', 'Swag Kits']
+    registeredSeats: 0,
+    image: '/images/posters/6.png',
+    requirements: ['Team (2-4)', 'Laptop', 'GitHub Account'],
+    prizes: ['Cash Prizes', 'Certificates', 'Internship Opportunities'],
+    route: '/events/codeforher',
+    event_slug: 'codeforher',
+    registrationOpen: true,
+    timeline: 'Jan 10 - Feb 1, 2025'
   },
   {
-    id: '3',
-    category: 'Series',
-    date: 'Oct 24-27, 2025',
-    time: '2:00 PM',
-    location: 'Robotics Lab',
-    difficulty: 'Beginner',
-    title: 'RoboQuest Series',
-    description: 'Hands-on robotics challenge featuring Line Follower & Obstacle Avoidance bots.',
-    fullDescription: 'A 4-day robotics bootcamp taking you from Arduino basics to PID control. Build your own bot from scratch with provided kits.',
-    language: 'Arduino',
-    seatsLimited: false,
-    totalSeats: 100,
-    registeredSeats: 45,
-    image: '/images/posters/14.png',
-    requirements: ['None'],
-    prizes: ['Best Bot Award', 'Certificates']
-  },
-  {
-    id: '4',
-    category: 'Workshops',
-    date: 'Oct 15, 2025',
-    time: '10:00 AM',
-    location: 'Seminar Hall',
-    difficulty: 'Beginner',
-    title: 'Full Stack Workshop',
-    description: 'Learn modern web development with React and TypeScript. Build your first app.',
-    fullDescription: 'Comprehensive workshop covering React, Node.js, and MongoDB. By the end of the day, you will have a deployed application.',
-    language: 'JS/TS',
-    seatsLimited: true,
-    totalSeats: 50,
-    registeredSeats: 50,
-    image: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?q=80&w=1000&auto=format&fit=crop',
-    requirements: ['VS Code', 'Node.js'],
-    prizes: ['Best Project', 'Udemy Coupons']
-  },
-  {
-    id: '5',
-    category: 'Workshops',
-    date: 'Oct 20, 2025',
-    time: '2:00 PM',
-    location: 'Lab 3',
-    difficulty: 'Intermediate',
-    title: 'ML Bootcamp',
-    description: 'Deep dive into ML algorithms, neural networks, and practical applications.',
-    fullDescription: 'Master the basics of Machine Learning with Python. We will cover SciKit-Learn, Pandas, and an intro to PyTorch.',
-    language: 'Python',
-    seatsLimited: true,
-    totalSeats: 40,
-    registeredSeats: 28,
-    image: 'https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?q=80&w=1000&auto=format&fit=crop',
-    requirements: ['Python Basics', 'Laptop'],
-    prizes: ['Best Model', 'Certificates']
-  },
-  {
-    id: '6',
-    category: 'Competitions',
-    date: 'Nov 05, 2025',
-    time: '11:00 AM',
-    location: 'Online',
-    difficulty: 'Intermediate',
-    title: 'CodeChef Monthly',
-    description: 'Monthly coding contest. Solve algorithmic challenges and improve your rating.',
-    fullDescription: 'Standard competitive programming contest. 5 problems, 3 hours. Great practice for ICPC.',
-    language: 'Any',
-    seatsLimited: false,
-    totalSeats: 500,
-    registeredSeats: 234,
-    image: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=1000&auto=format&fit=crop',
-    requirements: ['CodeChef Account'],
-    prizes: ['Global Ranking', 'Rating Points']
-  },
-  {
-    id: '7',
+    id: 'dataviz',
     category: 'Competitions',
     date: 'Jan 01-09, 2025',
     time: '10:00 AM',
@@ -147,12 +125,14 @@ export const EVENTS_DATA = [
     language: 'Any',
     seatsLimited: true,
     totalSeats: 100,
-    registeredSeats: 23,
-    expectedParticipants: 77,
+    registeredSeats: 0,
     image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1000&auto=format&fit=crop',
     requirements: ['Data Analysis Tool', 'Laptop', 'Basic Data Skills'],
     prizes: ['₹15,000 First Prize', 'Certificates', 'Portfolio Showcase'],
-    route: '/events/data-visualization-challenge-2'
+    route: '/events/data-visualization-challenge-2',
+    event_slug: 'data-visualization-challenge-2',
+    registrationOpen: true,
+    timeline: 'Jan 2025'
   }
 ];
 
@@ -216,7 +196,7 @@ const CATEGORIES = [
   { name: 'Series', icon: Target }
 ];
 
-const EventCard = ({ event, onClick, index }) => {
+const EventCard = ({ event, onClick, index, isRegistered = false }) => {
   const isFull = event.seatsLimited && event.registeredSeats >= event.totalSeats;
   const percentage = Math.round((event.registeredSeats / event.totalSeats) * 100);
 
@@ -296,15 +276,18 @@ const EventCard = ({ event, onClick, index }) => {
           )}
 
           <div className="flex items-center justify-between pt-4 border-t border-white/5">
-            <div className="flex -space-x-2">
-              {[1,2,3].map((i) => (
-                <div key={i} className="w-6 h-6 rounded-full bg-white/10 border border-black flex items-center justify-center text-[8px] text-white">
-                  <Users className="w-3 h-3" />
-                </div>
-              ))}
-              <div className="w-6 h-6 rounded-full bg-[#1a1a1a] border border-black flex items-center justify-center text-[8px] text-white font-bold">
-                +{event.expectedParticipants}
-              </div>
+            <div className="flex items-center gap-2 text-xs">
+              {isRegistered ? (
+                <span className="text-green-400 font-semibold flex items-center gap-1">
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  Registered
+                </span>
+              ) : (
+                <span className="text-white/40 flex items-center gap-1">
+                  <Users className="w-3.5 h-3.5" />
+                  Registration Open
+                </span>
+              )}
             </div>
             
             <button className="p-2 rounded-full bg-white text-black hover:bg-purple-400 hover:text-white transition-all transform group-hover:rotate-45">
@@ -471,15 +454,54 @@ const EventsPage = ({ isOpen, onClose, isFullPage = false }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [myRegistrations, setMyRegistrations] = useState([]);
 
   useEffect(() => {
     setIsLoaded(true);
+    fetchMyRegistrations();
   }, []);
 
+  const fetchMyRegistrations = async () => {
+    if (!authService.isAuthenticated()) return;
+    
+    try {
+      const result = await eventService.getMyRegistrations();
+      if (result.success) {
+        setMyRegistrations(result.registrations || []);
+      }
+    } catch (error) {
+      console.error('Error fetching registrations:', error);
+    }
+  };
+
+  // Check if user is registered for an event
+  const isRegisteredForEvent = (eventId, eventRoute, eventSlug) => {
+    if (!myRegistrations.length) return false;
+    
+    // Match by event_slug (most reliable)
+    if (eventSlug) {
+      return myRegistrations.some(reg => reg.event_slug === eventSlug && reg.status !== 'cancelled');
+    }
+    
+    // Fallback: try to match by route or id
+    const slugFromRoute = eventRoute?.split('/').pop();
+    return myRegistrations.some(reg => {
+      return reg.event_slug === slugFromRoute || 
+             reg.event_slug === eventId ||
+             (reg.event_name && eventId && reg.event_name.toLowerCase().includes(eventId.toLowerCase()));
+    });
+  };
+
   const filteredEvents = EVENTS_DATA.filter(event => {
+    // Show all events with open registrations (current and upcoming events)
+    // Registration status takes priority over date filtering
+    if (!event.registrationOpen) return false;
+    
+    // Apply category and search filters
     const matchesCategory = selectedCategory === 'All' || event.category === selectedCategory;
     const matchesSearch = event.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
                           event.description.toLowerCase().includes(searchQuery.toLowerCase());
+    
     return matchesCategory && matchesSearch;
   });
 
@@ -585,14 +607,18 @@ const EventsPage = ({ isOpen, onClose, isFullPage = false }) => {
 
         {/* Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-          {filteredEvents.map((event, index) => (
-            <EventCard 
-              key={event.id} 
-              event={event} 
-              index={index}
-              onClick={() => handleEventClick(event)} 
-            />
-          ))}
+          {filteredEvents.map((event, index) => {
+            const registered = isRegisteredForEvent(event.id, event.route, event.event_slug);
+            return (
+              <EventCard 
+                key={event.id} 
+                event={event} 
+                index={index}
+                isRegistered={registered}
+                onClick={() => handleEventClick(event)} 
+              />
+            );
+          })}
         </div>
 
         {/* Empty State */}
