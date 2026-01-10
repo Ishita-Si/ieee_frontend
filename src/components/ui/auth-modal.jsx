@@ -17,6 +17,7 @@ const AuthModal = ({ isOpen, onClose, mode, onSwitchMode }) => {
     confirmPassword: '',
     membership_type: '', // 'ieee_member' or 'non_member'
     membership_code: '', // Optional - only for existing IEEE membership codes
+    designation: '', // Designation for IEEE members
   });
   const [otpCode, setOtpCode] = useState('');
   const [step, setStep] = useState('form'); // 'form', 'otp', 'success'
@@ -42,6 +43,7 @@ const AuthModal = ({ isOpen, onClose, mode, onSwitchMode }) => {
         confirmPassword: '',
         membership_type: '',
         membership_code: '',
+        designation: '',
       });
       setOtpCode('');
       setError('');
@@ -178,6 +180,13 @@ const AuthModal = ({ isOpen, onClose, mode, onSwitchMode }) => {
       return;
     }
 
+    // Validate designation for IEEE members
+    if (formData.membership_type === 'ieee_member' && !formData.designation) {
+      setError('Please select your designation');
+      setLoading(false);
+      return;
+    }
+
     // Note: IEEE membership ID will be auto-generated on the backend
     // membership_code is optional (only for users who already have an existing code)
     
@@ -200,6 +209,7 @@ const AuthModal = ({ isOpen, onClose, mode, onSwitchMode }) => {
         roll_no: formData.roll_no.trim(),
         password: formData.password,
         membership_type: formData.membership_type,
+        designation: formData.membership_type === 'ieee_member' ? formData.designation : null,
         membership_code: formData.membership_type === 'ieee_member' ? formData.membership_code.trim() : null,
         role: 'user'
       });
@@ -403,7 +413,7 @@ const AuthModal = ({ isOpen, onClose, mode, onSwitchMode }) => {
                           <button
                             type="button"
                             onClick={() => {
-                              setFormData({ ...formData, membership_type: 'ieee_member', membership_code: '' });
+                              setFormData({ ...formData, membership_type: 'ieee_member', membership_code: '', designation: '' });
                               setError('');
                             }}
                             className={`rounded-xl border px-4 py-3 text-sm font-medium transition-all ${
@@ -439,6 +449,35 @@ const AuthModal = ({ isOpen, onClose, mode, onSwitchMode }) => {
                             </p>
                             <p className="text-xs text-purple-200/60 mt-1">
                               Your unique IEEE membership ID will be assigned and displayed on your profile and ID card.
+                            </p>
+                          </div>
+                          <div>
+                            <label className="mb-2 block text-sm font-medium text-purple-100/90">
+                              Designation <span className="text-red-400">*</span>
+                            </label>
+                            <select
+                              name="designation"
+                              value={formData.designation}
+                              onChange={handleChange}
+                              required
+                              className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white transition ring-offset-0 focus:border-purple-400/60 focus:outline-none focus:ring-2 focus:ring-purple-500/40"
+                            >
+                              <option value="">Select Designation</option>
+                              <option value="Joint_Sec">Joint Secretary</option>
+                              <option value="Design">Design</option>
+                              <option value="Audit">Audit</option>
+                              <option value="Editorial">Editorial</option>
+                              <option value="WIE">WIE</option>
+                              <option value="ComSoc">ComSoc</option>
+                              <option value="RAS">RAS</option>
+                              <option value="CS">CS</option>
+                              <option value="CS_Head">CS Head</option>
+                              <option value="EVENT">Event</option>
+                              <option value="CNM">CNM</option>
+                              <option value="Member">Member</option>
+                            </select>
+                            <p className="mt-1 text-xs text-purple-200/60">
+                              Select your team/designation in IEEE Student Branch
                             </p>
                           </div>
                           <div>

@@ -199,6 +199,20 @@ export const teamData = {
       }
     ]
   },
+  // New designations - these will be populated from backend
+  newDesignations: {
+    jointSec: [], // Joint_Sec
+    design: [], // Design
+    audit: [], // Audit
+    editorial: [], // Editorial
+    wie: [], // WIE
+    comsoc: [], // ComSoc
+    ras: [], // RAS
+    cs: [], // CS
+    event: [], // EVENT
+    cnm: [], // CNM
+    members: [] // Additional Members
+  },
   generalMembers: []
 };
 

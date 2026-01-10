@@ -30,7 +30,8 @@ export default function SignupPage() {
     password: "",
     confirmPassword: "",
     membership_type: "",
-    membership_code: ""
+    membership_code: "",
+    designation: ""
   });
   const [profilePicture, setProfilePicture] = useState(null);
   const [profilePicturePreview, setProfilePicturePreview] = useState(null);
@@ -157,6 +158,13 @@ export default function SignupPage() {
     // Note: IEEE membership ID will be auto-generated on the backend
     // No need to require membership_code anymore
 
+    // Validate designation for IEEE members
+    if (form.membership_type === 'ieee_member' && !form.designation) {
+      setError('Please select your designation');
+      setLoading(false);
+      return;
+    }
+
     try {
       const result = await authService.register({
         username: form.username.trim(),
@@ -169,6 +177,7 @@ export default function SignupPage() {
         roll_no: form.roll_no.trim(),
         password: form.password,
         membership_type: form.membership_type,
+        designation: form.membership_type === 'ieee_member' ? form.designation : null,
         membership_code: form.membership_type === 'ieee_member' && form.membership_code ? form.membership_code.trim() : null,
         role: 'user'
       }, profilePicture);
@@ -530,6 +539,34 @@ export default function SignupPage() {
                   <p className="text-xs text-white/60 mt-1">
                     Your unique IEEE membership ID will be assigned and displayed on your profile and ID card.
                   </p>
+                </div>
+                <div className="space-y-2">
+                  <label htmlFor="designation" className="text-sm uppercase tracking-[0.35em] text-white/60">
+                    Designation <span className="text-red-400">*</span>
+                  </label>
+                  <select
+                    id="designation"
+                    name="designation"
+                    value={form.designation}
+                    onChange={handleChange}
+                    required
+                    className="w-full rounded-2xl bg-black/60 border border-white/20 px-4 py-3 focus:outline-none focus:border-white text-white"
+                  >
+                    <option value="">Select Designation</option>
+                    <option value="Joint_Sec">Joint Secretary</option>
+                    <option value="Design">Design</option>
+                    <option value="Audit">Audit</option>
+                    <option value="Editorial">Editorial</option>
+                    <option value="WIE">WIE</option>
+                    <option value="ComSoc">ComSoc</option>
+                    <option value="RAS">RAS</option>
+                    <option value="CS">CS</option>
+                    <option value="CS_Head">CS Head</option>
+                    <option value="EVENT">Event</option>
+                    <option value="CNM">CNM</option>
+                    <option value="Member">Member</option>
+                  </select>
+                  <p className="text-xs text-white/50">Select your team/designation in IEEE Student Branch</p>
                 </div>
                 <div className="space-y-2">
                   <label htmlFor="membership_code" className="text-sm uppercase tracking-[0.35em] text-white/60">

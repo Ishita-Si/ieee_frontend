@@ -218,21 +218,87 @@ export const authService = {
       const token = authService.getToken()
       if (!token) return null
 
-      const response = await fetch(`${API_BASE_URL}/auth/me`, {
-        headers: authService.getAuthHeaders()
-      })
+      let response
+      try {
+        response = await fetch(`${API_BASE_URL}/auth/me`, {
+          headers: authService.getAuthHeaders(),
+          // Add signal to allow aborting if needed
+          signal: AbortSignal.timeout ? AbortSignal.timeout(5000) : undefined
+        }).catch((fetchError) => {
+          // Catch fetch errors immediately
+          if (fetchError.name === 'TypeError' || 
+              fetchError.name === 'AbortError' ||
+              fetchError.message?.includes('fetch') || 
+              fetchError.message?.includes('Failed to fetch')) {
+            // Network error - return a special marker
+            return { _networkError: true, error: fetchError }
+          }
+          throw fetchError
+        })
+        
+        // Check if fetch returned a network error marker
+        if (response && response._networkError) {
+          // Try cached data
+          try {
+            const cachedUser = localStorage.getItem('userData')
+            if (cachedUser) {
+              return JSON.parse(cachedUser)
+            }
+          } catch (e) {
+            // Ignore parse errors
+          }
+          // Return null but don't remove token - might be temporary network issue
+          return null
+        }
+      } catch (fetchError) {
+        // Fetch failed (network error, CORS, etc.)
+        if (fetchError.name === 'TypeError' || 
+            fetchError.name === 'AbortError' ||
+            fetchError.message?.includes('fetch') || 
+            fetchError.message?.includes('Failed to fetch')) {
+          // Network error - try cached data
+          try {
+            const cachedUser = localStorage.getItem('userData')
+            if (cachedUser) {
+              return JSON.parse(cachedUser)
+            }
+          } catch (e) {
+            // Ignore parse errors
+          }
+          // Return null but don't remove token - might be temporary network issue
+          return null
+        }
+        throw fetchError // Re-throw if it's not a network error
+      }
 
-      if (response.ok) {
+      if (response && response.ok) {
         const result = await response.json()
         if (result.success && result.user) {
           localStorage.setItem('userData', JSON.stringify(result.user))
           return result.user
         }
       }
-      authService.removeToken()
+      
+      // Only remove token if it's an auth error (401/403), not network error
+      if (response && response.status && (response.status === 401 || response.status === 403)) {
+        authService.removeToken()
+      }
       return null
     } catch (error) {
-      console.error('Get user error:', error)
+      // Handle any other errors
+      if (error.name === 'TypeError' && (error.message?.includes('fetch') || error.message?.includes('Failed to fetch'))) {
+        // Network error - try cached data
+        try {
+          const cachedUser = localStorage.getItem('userData')
+          if (cachedUser) {
+            return JSON.parse(cachedUser)
+          }
+        } catch (e) {
+          // Ignore parse errors
+        }
+        return null
+      }
+      console.error('Error fetching current user:', error)
       return null
     }
   },

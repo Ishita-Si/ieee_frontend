@@ -657,13 +657,20 @@ const Dashboard = () => {
                <div className="absolute top-0 right-0 w-32 h-32 bg-purple-600/20 blur-[50px] rounded-full pointer-events-none" />
                
                <div className="relative z-10 flex flex-col items-center text-center">
-                  <div className="w-24 h-24 rounded-full p-1 bg-gradient-to-br from-purple-500 to-blue-500 mb-4 shadow-lg shadow-purple-500/20">
+                  <div className="relative w-24 h-24 rounded-full p-1 bg-gradient-to-br from-purple-500 to-blue-500 mb-4 shadow-lg shadow-purple-500/20 group">
                      <img 
                        src={user.profile_image_url || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80"} 
                        alt="Profile" 
                        className="w-full h-full rounded-full object-cover border-4 border-black"
                        onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80" }}
                      />
+                     <button
+                       onClick={handleOpenProfileForm}
+                       className="absolute inset-0 w-full h-full rounded-full bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center cursor-pointer"
+                       title="Edit Profile Picture"
+                     >
+                       <ImageIcon className="w-6 h-6 text-white" />
+                     </button>
                   </div>
                   <h3 className="text-xl font-bold text-white">{user.full_name}</h3>
                   <p className="text-purple-400 text-sm mb-6">{user.designation || (isIEEEMember ? "Core Member" : "Guest")}</p>
@@ -695,6 +702,72 @@ const Dashboard = () => {
                   </div>
                </div>
             </div>
+
+            {/* Social Links for IEEE Members */}
+            {isIEEEMember && (
+              <div className="glass-panel rounded-3xl p-6">
+                 <h3 className="text-sm font-bold text-white/50 uppercase tracking-wider mb-4">Social Links</h3>
+                 <div className="space-y-3">
+                    {user.linkedin_url ? (
+                       <a 
+                         href={user.linkedin_url} 
+                         target="_blank" 
+                         rel="noopener noreferrer"
+                         className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition-colors group border border-white/5"
+                       >
+                          <div className="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform">
+                             <Linkedin className="w-4 h-4" />
+                          </div>
+                          <span className="text-sm text-white/80 font-medium flex-1 truncate">LinkedIn</span>
+                          <ExternalLink className="w-4 h-4 text-white/40" />
+                       </a>
+                    ) : (
+                       <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5 opacity-50">
+                          <div className="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center text-blue-400">
+                             <Linkedin className="w-4 h-4" />
+                          </div>
+                          <span className="text-sm text-white/60 font-medium">No LinkedIn</span>
+                       </div>
+                    )}
+                    
+                    {user.github_url ? (
+                       <a 
+                         href={user.github_url} 
+                         target="_blank" 
+                         rel="noopener noreferrer"
+                         className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition-colors group border border-white/5"
+                       >
+                          <div className="w-8 h-8 rounded-lg bg-gray-500/20 flex items-center justify-center text-gray-300 group-hover:scale-110 transition-transform">
+                             <Github className="w-4 h-4" />
+                          </div>
+                          <span className="text-sm text-white/80 font-medium flex-1 truncate">GitHub</span>
+                          <ExternalLink className="w-4 h-4 text-white/40" />
+                       </a>
+                    ) : (
+                       <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5 opacity-50">
+                          <div className="w-8 h-8 rounded-lg bg-gray-500/20 flex items-center justify-center text-gray-300">
+                             <Github className="w-4 h-4" />
+                          </div>
+                          <span className="text-sm text-white/60 font-medium">No GitHub</span>
+                       </div>
+                    )}
+
+                    <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5">
+                       <div className="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center text-purple-400">
+                          <User className="w-4 h-4" />
+                       </div>
+                       <span className="text-sm text-white/80 font-medium flex-1 truncate">{user.email}</span>
+                    </div>
+
+                    <button 
+                       onClick={handleOpenProfileForm}
+                       className="w-full mt-4 py-2 px-4 rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20 hover:bg-purple-500/20 hover:text-purple-300 transition-all text-xs font-bold flex items-center justify-center gap-2"
+                    >
+                       <Edit className="w-3 h-3" /> Update Social Links
+                    </button>
+                 </div>
+              </div>
+            )}
 
             {/* Quick Links / Resources */}
             {isIEEEMember && (

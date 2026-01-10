@@ -30,9 +30,28 @@ export default function SessionProvider({ children }) {
         setIsAuthenticated(!!userData);
       } catch (error) {
         console.error('Error fetching user:', error);
+        
+        // Check if it's a network error (backend might be down)
+        if (error.name === 'TypeError' && error.message.includes('fetch')) {
+          // Network error - try to use cached data
+          try {
+            const cachedUser = localStorage.getItem('userData');
+            if (cachedUser) {
+              const user = JSON.parse(cachedUser);
+              setUser(user);
+              setIsAuthenticated(true);
+              setLoading(false);
+              return; // Don't remove token on network errors
+            }
+          } catch (e) {
+            // Invalid cached data, continue to clear state
+          }
+        }
+        
+        // Only clear user state if it's not a network error
+        // Don't remove token on network errors - might be temporary
         setUser(null);
         setIsAuthenticated(false);
-        authService.removeToken();
       }
     } else {
       setUser(null);

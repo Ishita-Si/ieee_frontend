@@ -17,7 +17,8 @@ import {
   Users, Calendar, FileText, 
   Search, Download, 
   Loader2, Check, BarChart3,
-  UserCheck, Clock, X
+  UserCheck, Clock, X, Database,
+  Plus, Trash2, Upload, FileUp
 } from 'lucide-react';
 
 // StatCard component
@@ -50,6 +51,605 @@ const StatRow = ({ label, value }) => (
   </div>
 );
 
+// Database Management Tab Component
+const DatabaseManagementTab = ({ API_URL, authService, registrations, setRegistrations, fetchRegistrations }) => {
+  const [dbUsers, setDbUsers] = useState([]);
+  const [selectedUsers, setSelectedUsers] = useState([]);
+  const [selectedRegistrations, setSelectedRegistrations] = useState([]);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [createType, setCreateType] = useState('user');
+  const [createFormData, setCreateFormData] = useState({});
+  const [bulkCreateData, setBulkCreateData] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [activeSubTab, setActiveSubTab] = useState('users');
+  const [searchTerm, setSearchTerm] = useState('');
+
+  useEffect(() => {
+    if (activeSubTab === 'users') {
+      fetchUsers();
+    }
+  }, [activeSubTab, searchTerm]);
+
+  const fetchUsers = async () => {
+    try {
+      setLoading(true);
+      const token = authService.getToken();
+      const query = searchTerm ? `?search=${encodeURIComponent(searchTerm)}` : '';
+      const response = await fetch(`${API_URL}/admin/users${query}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setDbUsers(data.users || []);
+      }
+    } catch (err) {
+      console.error('Error fetching users:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCreateSingle = async (e) => {
+    e.preventDefault();
+    try {
+      setLoading(true);
+      const token = authService.getToken();
+      const response = await fetch(`${API_URL}/admin/users`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(createFormData)
+      });
+      
+      if (response.ok) {
+        alert('User created successfully!');
+        setShowCreateModal(false);
+        setCreateFormData({});
+        fetchUsers();
+      } else {
+        const error = await response.json();
+        alert(error.error || 'Failed to create user');
+      }
+    } catch (err) {
+      alert('Failed to create user');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteSingle = async (id, type) => {
+    if (!confirm(`Are you sure you want to delete this ${type}?`)) return;
+    
+    try {
+      setLoading(true);
+      const token = authService.getToken();
+      const endpoint = type === 'user' ? `/admin/users/${id}` : `/admin/registrations/${id}`;
+      const response = await fetch(`${API_URL}${endpoint}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      
+      if (response.ok) {
+        alert(`${type === 'user' ? 'User' : 'Registration'} deleted successfully!`);
+        if (type === 'user') {
+          fetchUsers();
+        } else {
+          fetchRegistrations();
+        }
+      } else {
+        const error = await response.json();
+        alert(error.error || `Failed to delete ${type}`);
+      }
+    } catch (err) {
+      alert(`Failed to delete ${type}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleBulkDelete = async (type) => {
+    const selected = type === 'user' ? selectedUsers : selectedRegistrations;
+    if (selected.length === 0) {
+      alert('Please select items to delete');
+      return;
+    }
+    
+    if (!confirm(`Are you sure you want to delete ${selected.length} ${type}(s)?`)) return;
+    
+    try {
+      setLoading(true);
+      const token = authService.getToken();
+      const field = type === 'user' ? 'user_ids' : 'registration_ids';
+      const response = await fetch(`${API_URL}/admin/${type}s/bulk-delete`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ [field]: selected })
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        alert(data.message || `Successfully deleted ${selected.length} ${type}(s)`);
+        if (type === 'user') {
+          setSelectedUsers([]);
+          fetchUsers();
+        } else {
+          setSelectedRegistrations([]);
+          fetchRegistrations();
+        }
+      } else {
+        const error = await response.json();
+        alert(error.error || `Failed to delete ${type}s`);
+      }
+    } catch (err) {
+      alert(`Failed to delete ${type}s`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleBulkCreate = async () => {
+    if (!bulkCreateData.trim()) {
+      alert('Please provide JSON data');
+      return;
+    }
+    
+    try {
+      const users = JSON.parse(bulkCreateData);
+      if (!Array.isArray(users)) {
+        alert('Data must be an array of user objects');
+        return;
+      }
+      
+      setLoading(true);
+      const token = authService.getToken();
+      const response = await fetch(`${API_URL}/admin/users/bulk-create`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ users })
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        alert(`Successfully created ${data.created} user(s). ${data.failed} failed.`);
+        setBulkCreateData('');
+        fetchUsers();
+      } else {
+        const error = await response.json();
+        alert(error.error || 'Failed to create users');
+      }
+    } catch (err) {
+      alert('Invalid JSON format or failed to create users');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filteredUsers = dbUsers.filter(user => {
+    const search = searchTerm.toLowerCase();
+    return (
+      user.email?.toLowerCase().includes(search) ||
+      user.full_name?.toLowerCase().includes(search) ||
+      user.username?.toLowerCase().includes(search)
+    );
+  });
+
+  return (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-bold text-white">Database Management</h2>
+        <div className="flex gap-2">
+          <button
+            onClick={() => { setCreateType('user'); setShowCreateModal(true); }}
+            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-green-500/20 hover:bg-green-500/30 border border-green-500/30 text-green-300 transition-all"
+          >
+            <Plus className="w-4 h-4" /> Create User
+          </button>
+        </div>
+      </div>
+
+      {/* Sub-tabs */}
+      <div className="flex gap-2 border-b border-white/10">
+        {[
+          { id: 'users', label: 'Users' },
+          { id: 'registrations', label: 'Registrations' },
+          { id: 'bulk', label: 'Bulk Operations' }
+        ].map(tab => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveSubTab(tab.id)}
+            className={`px-4 py-2 border-b-2 transition-colors ${
+              activeSubTab === tab.id
+                ? 'border-purple-400 text-white'
+                : 'border-transparent text-white/60 hover:text-white'
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Users Tab */}
+      {activeSubTab === 'users' && (
+        <div className="space-y-4">
+          <div className="flex gap-4">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-white/60" />
+              <input
+                type="text"
+                placeholder="Search users..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white placeholder-white/40 focus:outline-none focus:border-purple-400/50"
+              />
+            </div>
+            {selectedUsers.length > 0 && (
+              <button
+                onClick={() => handleBulkDelete('user')}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 text-red-300 transition-all"
+              >
+                <Trash2 className="w-4 h-4" /> Delete Selected ({selectedUsers.length})
+              </button>
+            )}
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[800px]">
+              <thead>
+                <tr className="border-b border-white/10">
+                  <th className="text-left py-3 px-4">
+                    <input
+                      type="checkbox"
+                      checked={filteredUsers.length > 0 && selectedUsers.length === filteredUsers.length}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setSelectedUsers(filteredUsers.map(u => u._id));
+                        } else {
+                          setSelectedUsers([]);
+                        }
+                      }}
+                    />
+                  </th>
+                  <th className="text-left py-3 px-4 text-white/80 text-sm font-semibold">Name</th>
+                  <th className="text-left py-3 px-4 text-white/80 text-sm font-semibold">Email</th>
+                  <th className="text-left py-3 px-4 text-white/80 text-sm font-semibold">Username</th>
+                  <th className="text-left py-3 px-4 text-white/80 text-sm font-semibold">Type</th>
+                  <th className="text-left py-3 px-4 text-white/80 text-sm font-semibold">Designation</th>
+                  <th className="text-left py-3 px-4 text-white/80 text-sm font-semibold">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {loading ? (
+                  <tr>
+                    <td colSpan="7" className="py-8 text-center">
+                      <Loader2 className="w-6 h-6 animate-spin mx-auto text-purple-400" />
+                    </td>
+                  </tr>
+                ) : filteredUsers.length === 0 ? (
+                  <tr>
+                    <td colSpan="7" className="py-8 text-center text-white/60">No users found</td>
+                  </tr>
+                ) : (
+                  filteredUsers.map(user => (
+                    <tr key={user._id} className="border-b border-white/5 hover:bg-white/5">
+                      <td className="py-3 px-4">
+                        <input
+                          type="checkbox"
+                          checked={selectedUsers.includes(user._id)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setSelectedUsers([...selectedUsers, user._id]);
+                            } else {
+                              setSelectedUsers(selectedUsers.filter(id => id !== user._id));
+                            }
+                          }}
+                        />
+                      </td>
+                      <td className="py-3 px-4 text-white text-sm">{user.full_name}</td>
+                      <td className="py-3 px-4 text-white/90 text-sm">{user.email}</td>
+                      <td className="py-3 px-4 text-white/80 text-sm">{user.username}</td>
+                      <td className="py-3 px-4 text-white/80 text-sm">{user.membership_type}</td>
+                      <td className="py-3 px-4 text-white/80 text-sm">{user.designation || '-'}</td>
+                      <td className="py-3 px-4">
+                        <button
+                          onClick={() => handleDeleteSingle(user._id, 'user')}
+                          className="px-3 py-1 rounded bg-red-500/20 hover:bg-red-500/30 text-red-300 text-xs"
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* Registrations Tab */}
+      {activeSubTab === 'registrations' && (
+        <div className="space-y-4">
+          <div className="flex gap-4">
+            {selectedRegistrations.length > 0 && (
+              <button
+                onClick={() => handleBulkDelete('registration')}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 text-red-300 transition-all"
+              >
+                <Trash2 className="w-4 h-4" /> Delete Selected ({selectedRegistrations.length})
+              </button>
+            )}
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[800px]">
+              <thead>
+                <tr className="border-b border-white/10">
+                  <th className="text-left py-3 px-4">
+                    <input
+                      type="checkbox"
+                      checked={registrations.length > 0 && selectedRegistrations.length === registrations.length}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setSelectedRegistrations(registrations.map(r => r._id));
+                        } else {
+                          setSelectedRegistrations([]);
+                        }
+                      }}
+                    />
+                  </th>
+                  <th className="text-left py-3 px-4 text-white/80 text-sm font-semibold">Event</th>
+                  <th className="text-left py-3 px-4 text-white/80 text-sm font-semibold">Team</th>
+                  <th className="text-left py-3 px-4 text-white/80 text-sm font-semibold">Leader</th>
+                  <th className="text-left py-3 px-4 text-white/80 text-sm font-semibold">Status</th>
+                  <th className="text-left py-3 px-4 text-white/80 text-sm font-semibold">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {registrations.map(reg => (
+                  <tr key={reg._id} className="border-b border-white/5 hover:bg-white/5">
+                    <td className="py-3 px-4">
+                      <input
+                        type="checkbox"
+                        checked={selectedRegistrations.includes(reg._id)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setSelectedRegistrations([...selectedRegistrations, reg._id]);
+                          } else {
+                            setSelectedRegistrations(selectedRegistrations.filter(id => id !== reg._id));
+                          }
+                        }}
+                      />
+                    </td>
+                    <td className="py-3 px-4 text-white text-sm">{reg.event_name}</td>
+                    <td className="py-3 px-4 text-white/90 text-sm">{reg.team_name}</td>
+                    <td className="py-3 px-4 text-white/80 text-sm">{reg.members?.[0]?.name || '-'}</td>
+                    <td className="py-3 px-4">
+                      <span className={`px-2 py-1 rounded text-xs ${
+                        reg.status === 'confirmed' ? 'bg-green-500/20 text-green-300' :
+                        reg.status === 'pending' ? 'bg-yellow-500/20 text-yellow-300' :
+                        'bg-red-500/20 text-red-300'
+                      }`}>
+                        {reg.status}
+                      </span>
+                    </td>
+                    <td className="py-3 px-4">
+                      <button
+                        onClick={() => handleDeleteSingle(reg._id, 'registration')}
+                        className="px-3 py-1 rounded bg-red-500/20 hover:bg-red-500/30 text-red-300 text-xs"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* Bulk Operations Tab */}
+      {activeSubTab === 'bulk' && (
+        <div className="space-y-6">
+          <div className="p-6 rounded-lg bg-white/5 border border-white/10">
+            <h3 className="text-lg font-semibold text-white mb-4">Bulk Create Users</h3>
+            <p className="text-white/60 text-sm mb-4">
+              Paste JSON array of user objects. Each user should have: username, full_name, email, phone_number, college, branch, year, roll_no, password, membership_type, designation (optional)
+            </p>
+            <textarea
+              value={bulkCreateData}
+              onChange={(e) => setBulkCreateData(e.target.value)}
+              placeholder='[{"username":"user1","full_name":"User One","email":"user1@example.com","phone_number":"1234567890","college":"RGIPT","branch":"CSE","year":"3rd Year","roll_no":"24cs1001","password":"password123","membership_type":"ieee_member","designation":"CS"}]'
+              className="w-full h-64 p-4 rounded-lg bg-black/40 border border-white/10 text-white font-mono text-sm focus:outline-none focus:border-purple-400/50"
+            />
+            <button
+              onClick={handleBulkCreate}
+              disabled={loading}
+              className="mt-4 flex items-center gap-2 px-6 py-2 rounded-lg bg-green-500/20 hover:bg-green-500/30 border border-green-500/30 text-green-300 transition-all disabled:opacity-50"
+            >
+              <Upload className="w-4 h-4" /> {loading ? 'Creating...' : 'Bulk Create Users'}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Create User Modal */}
+      {showCreateModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm p-4">
+          <div className="bg-black/90 border border-white/10 rounded-xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold text-white">Create New User</h2>
+              <button onClick={() => setShowCreateModal(false)} className="text-white/60 hover:text-white">
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            <form onSubmit={handleCreateSingle} className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm text-white/60 mb-1">Username *</label>
+                  <input
+                    type="text"
+                    required
+                    value={createFormData.username || ''}
+                    onChange={(e) => setCreateFormData({...createFormData, username: e.target.value})}
+                    className="w-full px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:outline-none focus:border-purple-400/50"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm text-white/60 mb-1">Full Name *</label>
+                  <input
+                    type="text"
+                    required
+                    value={createFormData.full_name || ''}
+                    onChange={(e) => setCreateFormData({...createFormData, full_name: e.target.value})}
+                    className="w-full px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:outline-none focus:border-purple-400/50"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm text-white/60 mb-1">Email *</label>
+                  <input
+                    type="email"
+                    required
+                    value={createFormData.email || ''}
+                    onChange={(e) => setCreateFormData({...createFormData, email: e.target.value})}
+                    className="w-full px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:outline-none focus:border-purple-400/50"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm text-white/60 mb-1">Phone *</label>
+                  <input
+                    type="text"
+                    required
+                    value={createFormData.phone_number || ''}
+                    onChange={(e) => setCreateFormData({...createFormData, phone_number: e.target.value})}
+                    className="w-full px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:outline-none focus:border-purple-400/50"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm text-white/60 mb-1">College *</label>
+                  <input
+                    type="text"
+                    required
+                    value={createFormData.college || ''}
+                    onChange={(e) => setCreateFormData({...createFormData, college: e.target.value})}
+                    className="w-full px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:outline-none focus:border-purple-400/50"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm text-white/60 mb-1">Branch *</label>
+                  <select
+                    required
+                    value={createFormData.branch || ''}
+                    onChange={(e) => setCreateFormData({...createFormData, branch: e.target.value})}
+                    className="w-full px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:outline-none focus:border-purple-400/50"
+                  >
+                    <option value="">Select Branch</option>
+                    <option value="CSE">CSE</option>
+                    <option value="CSD">CSD</option>
+                    <option value="ECE">ECE</option>
+                    <option value="EV">EV</option>
+                    <option value="MnC">MnC</option>
+                    <option value="IT">IT</option>
+                    <option value="Mechanical">Mechanical</option>
+                    <option value="Chemical">Chemical</option>
+                    <option value="Petroleum">Petroleum</option>
+                    <option value="Civil">Civil</option>
+                    <option value="Biotech">Biotech</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm text-white/60 mb-1">Year *</label>
+                  <select
+                    required
+                    value={createFormData.year || ''}
+                    onChange={(e) => setCreateFormData({...createFormData, year: e.target.value})}
+                    className="w-full px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:outline-none focus:border-purple-400/50"
+                  >
+                    <option value="">Select Year</option>
+                    <option value="1st Year">1st Year</option>
+                    <option value="2nd Year">2nd Year</option>
+                    <option value="3rd Year">3rd Year</option>
+                    <option value="4th Year">4th Year</option>
+                    <option value="5th Year">5th Year</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm text-white/60 mb-1">Roll No *</label>
+                  <input
+                    type="text"
+                    required
+                    value={createFormData.roll_no || ''}
+                    onChange={(e) => setCreateFormData({...createFormData, roll_no: e.target.value})}
+                    className="w-full px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:outline-none focus:border-purple-400/50"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm text-white/60 mb-1">Password *</label>
+                  <input
+                    type="password"
+                    required
+                    value={createFormData.password || ''}
+                    onChange={(e) => setCreateFormData({...createFormData, password: e.target.value})}
+                    className="w-full px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:outline-none focus:border-purple-400/50"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm text-white/60 mb-1">Membership Type *</label>
+                  <select
+                    required
+                    value={createFormData.membership_type || ''}
+                    onChange={(e) => setCreateFormData({...createFormData, membership_type: e.target.value})}
+                    className="w-full px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:outline-none focus:border-purple-400/50"
+                  >
+                    <option value="">Select Type</option>
+                    <option value="ieee_member">IEEE Member</option>
+                    <option value="non_member">Non Member</option>
+                  </select>
+                </div>
+                <div className="col-span-2">
+                  <label className="block text-sm text-white/60 mb-1">Designation</label>
+                  <input
+                    type="text"
+                    value={createFormData.designation || ''}
+                    onChange={(e) => setCreateFormData({...createFormData, designation: e.target.value})}
+                    placeholder="e.g., CS, Design, Joint_Sec"
+                    className="w-full px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:outline-none focus:border-purple-400/50"
+                  />
+                </div>
+              </div>
+              <div className="flex justify-end gap-4 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setShowCreateModal(false)}
+                  className="px-6 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-white transition-all"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="px-6 py-2 rounded-lg bg-green-500/20 hover:bg-green-500/30 border border-green-500/30 text-green-300 transition-all disabled:opacity-50"
+                >
+                  {loading ? 'Creating...' : 'Create User'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
 const AdminDashboard = () => {
   const router = useRouter();
   const [user, setUser] = useState(null);
@@ -79,8 +679,54 @@ const AdminDashboard = () => {
       try {
         const currentUser = await authService.getCurrentUser();
         if (!currentUser) {
-          router.push('/dashboard');
-          return;
+          // Check if it's a network error by trying to fetch from API
+          const token = authService.getToken();
+          if (!token) {
+            router.push('/');
+            return;
+          }
+          
+          // Try to verify if backend is accessible
+          try {
+            const checkResponse = await fetch(`${API_URL}/admin/registrations/stats`, {
+              headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (!checkResponse.ok) {
+              if (checkResponse.status === 403) {
+                alert('Access denied. Admin access is restricted to authorized personnel only.');
+                router.push('/dashboard');
+                return;
+              }
+              router.push('/dashboard');
+              return;
+            }
+            
+            // Backend is accessible but user fetch failed - use cached data if available
+            const cachedUser = localStorage.getItem('userData');
+            if (cachedUser) {
+              try {
+                const user = JSON.parse(cachedUser);
+                setUser(user);
+                await fetchStats();
+                await fetchRegistrations();
+                await fetchVisitorStats();
+                setLoading(false);
+                return;
+              } catch (e) {
+                // Invalid cached data
+              }
+            }
+            
+            router.push('/dashboard');
+            return;
+          } catch (fetchError) {
+            // Backend is not accessible
+            console.error('Backend server is not accessible:', fetchError);
+            alert('Unable to connect to server. Please check if the backend is running.');
+            router.push('/');
+            return;
+          }
         }
 
         // Check if user email is in admin whitelist
@@ -105,6 +751,10 @@ const AdminDashboard = () => {
         await fetchVisitorStats();
       } catch (err) {
         console.error('Auth error:', err);
+        // Check if it's a network error
+        if (err.message && err.message.includes('fetch')) {
+          alert('Unable to connect to server. Please check if the backend is running.');
+        }
         router.push('/');
       } finally {
         setLoading(false);
@@ -264,7 +914,8 @@ const AdminDashboard = () => {
           <div className="mb-6 flex flex-wrap gap-2 border-b border-white/10">
             {[
               { id: 'registrations', label: 'Registrations', icon: FileText },
-              { id: 'visitors', label: 'Visitors', icon: Users }
+              { id: 'visitors', label: 'Visitors', icon: Users },
+              { id: 'database', label: 'Database Management', icon: Database }
             ].map(tab => (
               <button
                 key={tab.id}
@@ -439,6 +1090,16 @@ const AdminDashboard = () => {
                   </div>
                 )}
               </div>
+            )}
+
+            {activeTab === 'database' && (
+              <DatabaseManagementTab
+                API_URL={API_URL}
+                authService={authService}
+                registrations={registrations}
+                setRegistrations={setRegistrations}
+                fetchRegistrations={fetchRegistrations}
+              />
             )}
           </div>
         </div>
