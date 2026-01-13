@@ -327,6 +327,30 @@ export default function CodeForHerPage() {
         router.push('/signin?redirect=/events/codeforher');
         return;
       }
+      
+      // Auto-fill team leader details from current user
+      try {
+        const currentUser = await authService.getCurrentUser();
+        if (currentUser) {
+          // Auto-fill the first member (team leader) with user's data
+          setMembers(prevMembers => {
+            const newMembers = [...prevMembers];
+            newMembers[0] = {
+              name: currentUser.full_name || "",
+              email: currentUser.email || "",
+              mobile: currentUser.phone_number || "",
+              college: currentUser.college || "",
+              course: "B.Tech", // Default, user can change
+              branch: currentUser.branch || "",
+              year: currentUser.year || ""
+            };
+            return newMembers;
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching user data for auto-fill:', error);
+      }
+      
       setAuthChecked(true);
     };
     checkAuth();
@@ -340,28 +364,29 @@ export default function CodeForHerPage() {
     );
   }
 
-  // Event Data for Landing Page
-const eventData = {
-  event: {
-    year: "2025",
-    subtitle: "Code the future. Break the bias.",
-    organizer: "IEEE Student Branch, RGIPT",
-    badge: "National Hackathon",
-  },
-  objectives: [
-    { title: "Innovate", desc: "Solve real-world problems with creative tech solutions.", icon: Sparkles },
-    { title: "Empower", desc: "Bridge the gender gap in technology leadership.", icon: Zap },
-    { title: "Build", desc: "Deploy full-stack prototypes in 48 hours.", icon: Cpu },
-    { title: "Network", desc: "Connect with industry mentors and peers.", icon: Users },
-  ],
-  timeline: [
-    { date: "10-14 Jan", title: "Phase 1", desc: "Development Phase" },
-    { date: "15-16 Jan", title: "Presentation", desc: "Team Presentations" },
-    { date: "17 Jan", title: "Results", desc: "Phase 1 Results Announcement" },
-    { date: "18-24 Jan", title: "Phase 2", desc: "Final Development Phase" },
-    { date: "31 Jan / 1 Feb", title: "Valedictory", desc: "Final Ceremony & Winners" },
-  ]
-};
+  // Event Data - will be fetched from backend or kept as static content
+  // Note: This is event-specific content, not mock data
+  const eventData = {
+    event: {
+      year: "2026",
+      subtitle: "Code the future. Break the bias.",
+      organizer: "IEEE Student Branch, RGIPT",
+      badge: "National Hackathon",
+    },
+    objectives: [
+      { title: "Innovate", desc: "Solve real-world problems with creative tech solutions.", icon: Sparkles },
+      { title: "Empower", desc: "Bridge the gender gap in technology leadership.", icon: Zap },
+      { title: "Build", desc: "Deploy full-stack prototypes in 48 hours.", icon: Cpu },
+      { title: "Network", desc: "Connect with industry mentors and peers.", icon: Users },
+    ],
+    timeline: [
+      { date: "15-19 Jan", title: "Phase 1: Ideation", desc: "Problem Statement & PPT Submission" },
+      { date: "20-21 Jan", title: "Presentation", desc: "Team Presentations" },
+      { date: "22 Jan", title: "Results", desc: "Phase 1 Results Announcement" },
+      { date: "23-29 Jan", title: "Phase 2: Prototype", desc: "Development & Demo Submission" },
+      { date: "31 Jan / 1 Feb", title: "Valedictory", desc: "Results & Awards Ceremony" },
+    ]
+  };
 
   const handleMemberChange = (index, field, value) => {
     const newMembers = [...members];
@@ -374,24 +399,42 @@ const eventData = {
     setIsSubmitting(true);
     
     try {
-      // Filter out empty members and ensure we have valid team size
-      const validMembers = members.filter(m => m.name && m.email && m.mobile).slice(0, 4);
+      // Filter out empty members and ensure we have valid team size (2-4 members)
+      const validMembers = members.filter(m => m.name && m.email && m.mobile);
       
-      if (validMembers.length === 0) {
-        alert('Please add at least one team member with name, email, and mobile number.');
+      if (validMembers.length < 2) {
+        alert('Please add at least 2 team members (minimum team size is 2).');
+        setIsSubmitting(false);
+        return;
+      }
+      
+      if (validMembers.length > 4) {
+        alert('Maximum team size is 4 members.');
+        setIsSubmitting(false);
+        return;
+      }
+      
+      // Check if all members are from the same college
+      const colleges = [...new Set(validMembers.map(m => m.college?.trim()).filter(Boolean))];
+      if (colleges.length > 1) {
+        alert('All team members must be from the same college.');
         setIsSubmitting(false);
         return;
       }
 
       const formData = {
-        event_name: "CodeForHer Hackathon 2025",
+        event_name: "CodeForHer Hackathon 2026",
         event_slug: "codeforher",
         team_name: teamName,
         team_size: validMembers.length,
         members: validMembers.map(m => ({
           name: m.name.trim(),
           email: m.email.trim().toLowerCase(),
-          mobile: m.mobile.trim()
+          mobile: m.mobile.trim(),
+          college: m.college?.trim() || "",
+          course: m.course || "",
+          branch: m.branch || "",
+          year: m.year || ""
         })),
         feedback: `${track ? `Track: ${track}. ` : ''}${previousExperience || ''}`.trim()
       };
@@ -465,20 +508,6 @@ const eventData = {
                 <a href="#structure" className="inline-flex h-14 items-center justify-center rounded-full px-8 text-sm font-bold text-white/70 border border-white/10 hover:bg-white/5 transition-colors">
                   View Guidelines
                 </a>
-              </div>
-
-              {/* Stats */}
-              <div className="pt-8 border-t border-white/10 flex gap-8 sm:gap-12 justify-center lg:justify-start">
-                 {[
-                   { label: "Prize Pool", value: "₹50K+" },
-                   { label: "Participants", value: "300+" },
-                   { label: "Duration", value: "48 Hrs" }
-                 ].map((stat, i) => (
-                   <div key={i}>
-                     <div className="text-2xl sm:text-3xl font-bold text-white">{stat.value}</div>
-                     <div className="text-xs uppercase tracking-wider text-white/40">{stat.label}</div>
-                   </div>
-                 ))}
               </div>
             </div>
 
@@ -558,8 +587,10 @@ const eventData = {
                                 <div className="w-0.5 h-full bg-white/10" />
                              </div>
                              <div className="pb-8">
-                                <h3 className="text-xl font-bold text-white mb-2">Round 1: Ideation</h3>
-                                <p className="text-white/60">Submit your solution approach via PPT. Focus on novelty, feasibility, and impact.</p>
+                                <h3 className="text-xl font-bold text-white mb-2">Phase 1: Ideation & Presentation</h3>
+                                <p className="text-white/60 mb-2">Submit your solution approach via PPT. Focus on novelty, feasibility, and impact.</p>
+                                <p className="text-white/50 text-sm mb-2"><strong>Dates:</strong> 15th - 19th Jan 2026 (Ideation) & 20th - 21st Jan 2026 (Presentation)</p>
+                                <p className="text-white/50 text-sm mb-3"><strong>Results:</strong> 22nd Jan 2026</p>
                                 <div className="mt-3 inline-block px-3 py-1 rounded bg-pink-500/20 text-pink-300 text-xs font-bold">Online Submission</div>
                              </div>
                           </div>
@@ -567,11 +598,26 @@ const eventData = {
                           <div className="flex gap-4">
                              <div className="flex flex-col items-center gap-2">
                                 <div className="w-10 h-10 rounded-full bg-purple-500 flex items-center justify-center font-bold text-white">2</div>
+                                <div className="w-0.5 h-full bg-white/10" />
+                             </div>
+                             <div className="pb-8">
+                                <h3 className="text-xl font-bold text-white mb-2">Phase 2: Prototype Development & Demo</h3>
+                                <p className="text-white/60 mb-2">Build a fully functional website. Submit website link or hosted prototype with 3-5 minute demo video.</p>
+                                <p className="text-white/50 text-sm mb-3"><strong>Dates:</strong> 23rd Jan - 29th Jan 2026</p>
+                                <div className="mt-3 inline-block px-3 py-1 rounded bg-purple-500/20 text-purple-300 text-xs font-bold">Hybrid Mode</div>
+                             </div>
+                          </div>
+                          
+                          <div className="flex gap-4">
+                             <div className="flex flex-col items-center gap-2">
+                                <div className="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center font-bold text-white">3</div>
                              </div>
                              <div>
-                                <h3 className="text-xl font-bold text-white mb-2">Round 2: Prototyping</h3>
-                                <p className="text-white/60">Build the MVP. 48 hours of coding, mentoring, and deployment.</p>
-                                <div className="mt-3 inline-block px-3 py-1 rounded bg-purple-500/20 text-purple-300 text-xs font-bold">Hybrid Mode</div>
+                                <h3 className="text-xl font-bold text-white mb-2">Valedictory Ceremony & Final Results</h3>
+                                <p className="text-white/60 mb-2">The final winners will be announced during the Valedictory Ceremony.</p>
+                                <p className="text-white/50 text-sm mb-2"><strong>Date:</strong> January 31 or February 1, 2026</p>
+                                <p className="text-white/50 text-sm mb-3"><strong>Venue:</strong> Offline at RGIPT Campus</p>
+                                <div className="mt-3 inline-block px-3 py-1 rounded bg-green-500/20 text-green-300 text-xs font-bold">Offline Event</div>
                              </div>
                           </div>
                        </div>
@@ -591,20 +637,10 @@ const eventData = {
 <pre className="text-blue-300">
 {`{
   "event": "CodeForHer",
-  "tracks": [
-    "FinTech",
-    "HealthTech",
-    "Open Innovation"
-  ],
   "team_size": {
-    "min": 3,
+    "min": 2,
     "max": 4
-  },
-  "perks": [
-    "Mentorship",
-    "Internships",
-    "Swags"
-  ]
+  }
 }`}
 </pre>
                           </div>
@@ -642,6 +678,130 @@ const eventData = {
                         ))}
                     </div>
                   </div>
+              </div>
+            </section>
+
+            {/* Eligibility Section */}
+            <section id="eligibility" className="py-24 relative border-t border-white/5">
+              <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="text-center mb-12">
+                  <h2 className="text-3xl md:text-5xl font-bold mb-4">Eligibility</h2>
+                  <p className="text-white/60 max-w-2xl mx-auto">
+                    The hackathon is open to female undergraduate students from institutions across India.
+                  </p>
+                </div>
+                <GlassCard className="p-8 md:p-12 text-center">
+                  <div className="flex items-center justify-center mb-6">
+                    <div className="w-16 h-16 rounded-full bg-pink-500/20 flex items-center justify-center">
+                      <Users className="w-8 h-8 text-pink-400" />
+                    </div>
+                  </div>
+                  <h3 className="text-2xl font-bold text-white mb-4">Who Can Participate?</h3>
+                  <div className="space-y-3 text-white/70 text-lg">
+                    <p>✓ Female undergraduate students</p>
+                    <p>✓ From institutions across India</p>
+                    <p>✓ Team size: 2-4 members (same college)</p>
+                  </div>
+                </GlassCard>
+              </div>
+            </section>
+
+            {/* Evaluation Criteria Section */}
+            <section id="evaluation" className="py-24 relative border-t border-white/5 bg-black/20">
+              <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="text-center mb-12">
+                  <h2 className="text-3xl md:text-5xl font-bold mb-4">Evaluation Criteria</h2>
+                  <p className="text-white/60 max-w-2xl mx-auto">
+                    Your projects will be evaluated based on these key criteria to ensure fair and comprehensive assessment.
+                  </p>
+                </div>
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {[
+                    { 
+                      title: "Problem Understanding", 
+                      desc: "Clarity of idea and understanding of the problem statement",
+                      icon: Target,
+                      bgClass: "bg-pink-500/20",
+                      iconClass: "text-pink-400"
+                    },
+                    { 
+                      title: "Innovation & Creativity", 
+                      desc: "Novelty and creative approach to solving the problem",
+                      icon: Sparkles,
+                      bgClass: "bg-purple-500/20",
+                      iconClass: "text-purple-400"
+                    },
+                    { 
+                      title: "Feasibility & Quality", 
+                      desc: "Implementation quality and technical feasibility",
+                      icon: Code,
+                      bgClass: "bg-blue-500/20",
+                      iconClass: "text-blue-400"
+                    },
+                    { 
+                      title: "Potential Impact", 
+                      desc: "Real-world impact and scalability of the solution",
+                      icon: Zap,
+                      bgClass: "bg-yellow-500/20",
+                      iconClass: "text-yellow-400"
+                    },
+                    { 
+                      title: "Presentation", 
+                      desc: "Communication skills and clarity of presentation",
+                      icon: FileText,
+                      bgClass: "bg-green-500/20",
+                      iconClass: "text-green-400"
+                    }
+                  ].map((criterion, idx) => (
+                    <GlassCard key={idx} className="p-6 group hover:bg-white/5">
+                      <div className={`w-12 h-12 rounded-xl ${criterion.bgClass} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>
+                        <criterion.icon className={`w-6 h-6 ${criterion.iconClass}`} />
+                      </div>
+                      <h3 className="text-xl font-bold mb-2 text-white">{criterion.title}</h3>
+                      <p className="text-white/60 text-sm leading-relaxed">{criterion.desc}</p>
+                    </GlassCard>
+                  ))}
+                </div>
+              </div>
+            </section>
+
+            {/* Rewards & Opportunities Section */}
+            <section id="rewards" className="py-24 relative border-t border-white/5">
+              <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="text-center mb-12">
+                  <h2 className="text-3xl md:text-5xl font-bold mb-4">Rewards & Opportunities</h2>
+                  <p className="text-white/60 max-w-2xl mx-auto">
+                    Compete for exciting prizes, internships, and exclusive opportunities.
+                  </p>
+                </div>
+                <div className="grid md:grid-cols-3 gap-6">
+                  <GlassCard className="p-8 text-center border-2 border-yellow-500/30 bg-gradient-to-br from-yellow-900/20 to-transparent">
+                    <div className="w-16 h-16 rounded-full bg-yellow-500/20 flex items-center justify-center mx-auto mb-6">
+                      <Trophy className="w-8 h-8 text-yellow-400" />
+                    </div>
+                    <h3 className="text-2xl font-bold text-white mb-4">Top 3 Teams</h3>
+                    <p className="text-white/70 text-lg mb-2">Exciting Prizes</p>
+                    <p className="text-white/50 text-sm">Cash prizes, certificates, and exclusive IEEE goodies</p>
+                  </GlassCard>
+
+                  <GlassCard className="p-8 text-center border-2 border-blue-500/30 bg-gradient-to-br from-blue-900/20 to-transparent">
+                    <div className="w-16 h-16 rounded-full bg-blue-500/20 flex items-center justify-center mx-auto mb-6">
+                      <Building className="w-8 h-8 text-blue-400" />
+                    </div>
+                    <h3 className="text-2xl font-bold text-white mb-4">Top 5 Teams</h3>
+                    <p className="text-white/70 text-lg mb-2">Internship Opportunities</p>
+                    <p className="text-white/50 text-sm">Exclusive internship opportunities with partner organizations</p>
+                  </GlassCard>
+
+                  <GlassCard className="p-8 text-center border-2 border-purple-500/30 bg-gradient-to-br from-purple-900/20 to-transparent">
+                    <div className="w-16 h-16 rounded-full bg-purple-500/20 flex items-center justify-center mx-auto mb-6">
+                      <Award className="w-8 h-8 text-purple-400" />
+                    </div>
+                    <h3 className="text-2xl font-bold text-white mb-4">Top 5 Teams</h3>
+                    <p className="text-white/70 text-lg mb-2">Wildcard Entry</p>
+                    <p className="text-white/50 text-sm">Direct entry to KodeKurrent Season 2</p>
+                  </GlassCard>
+                </div>
               </div>
             </section>
 
@@ -683,7 +843,7 @@ const eventData = {
                 Register Your Team
               </h1>
               <p className="text-white/60 max-w-xl mx-auto">
-                Fill in the details below to register for Code for Her 2025. Make sure you have details of all 4 members ready.
+                Fill in the details below to register for Code for Her 2026. Team leader details have been auto-filled from your profile. Make sure you have details of all team members ready (2-4 members required).
               </p>
             </div>
 
@@ -718,7 +878,7 @@ const eventData = {
               <div className="space-y-6">
                 <div className="flex items-center justify-between px-2">
                   <h3 className="text-lg font-semibold text-white/80 uppercase tracking-wider">Member Details</h3>
-                  <span className="text-xs text-pink-400 bg-pink-500/10 px-3 py-1 rounded-full border border-pink-500/20">4 Members Required</span>
+                  <span className="text-xs text-pink-400 bg-pink-500/10 px-3 py-1 rounded-full border border-pink-500/20">2-4 Members Required (Same College)</span>
                 </div>
                 {members.map((memberData, index) => (
                   <MemberFormSection 
@@ -794,7 +954,7 @@ const eventData = {
               
               <h2 className="text-3xl font-bold text-white mb-2">Registration Successful!</h2>
               <p className="text-white/60 mb-8">
-                Team <span className="text-white font-bold">"{teamName}"</span> has been registered for Code For Her 2025.
+                Team <span className="text-white font-bold">"{teamName}"</span> has been registered for Code For Her 2026.
               </p>
 
               <div className="space-y-6">
