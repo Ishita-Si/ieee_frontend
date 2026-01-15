@@ -537,7 +537,21 @@ export default function DataVisualizationChallengePage() {
               </div>
             )}
 
-            {isAuthenticated && (
+            <div className="max-w-4xl mx-auto mb-8">
+              <div className="glass-panel rounded-2xl p-6 border border-gray-500/30 bg-gray-500/10">
+                <div className="flex items-start gap-3">
+                  <AlertCircle className="w-5 h-5 text-gray-400 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <h3 className="text-lg font-bold text-gray-300 mb-2">Registration Closed</h3>
+                    <p className="text-gray-200/80 text-sm">
+                      This event has ended. Registration is no longer available. Thank you for your interest!
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {isAuthenticated && false && (
               <form onSubmit={handleSubmit} className="max-w-4xl mx-auto space-y-8">
                 {/* Team Info */}
                 <GlassCard className="p-6 md:p-8">
@@ -719,6 +733,18 @@ export default function DataVisualizationChallengePage() {
       <PillNav items={navItems} />
 
       <main className="relative z-10">
+        {/* Event Ended Banner */}
+        <div className="relative z-20 bg-gradient-to-r from-gray-800/90 to-gray-900/90 border-b border-gray-700/50 backdrop-blur-md">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div className="flex items-center justify-center gap-3">
+              <div className="w-2 h-2 rounded-full bg-gray-500" />
+              <p className="text-sm sm:text-base text-white/90 font-medium">
+                This event has ended. Thank you to all participants!
+              </p>
+            </div>
+          </div>
+        </div>
+
         {/* Hero Section */}
         <section className="relative min-h-screen flex flex-col justify-center pt-20 overflow-hidden">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full grid lg:grid-cols-12 gap-12 items-center">
@@ -747,20 +773,12 @@ export default function DataVisualizationChallengePage() {
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                 <button 
-                  onClick={() => { 
-                    if (!isAuthenticated) {
-                      // Redirect to signin if not logged in
-                      router.push('/signin?redirect=/events/data-visualization-challenge-2');
-                    } else {
-                      setView("registration"); 
-                      window.scrollTo({ top: 0, behavior: 'smooth' }); 
-                    }
-                  }}
-                  className="relative inline-flex h-14 overflow-hidden rounded-full p-[1px] focus:outline-none group"
+                  disabled
+                  className="relative inline-flex h-14 overflow-hidden rounded-full p-[1px] focus:outline-none group opacity-50 cursor-not-allowed"
                 >
                   <span className="absolute inset-[-1000%] animate-[spin_2s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#67E8F9_0%,#3B82F6_50%,#67E8F9_100%)]" />
-                  <span className="inline-flex h-full w-full cursor-pointer items-center justify-center rounded-full bg-slate-950 px-8 py-1 text-sm font-medium text-white backdrop-blur-3xl transition group-hover:bg-slate-900">
-                    {isAuthenticated ? 'Register Now' : 'Login to Register'} <ArrowRight className="ml-2 w-4 h-4" />
+                  <span className="inline-flex h-full w-full items-center justify-center rounded-full bg-slate-950 px-8 py-1 text-sm font-medium text-white backdrop-blur-3xl">
+                    Event Ended <ArrowRight className="ml-2 w-4 h-4" />
                   </span>
                 </button>
                 <a href="#structure" className="inline-flex h-14 items-center justify-center rounded-full px-8 text-sm font-bold text-white/70 border border-white/10 hover:bg-white/5 transition-colors">
@@ -805,8 +823,8 @@ export default function DataVisualizationChallengePage() {
                     <div className="p-4 rounded-2xl bg-gradient-to-br from-white/10 to-transparent border border-white/5">
                       <div className="text-xs font-bold uppercase text-white/40 mb-1">Status</div>
                       <div className="text-lg font-bold text-white flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                        Registrations Open
+                        <div className="w-2 h-2 rounded-full bg-gray-500" />
+                        Event Ended
                       </div>
                     </div>
                   </GlassCard>

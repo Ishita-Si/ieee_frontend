@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import PillNav from "@/components/ui/PillNav";
 import { authService } from "@/lib/auth";
-import { Loader2, CheckCircle2, AlertCircle, User, Mail, Phone, School, GraduationCap, Layers, BookOpen, Hash } from "lucide-react";
+import { Loader2, CheckCircle2, AlertCircle, User, Mail, Phone, School, GraduationCap, Layers, BookOpen, Hash, Eye, EyeOff } from "lucide-react";
 
 const navItems = [
   { label: "IEEE", href: "/" },
@@ -40,6 +40,8 @@ export default function SignupPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -158,12 +160,7 @@ export default function SignupPage() {
     // Note: IEEE membership ID will be auto-generated on the backend
     // No need to require membership_code anymore
 
-    // Validate designation for IEEE members
-    if (form.membership_type === 'ieee_member' && !form.designation) {
-      setError('Please select your designation');
-      setLoading(false);
-      return;
-    }
+    // Note: Designation will be auto-assigned by backend based on email
 
     try {
       const result = await authService.register({
@@ -177,7 +174,7 @@ export default function SignupPage() {
         roll_no: form.roll_no.trim(),
         password: form.password,
         membership_type: form.membership_type,
-        designation: form.membership_type === 'ieee_member' ? form.designation : null,
+        // Designation will be auto-assigned by backend based on email
         membership_code: form.membership_type === 'ieee_member' && form.membership_code ? form.membership_code.trim() : null,
         role: 'user'
       }, profilePicture);
@@ -537,36 +534,8 @@ export default function SignupPage() {
                     <strong>IEEE Membership ID will be automatically generated</strong> upon successful registration.
                   </p>
                   <p className="text-xs text-white/60 mt-1">
-                    Your unique IEEE membership ID will be assigned and displayed on your profile and ID card.
+                    Your unique IEEE membership ID and designation will be automatically assigned based on your email address and displayed on your profile and ID card.
                   </p>
-                </div>
-                <div className="space-y-2">
-                  <label htmlFor="designation" className="text-sm uppercase tracking-[0.35em] text-white/60">
-                    Designation <span className="text-red-400">*</span>
-                  </label>
-                  <select
-                    id="designation"
-                    name="designation"
-                    value={form.designation}
-                    onChange={handleChange}
-                    required
-                    className="w-full rounded-2xl bg-black/60 border border-white/20 px-4 py-3 focus:outline-none focus:border-white text-white"
-                  >
-                    <option value="">Select Designation</option>
-                    <option value="Joint_Sec">Joint Secretary</option>
-                    <option value="Design">Design</option>
-                    <option value="Audit">Audit</option>
-                    <option value="Editorial">Editorial</option>
-                    <option value="WIE">WIE</option>
-                    <option value="ComSoc">ComSoc</option>
-                    <option value="RAS">RAS</option>
-                    <option value="CS">CS</option>
-                    <option value="CS_Head">CS Head</option>
-                    <option value="EVENT">Event</option>
-                    <option value="CNM">CNM</option>
-                    <option value="Member">Member</option>
-                  </select>
-                  <p className="text-xs text-white/50">Select your team/designation in IEEE Student Branch</p>
                 </div>
                 <div className="space-y-2">
                   <label htmlFor="membership_code" className="text-sm uppercase tracking-[0.35em] text-white/60">
@@ -591,33 +560,51 @@ export default function SignupPage() {
                 <label htmlFor="password" className="text-sm uppercase tracking-[0.35em] text-white/60">
                   Password
                 </label>
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  value={form.password}
-                  onChange={handleChange}
-                  required
-                  minLength={6}
-                  className="w-full rounded-2xl bg-black/60 border border-white/20 px-4 py-3 focus:outline-none focus:border-white text-white"
-                  placeholder="Create a password"
-                />
+                <div className="relative">
+                  <input
+                    id="password"
+                    name="password"
+                    type={showPassword ? "text" : "password"}
+                    value={form.password}
+                    onChange={handleChange}
+                    required
+                    minLength={6}
+                    className="w-full rounded-2xl bg-black/60 border border-white/20 px-4 py-3 pr-10 focus:outline-none focus:border-white text-white"
+                    placeholder="Create a password"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 hover:text-white transition-colors"
+                  >
+                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  </button>
+                </div>
               </div>
 
               <div className="space-y-2">
                 <label htmlFor="confirmPassword" className="text-sm uppercase tracking-[0.35em] text-white/60">
                   Confirm Password
                 </label>
-                <input
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  type="password"
-                  value={form.confirmPassword}
-                  onChange={handleChange}
-                  required
-                  className="w-full rounded-2xl bg-black/60 border border-white/20 px-4 py-3 focus:outline-none focus:border-white text-white"
-                  placeholder="Confirm password"
-                />
+                <div className="relative">
+                  <input
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    type={showConfirmPassword ? "text" : "password"}
+                    value={form.confirmPassword}
+                    onChange={handleChange}
+                    required
+                    className="w-full rounded-2xl bg-black/60 border border-white/20 px-4 py-3 pr-10 focus:outline-none focus:border-white text-white"
+                    placeholder="Confirm password"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 hover:text-white transition-colors"
+                  >
+                    {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  </button>
+                </div>
               </div>
             </div>
 

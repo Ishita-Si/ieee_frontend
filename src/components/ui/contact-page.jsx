@@ -119,6 +119,7 @@ const ContactPage = () => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState({ type: '', message: '' });
 
   useEffect(() => {
     setIsLoaded(true);
@@ -127,13 +128,41 @@ const ContactPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate network
-    setIsSubmitting(false);
-    setFormData({ name: '', email: '', subject: '', message: '' });
-    alert("Message sent!");
+    setSubmitStatus({ type: '', message: '' });
+
+    try {
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      const response = await fetch(`${API_URL}/contact/submit`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        setSubmitStatus({ type: 'success', message: data.message || 'Message sent successfully! We will get back to you soon.' });
+        setFormData({ name: '', email: '', subject: '', message: '' });
+      } else {
+        setSubmitStatus({ type: 'error', message: data.error || 'Failed to send message. Please try again.' });
+      }
+    } catch (error) {
+      console.error('Contact form error:', error);
+      setSubmitStatus({ type: 'error', message: 'Network error. Please check your connection and try again.' });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+    // Clear status when user starts typing
+    if (submitStatus.type) {
+      setSubmitStatus({ type: '', message: '' });
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#050505] text-white font-sans selection:bg-pink-500/30 selection:text-white">
@@ -235,6 +264,16 @@ const ContactPage = () => {
                     
                     <h2 className="text-2xl font-bold text-white mb-2 relative z-10">Send a Message</h2>
                     <p className="text-white/50 mb-8 text-sm relative z-10">We usually respond within 24 hours.</p>
+
+                    {submitStatus.type && (
+                      <div className={`mb-6 p-4 rounded-xl border ${
+                        submitStatus.type === 'success' 
+                          ? 'bg-green-500/10 border-green-500/30 text-green-200' 
+                          : 'bg-red-500/10 border-red-500/30 text-red-200'
+                      } relative z-10`}>
+                        <p className="text-sm font-medium">{submitStatus.message}</p>
+                      </div>
+                    )}
 
                     <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
                         <div className="grid md:grid-cols-2 gap-6">

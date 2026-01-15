@@ -320,52 +320,49 @@ export default function CodeForHerPage() {
 
   useEffect(() => {
     const checkAuth = async () => {
-      const authenticated = authService.isAuthenticated();
-      setIsAuthenticated(authenticated);
-      
-      if (!authenticated) {
-        router.push('/signin?redirect=/events/codeforher');
-        return;
-      }
-      
-      // Auto-fill team leader details from current user
       try {
-        const currentUser = await authService.getCurrentUser();
-        if (currentUser) {
-          // Auto-fill the first member (team leader) with user's data
-          setMembers(prevMembers => {
-            const newMembers = [...prevMembers];
-            newMembers[0] = {
-              name: currentUser.full_name || "",
-              email: currentUser.email || "",
-              mobile: currentUser.phone_number || "",
-              college: currentUser.college || "",
-              course: "B.Tech", // Default, user can change
-              branch: currentUser.branch || "",
-              year: currentUser.year || ""
-            };
-            return newMembers;
-          });
+        const authenticated = authService.isAuthenticated();
+        setIsAuthenticated(authenticated);
+        
+        if (!authenticated) {
+          router.push('/signin?redirect=/events/codeforher');
+          return;
+        }
+        
+        // Auto-fill team leader details from current user
+        try {
+          const currentUser = await authService.getCurrentUser();
+          if (currentUser) {
+            // Auto-fill the first member (team leader) with user's data
+            setMembers(prevMembers => {
+              const newMembers = [...prevMembers];
+              newMembers[0] = {
+                name: currentUser.full_name || "",
+                email: currentUser.email || "",
+                mobile: currentUser.phone_number || "",
+                college: currentUser.college || "",
+                course: "B.Tech", // Default, user can change
+                branch: currentUser.branch || "",
+                year: currentUser.year || ""
+              };
+              return newMembers;
+            });
+          }
+        } catch (error) {
+          console.error('Error fetching user data for auto-fill:', error);
         }
       } catch (error) {
-        console.error('Error fetching user data for auto-fill:', error);
+        console.error('Error in auth check:', error);
+      } finally {
+        setAuthChecked(true);
       }
-      
-      setAuthChecked(true);
     };
     checkAuth();
   }, [router]);
 
-  if (!authChecked) {
-    return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-purple-400" />
-      </div>
-    );
-  }
-
   // Event Data - will be fetched from backend or kept as static content
   // Note: This is event-specific content, not mock data
+  // Defined before early return to ensure it's always available
   const eventData = {
     event: {
       year: "2026",
@@ -387,6 +384,14 @@ export default function CodeForHerPage() {
       { date: "31 Jan / 1 Feb", title: "Valedictory", desc: "Results & Awards Ceremony" },
     ]
   };
+
+  if (!authChecked) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-purple-400" />
+      </div>
+    );
+  }
 
   const handleMemberChange = (index, field, value) => {
     const newMembers = [...members];

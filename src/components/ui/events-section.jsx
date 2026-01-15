@@ -40,17 +40,6 @@ const events = [
     attendees: '200+',
     timeline: 'Jan 10 - Feb 1, 2025',
     registrationOpen: true
-  },
-  {
-    name: 'Data Visualisation Challenge 2.0',
-    className: 'dataviz',
-    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=900&q=80',
-    route: '/events/data-visualization-challenge-2',
-    color: '#06b6d4',
-    tag: 'Competition',
-    attendees: '100+',
-    timeline: 'Jan 2025',
-    registrationOpen: true
   }
 ].filter(event => {
   // Show events with open registrations that are upcoming or currently happening

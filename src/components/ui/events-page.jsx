@@ -112,32 +112,18 @@ export const EVENTS_DATA = [
     registrationOpen: true,
     timeline: 'Jan 10 - Feb 1, 2025'
   },
-  {
-    id: 'dataviz',
-    category: 'Competitions',
-    date: 'Jan 01-09, 2025',
-    time: '10:00 AM',
-    location: 'Online',
-    difficulty: 'Intermediate',
-    title: 'Data Visualisation Challenge 2.0',
-    description: 'A theme-anchored, case-driven data visualization challenge. Navigate real-world datasets across healthcare, agriculture, and urban infrastructure.',
-    fullDescription: 'Data Visualisation Challenge 2.0 is a competition where participants analyze datasets and create innovative, insightful visualizations. Use tools like Tableau, Power BI, Python (Matplotlib/Seaborn), or D3.js to tell compelling data stories. Winners will be judged on creativity, clarity, and impact.',
-    language: 'Any',
-    seatsLimited: true,
-    totalSeats: 100,
-    registeredSeats: 0,
-    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1000&auto=format&fit=crop',
-    requirements: ['Data Analysis Tool', 'Laptop', 'Basic Data Skills'],
-    prizes: ['₹15,000 First Prize', 'Certificates', 'Portfolio Showcase'],
-    route: '/events/data-visualization-challenge-2',
-    event_slug: 'data-visualization-challenge-2',
-    registrationOpen: true,
-    timeline: 'Jan 2025'
-  }
 ];
 
 // --- New Past Events Data ---
 const PAST_EVENTS = [
+  {
+    id: 'dataviz',
+    title: 'Data Visualisation Challenge 2.0',
+    category: 'Competition',
+    date: 'Jan 2025',
+    description: 'A theme-anchored, case-driven data visualization challenge. Navigate real-world datasets across healthcare, agriculture, and urban infrastructure.',
+    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1000&auto=format&fit=crop'
+  },
   {
     id: 'p1',
     title: 'KodeCurrent',

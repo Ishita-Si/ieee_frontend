@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Users, Code, Cpu, Bot, Sparkles, Radio, Wrench, FileText, Palette, Shield, PenTool, Calendar, Network } from 'lucide-react';
 import { teamData, generateSlug } from '@/data/team-data';
+import { TEAM_STRUCTURE } from '@/data/team-structure';
 import ChromaGrid from '@/components/ui/ChromaGrid';
 
 const highlightPalette = [
@@ -48,7 +49,15 @@ const buildChromaItems = (
         (member?.name ? generateSlug(member.name) : null);
 
       // For backend members, use team and role info
-      const position = member.role ? `${member.role} - ${member.team}` : member.position;
+      // If member has a specific position (like "CS Secretary"), use that
+      // Otherwise, use role - team format (like "Head - CS")
+      let position = member.position;
+      if (member.role && member.team && !member.position) {
+        position = `${member.role} - ${member.team}`;
+      } else if (member.position && member.team && !member.position.includes(member.team)) {
+        // If position doesn't include team name, add it for context
+        position = member.position;
+      }
       const location = member.is_ieee_member ? `IEEE Member - ${member.team || fallbackLocation}` : (member.team || member.chapter || member.society || member.section || fallbackLocation);
 
       return {
@@ -147,6 +156,7 @@ const SectionGrid = ({ title, description, icon: Icon, items, columns = 3, radiu
 const TeamPage = () => {
   const [isHeaderVisible, setIsHeaderVisible] = useState(false);
   const [newDesignationMembers, setNewDesignationMembers] = useState({});
+  const [memberDataMap, setMemberDataMap] = useState({}); // Map email to member data from backend
   const [loadingMembers, setLoadingMembers] = useState(true);
   const headerRef = useRef(null);
 
@@ -161,6 +171,16 @@ const TeamPage = () => {
         if (response.ok) {
           const data = await response.json();
           const membersByTeam = data.membersByTeam || {};
+          const allMembers = data.members || [];
+          
+          // Create a map of email to member data for easy lookup
+          const emailToMemberMap = {};
+          allMembers.forEach(member => {
+            if (member.email) {
+              emailToMemberMap[member.email.toLowerCase()] = member;
+            }
+          });
+          setMemberDataMap(emailToMemberMap);
           
           // Store members grouped by team (already sorted: heads first, then coheads)
           setNewDesignationMembers(membersByTeam);
@@ -200,109 +220,169 @@ const TeamPage = () => {
 
   let paletteOffset = 0;
 
-  const executiveMembers = [
-    teamData.executive?.chair,
-    teamData.executive?.viceChair,
-    ...(teamData.executive?.secretaries || []),
-    teamData.executive?.treasurer
-  ].filter(Boolean);
-  const executiveItems = buildChromaItems(executiveMembers, paletteOffset, 'Executive Committee');
+  // Build executive officers from new team structure
+  // This will re-render when memberDataMap updates with backend data
+  // When IEEE members register and upload their photo, it's automatically saved to profile_image_url
+  // and will appear here once they're verified and their data is fetched from the backend
+  const executiveMembers = TEAM_STRUCTURE.executive_officers.map(officer => {
+    // Try to get member data from backend if available (matches by email)
+    // Backend returns profile_image_url as 'image' field
+    const backendData = memberDataMap[officer.email.toLowerCase()];
+    return {
+      name: officer.name,
+      position: officer.position,
+      email: officer.email,
+      // Use profile_image_url from backend if available (uploaded during registration)
+      // If null, buildChromaItems will use a fallback avatar
+      image: backendData?.image || backendData?.profile_image_url || null,
+      linkedin: backendData?.linkedin || backendData?.linkedin_url || '',
+      github: backendData?.github || backendData?.github_url || '',
+      instagram: backendData?.instagram || backendData?.instagram_url || '',
+      bio: backendData?.bio || '',
+      achievements: backendData?.achievements || '',
+      is_ieee_member: true
+    };
+  });
+  const executiveItems = buildChromaItems(executiveMembers, paletteOffset, 'Leaders');
   paletteOffset += executiveItems.length;
 
-  const webDesignMembers = [...(teamData.webDesignTeam?.webmasters || [])].filter(Boolean);
-  const webDesignItems = buildChromaItems(
-    webDesignMembers,
-    paletteOffset,
-    'Web & Design Team',
-    { slugResolver: webTeamSlugResolver }
-  );
-  paletteOffset += webDesignItems.length;
-
-  const technicalSections = [
-    {
-      title: 'Computer Society',
-      description: 'Driving CS initiatives, workshops, and coding culture.',
-      icon: Cpu,
-      members: [
-        teamData.technicalTeam?.csSecretary,
-        ...(teamData.technicalTeam?.csViceSecretaries || [])
-      ].filter(Boolean),
-      slugResolver: csSlugResolver
-    },
-    {
-      title: 'Robotics & Automation Society',
-      description: 'Building innovative robotics and automation experiences.',
-      icon: Bot,
-      members: [
-        teamData.technicalTeam?.rasSecretary,
-        ...(teamData.technicalTeam?.rasViceSecretaries || [])
-      ].filter(Boolean)
-    },
-    {
-      title: 'Women in Engineering',
-      description: 'Championing inclusion, mentorship, and leadership.',
-      icon: Sparkles,
-      members: [
-        teamData.technicalTeam?.wieSecretary,
-        ...(teamData.technicalTeam?.wieViceSecretaries || [])
-      ].filter(Boolean)
-    },
-    {
-      title: 'Communications Society',
-      description: 'Exploring communication systems and networks.',
-      icon: Radio,
-      members: [
-        teamData.technicalTeam?.comsocSecretary,
-        ...(teamData.technicalTeam?.comsocViceSecretaries || [])
-      ].filter(Boolean)
+  // Build team sections from TEAM_STRUCTURE
+  // This includes all officers, heads, and coheads from the structure
+  // If they've registered, their uploaded photos will be shown, otherwise fallback avatars
+  const buildTeamMembersFromStructure = (teamKey, team) => {
+    const members = [];
+    
+    // Add officers if they exist (officers come first)
+    if (team.officers) {
+      team.officers.forEach(officer => {
+        const backendData = memberDataMap[officer.email.toLowerCase()];
+        members.push({
+          name: officer.name,
+          position: officer.position, // e.g., "CS Secretary", "COMSOC Secretary"
+          email: officer.email,
+          image: backendData?.image || backendData?.profile_image_url || null,
+          linkedin: backendData?.linkedin || backendData?.linkedin_url || '',
+          github: backendData?.github || backendData?.github_url || '',
+          instagram: backendData?.instagram || backendData?.instagram_url || '',
+          bio: backendData?.bio || '',
+          achievements: backendData?.achievements || '',
+          is_ieee_member: true,
+          team: teamKey,
+          role: 'Officer'
+        });
+      });
     }
-  ].map((section) => {
-    const items = buildChromaItems(
-      section.members,
-      paletteOffset,
-      section.title,
-      { slugResolver: section.slugResolver }
-    );
-    paletteOffset += items.length;
-    return { ...section, items };
-  });
-
-  const generalItems = buildChromaItems(teamData.generalMembers || [], paletteOffset, 'IEEE RGIPT');
+    
+    // Add head if exists (heads come after officers)
+    if (team.heads_and_coheads?.head) {
+      const head = team.heads_and_coheads.head;
+      const backendData = memberDataMap[head.email.toLowerCase()];
+      members.push({
+        name: head.name,
+        position: `Head - ${teamKey}`, // e.g., "Head - CS"
+        email: head.email,
+        image: backendData?.image || backendData?.profile_image_url || null,
+        linkedin: backendData?.linkedin || backendData?.linkedin_url || '',
+        github: backendData?.github || backendData?.github_url || '',
+        instagram: backendData?.instagram || backendData?.instagram_url || '',
+        bio: backendData?.bio || '',
+        achievements: backendData?.achievements || '',
+        is_ieee_member: true,
+        team: teamKey,
+        role: 'Head',
+        isHead: true
+      });
+    }
+    
+    // Add coheads if they exist (coheads come after heads)
+    if (team.heads_and_coheads?.co_heads) {
+      team.heads_and_coheads.co_heads.forEach(cohead => {
+        const backendData = memberDataMap[cohead.email.toLowerCase()];
+        members.push({
+          name: cohead.name,
+          position: `Cohead - ${teamKey}`, // e.g., "Cohead - CS"
+          email: cohead.email,
+          image: backendData?.image || backendData?.profile_image_url || null,
+          linkedin: backendData?.linkedin || backendData?.linkedin_url || '',
+          github: backendData?.github || backendData?.github_url || '',
+          instagram: backendData?.instagram || backendData?.instagram_url || '',
+          bio: backendData?.bio || '',
+          achievements: backendData?.achievements || '',
+          is_ieee_member: true,
+          team: teamKey,
+          role: 'Cohead',
+          isHead: false
+        });
+      });
+    }
+    
+    return members;
+  };
   
-  // Calculate palette offset for new designations
-  let newDesignationPaletteOffset = paletteOffset + generalItems.length;
+  // Calculate palette offset for team sections
+  let teamSectionsPaletteOffset = paletteOffset;
   
   // Team configuration with icons and descriptions
   const teamConfig = {
-    'Joint Secretaries': { icon: Users, description: 'IEEE members supporting branch operations and coordination.' },
-    'Design': { icon: Palette, description: 'IEEE members creating visual identity and design assets.' },
-    'Audit': { icon: Shield, description: 'IEEE members ensuring transparency and accountability.' },
-    'Editorial': { icon: PenTool, description: 'IEEE members crafting content and communications.' },
-    'WIE': { icon: Sparkles, description: 'IEEE members championing inclusion, mentorship, and leadership.' },
-    'ComSoc': { icon: Radio, description: 'IEEE members exploring communication systems and networks.' },
-    'RAS': { icon: Bot, description: 'IEEE members building innovative robotics and automation experiences.' },
-    'CS': { icon: Cpu, description: 'IEEE members driving CS initiatives, workshops, and coding culture. Head leads the team with coheads supporting.' },
-    'Event': { icon: Calendar, description: 'IEEE members organizing and managing branch events.' },
-    'CNM': { icon: Network, description: 'IEEE members exploring computational intelligence and network systems.' },
-    'General': { icon: Wrench, description: 'IEEE member volunteers and contributors powering IEEE Student Branch initiatives.' }
+    'CS': { icon: Cpu, title: 'Computer Society', description: 'IEEE members driving CS initiatives, workshops, and coding culture. Head leads the team with coheads supporting.' },
+    'COMSOC': { icon: Radio, title: 'Communications Society', description: 'IEEE members exploring communication systems and networks.' },
+    'WIE': { icon: Sparkles, title: 'Women in Engineering', description: 'IEEE members championing inclusion, mentorship, and leadership.' },
+    'RAS': { icon: Bot, title: 'Robotics & Automation Society', description: 'IEEE members building innovative robotics and automation experiences.' },
+    'Joint_Secretary': { icon: Users, title: 'Joint Secretaries', description: 'IEEE members supporting branch operations and coordination.' },
+    'Design': { icon: Palette, title: 'Design', description: 'IEEE members creating visual identity and design assets.' },
+    'Audit': { icon: Shield, title: 'Audit', description: 'IEEE members ensuring transparency and accountability.' },
+    'Editorial': { icon: PenTool, title: 'Editorial', description: 'IEEE members crafting content and communications.' },
+    'EVENT': { icon: Calendar, title: 'Event Management', description: 'IEEE members organizing and managing branch events.' },
+    'CNM': { icon: Network, title: 'CNM', description: 'IEEE members exploring computational intelligence and network systems.' }
   };
   
-  // Build items for new designations grouped by team
-  const newDesignationSections = [];
+  // Build team sections from TEAM_STRUCTURE (shows ALL members, not just registered ones)
+  const teamSections = [];
+  Object.keys(TEAM_STRUCTURE.teams).forEach(teamKey => {
+    const team = TEAM_STRUCTURE.teams[teamKey];
+    const members = buildTeamMembersFromStructure(teamKey, team);
+    
+    if (members.length > 0) {
+      const config = teamConfig[teamKey] || { icon: Users, title: teamKey, description: `${teamKey} team members.` };
+      teamSections.push({
+        title: config.title,
+        icon: config.icon,
+        description: config.description,
+        items: buildChromaItems(members, teamSectionsPaletteOffset, teamKey),
+        offset: teamSectionsPaletteOffset
+      });
+      teamSectionsPaletteOffset += members.length;
+    }
+  });
+  
+  // Also include members from backend that might not be in structure (for backward compatibility)
+  const backendTeamSections = [];
   const teamOrder = ['Joint Secretaries', 'Design', 'Audit', 'Editorial', 'WIE', 'ComSoc', 'RAS', 'CS', 'Event', 'CNM', 'General'];
   
   teamOrder.forEach(teamName => {
     const teamMembers = newDesignationMembers[teamName];
     if (teamMembers && teamMembers.length > 0) {
-      const config = teamConfig[teamName] || { icon: Users, description: `${teamName} team members.` };
-      newDesignationSections.push({
-        title: teamName === 'CS' ? 'Computer Society' : teamName === 'Event' ? 'Event Management' : teamName,
-        icon: config.icon,
-        description: config.description,
-        items: buildChromaItems(teamMembers, newDesignationPaletteOffset, teamName),
-        offset: newDesignationPaletteOffset
+      // Check if this team is already covered by structure-based sections
+      const isAlreadyCovered = teamSections.some(section => {
+        const mapping = {
+          'Joint Secretaries': 'Joint_Secretary',
+          'ComSoc': 'COMSOC',
+          'Event': 'EVENT'
+        };
+        return section.title === teamConfig[mapping[teamName] || teamName]?.title;
       });
-      newDesignationPaletteOffset += teamMembers.length;
+      
+      if (!isAlreadyCovered) {
+        const config = teamConfig[teamName] || { icon: Users, description: `${teamName} team members.` };
+        backendTeamSections.push({
+          title: teamName === 'CS' ? 'Computer Society' : teamName === 'Event' ? 'Event Management' : teamName,
+          icon: config.icon,
+          description: config.description,
+          items: buildChromaItems(teamMembers, teamSectionsPaletteOffset, teamName),
+          offset: teamSectionsPaletteOffset
+        });
+        teamSectionsPaletteOffset += teamMembers.length;
+      }
     }
   });
 
@@ -338,33 +418,8 @@ const TeamPage = () => {
           />
         )}
 
-        {/* Web & Design */}
-        {webDesignItems.length > 0 && (
-          <SectionGrid
-            title="Members - Web & Design Team"
-            icon={Code}
-            description="Designing, developing, and maintaining our digital footprint."
-            items={webDesignItems}
-            columns={3}
-          />
-        )}
-
-        {/* Technical Societies */}
-        {technicalSections.map((section) =>
-          section.items.length > 0 ? (
-            <SectionGrid
-              key={section.title}
-              title={`Members - ${section.title}`}
-              icon={section.icon}
-              description={section.description}
-              items={section.items}
-              columns={section.items.length >= 4 ? 4 : 3}
-            />
-          ) : null
-        )}
-
-        {/* Members grouped by team from Backend */}
-        {!loadingMembers && newDesignationSections.map((section) => (
+        {/* Team Sections from TEAM_STRUCTURE - Shows ALL members (officers, heads, coheads) */}
+        {teamSections.map((section) => (
           <SectionGrid
             key={section.title}
             title={`Members - ${section.title}`}
@@ -375,16 +430,17 @@ const TeamPage = () => {
           />
         ))}
 
-        {/* General Members (from static data) */}
-        {generalItems.length > 0 && (
+        {/* Additional members from backend (for any registered members not in structure) */}
+        {!loadingMembers && backendTeamSections.map((section) => (
           <SectionGrid
-            title="Members - General"
-            icon={Wrench}
-            description="Volunteers and contributors powering IEEE Student Branch initiatives."
-            items={generalItems}
-            columns={4}
+            key={section.title}
+            title={`Members - ${section.title}`}
+            icon={section.icon}
+            description={section.description}
+            items={section.items}
+            columns={section.items.length >= 4 ? 4 : section.items.length >= 3 ? 3 : 2}
           />
-        )}
+        ))}
       </div>
     </div>
   );

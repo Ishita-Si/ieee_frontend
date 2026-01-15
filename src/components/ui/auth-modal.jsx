@@ -1,6 +1,6 @@
 "use client"
 import React, { useState, useEffect } from 'react';
-import { X, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
+import { X, Loader2, CheckCircle2, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import { authService } from '@/lib/auth';
 
 const AuthModal = ({ isOpen, onClose, mode, onSwitchMode }) => {
@@ -25,6 +25,8 @@ const AuthModal = ({ isOpen, onClose, mode, onSwitchMode }) => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   useEffect(() => {
     if (!isOpen) {
@@ -180,12 +182,7 @@ const AuthModal = ({ isOpen, onClose, mode, onSwitchMode }) => {
       return;
     }
 
-    // Validate designation for IEEE members
-    if (formData.membership_type === 'ieee_member' && !formData.designation) {
-      setError('Please select your designation');
-      setLoading(false);
-      return;
-    }
+    // Note: Designation will be auto-assigned by backend based on email
 
     // Note: IEEE membership ID will be auto-generated on the backend
     // membership_code is optional (only for users who already have an existing code)
@@ -209,7 +206,7 @@ const AuthModal = ({ isOpen, onClose, mode, onSwitchMode }) => {
         roll_no: formData.roll_no.trim(),
         password: formData.password,
         membership_type: formData.membership_type,
-        designation: formData.membership_type === 'ieee_member' ? formData.designation : null,
+        // Designation will be auto-assigned by backend based on email
         membership_code: formData.membership_type === 'ieee_member' ? formData.membership_code.trim() : null,
         role: 'user'
       });
@@ -445,39 +442,10 @@ const AuthModal = ({ isOpen, onClose, mode, onSwitchMode }) => {
                         <div className="space-y-3">
                           <div className="rounded-xl border border-purple-500/30 bg-purple-500/10 px-4 py-3">
                             <p className="text-sm text-purple-300">
-                              <strong>IEEE Membership ID will be automatically generated</strong> upon successful registration.
+                              <strong>IEEE Membership ID and Designation will be automatically assigned</strong> based on your email address.
                             </p>
                             <p className="text-xs text-purple-200/60 mt-1">
-                              Your unique IEEE membership ID will be assigned and displayed on your profile and ID card.
-                            </p>
-                          </div>
-                          <div>
-                            <label className="mb-2 block text-sm font-medium text-purple-100/90">
-                              Designation <span className="text-red-400">*</span>
-                            </label>
-                            <select
-                              name="designation"
-                              value={formData.designation}
-                              onChange={handleChange}
-                              required
-                              className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white transition ring-offset-0 focus:border-purple-400/60 focus:outline-none focus:ring-2 focus:ring-purple-500/40"
-                            >
-                              <option value="">Select Designation</option>
-                              <option value="Joint_Sec">Joint Secretary</option>
-                              <option value="Design">Design</option>
-                              <option value="Audit">Audit</option>
-                              <option value="Editorial">Editorial</option>
-                              <option value="WIE">WIE</option>
-                              <option value="ComSoc">ComSoc</option>
-                              <option value="RAS">RAS</option>
-                              <option value="CS">CS</option>
-                              <option value="CS_Head">CS Head</option>
-                              <option value="EVENT">Event</option>
-                              <option value="CNM">CNM</option>
-                              <option value="Member">Member</option>
-                            </select>
-                            <p className="mt-1 text-xs text-purple-200/60">
-                              Select your team/designation in IEEE Student Branch
+                              Your unique IEEE membership ID and designation will be assigned and displayed on your profile and ID card.
                             </p>
                           </div>
                           <div>
@@ -593,16 +561,25 @@ const AuthModal = ({ isOpen, onClose, mode, onSwitchMode }) => {
                     <label className="mb-2 block text-sm font-medium text-purple-100/90">
                       Password
                     </label>
-                    <input
-                      type="password"
-                      name="password"
-                      value={formData.password}
-                      onChange={handleChange}
-                      className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder-purple-200/60 transition ring-offset-0 focus:border-purple-400/60 focus:outline-none focus:ring-2 focus:ring-purple-500/40"
-                      placeholder={mode === 'login' ? 'Enter your password' : 'Create a secure password'}
-                      required
-                      minLength={6}
-                    />
+                    <div className="relative">
+                      <input
+                        type={showPassword ? "text" : "password"}
+                        name="password"
+                        value={formData.password}
+                        onChange={handleChange}
+                        className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 pr-10 text-sm text-white placeholder-purple-200/60 transition ring-offset-0 focus:border-purple-400/60 focus:outline-none focus:ring-2 focus:ring-purple-500/40"
+                        placeholder={mode === 'login' ? 'Enter your password' : 'Create a secure password'}
+                        required
+                        minLength={6}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-purple-200/60 hover:text-white transition-colors"
+                      >
+                        {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                      </button>
+                    </div>
                   </div>
 
                   {mode === 'signup' && (
@@ -610,15 +587,24 @@ const AuthModal = ({ isOpen, onClose, mode, onSwitchMode }) => {
                       <label className="mb-2 block text-sm font-medium text-purple-100/90">
                         Confirm password
                       </label>
-                      <input
-                        type="password"
-                        name="confirmPassword"
-                        value={formData.confirmPassword}
-                        onChange={handleChange}
-                        className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder-purple-200/60 transition ring-offset-0 focus:border-purple-400/60 focus:outline-none focus:ring-2 focus:ring-purple-500/40"
-                        placeholder="Repeat password"
-                        required
-                      />
+                      <div className="relative">
+                        <input
+                          type={showConfirmPassword ? "text" : "password"}
+                          name="confirmPassword"
+                          value={formData.confirmPassword}
+                          onChange={handleChange}
+                          className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 pr-10 text-sm text-white placeholder-purple-200/60 transition ring-offset-0 focus:border-purple-400/60 focus:outline-none focus:ring-2 focus:ring-purple-500/40"
+                          placeholder="Repeat password"
+                          required
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-purple-200/60 hover:text-white transition-colors"
+                        >
+                          {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                        </button>
+                      </div>
                     </div>
                   )}
 

@@ -87,6 +87,26 @@ const timelineData = [
       </div>
     ),
   },
+  {
+    title: "January 2025",
+    content: (
+      <div className="bg-white/5 border border-white/10 backdrop-blur-xl rounded-xl sm:rounded-2xl p-4 sm:p-5 md:p-6 space-y-3 sm:space-y-4">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-[10px] sm:text-xs uppercase tracking-[0.3em] sm:tracking-[0.4em] text-white/60">
+          <span className="h-px w-4 sm:w-6 bg-gradient-to-r from-white/30 to-transparent" />
+          Competition
+        </div>
+        <h3 className="text-lg sm:text-xl md:text-2xl font-semibold text-white">Data Visualisation Challenge 2.0</h3>
+        <p className="text-xs sm:text-sm text-white/80 leading-relaxed">
+          A theme-anchored, case-driven data visualization challenge where participants navigated real-world datasets across healthcare, agriculture, and urban infrastructure to derive meaningful, high-impact insights. Winners showcased creativity, clarity, and impact in their visualizations.
+        </p>
+        <div className="flex flex-wrap gap-1.5 sm:gap-2 text-[10px] sm:text-xs text-white/70">
+          <span className="px-2 sm:px-3 py-0.5 sm:py-1 rounded-full border border-white/15">100+ participants</span>
+          <span className="px-2 sm:px-3 py-0.5 sm:py-1 rounded-full border border-white/15">₹15,000 prize pool</span>
+          <span className="px-2 sm:px-3 py-0.5 sm:py-1 rounded-full border border-white/15">Multiple tracks</span>
+        </div>
+      </div>
+    ),
+  },
 ];
 
 const PastEventsTimeline = () => {

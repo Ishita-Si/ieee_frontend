@@ -79,16 +79,6 @@ const announcements = [
     primaryButton: { text: "Register", href: "/events" },
     secondaryButton: { text: "Learn More", href: "/events" }
   },
-  {
-    id: 5,
-    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1000&auto=format&fit=crop",
-    badge: "Competition",
-    title: "Data Visualisation Challenge 2.0",
-    description: "A theme-anchored, case-driven data visualization challenge where participants navigate real-world datasets across healthcare, agriculture, and urban infrastructure to derive meaningful, high-impact insights.",
-    description2: "Transform data into decisions. Navigate complexities of real-world datasets using professional-grade statistical and analytical techniques. Registration opens 31st December.",
-    primaryButton: { text: "Learn More", href: "/events/data-visualization-challenge-2" },
-    secondaryButton: { text: "Register Now", href: "/contact" }
-  }
 ];
 
 const chapterCards = [

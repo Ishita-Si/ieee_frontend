@@ -18,7 +18,7 @@ import {
   Search, Download, 
   Loader2, Check, BarChart3,
   UserCheck, Clock, X, Database,
-  Plus, Trash2, Upload, FileUp
+  Plus, Trash2, Upload, FileUp, Mail
 } from 'lucide-react';
 
 // StatCard component
@@ -661,6 +661,11 @@ const AdminDashboard = () => {
   const [registrations, setRegistrations] = useState([]);
   const [registrationStats, setRegistrationStats] = useState(null);
   const [visitorStats, setVisitorStats] = useState(null);
+  const [contacts, setContacts] = useState([]);
+  const [contactStats, setContactStats] = useState(null);
+  const [contactSearchTerm, setContactSearchTerm] = useState('');
+  const [contactStatusFilter, setContactStatusFilter] = useState('all');
+  const [selectedContacts, setSelectedContacts] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState(null);
@@ -749,6 +754,7 @@ const AdminDashboard = () => {
         await fetchStats();
         await fetchRegistrations();
         await fetchVisitorStats();
+        await fetchContacts();
       } catch (err) {
         console.error('Auth error:', err);
         // Check if it's a network error
@@ -763,6 +769,12 @@ const AdminDashboard = () => {
 
     checkAuth();
   }, [router]);
+
+  useEffect(() => {
+    if (activeTab === 'contacts') {
+      fetchContacts();
+    }
+  }, [contactStatusFilter, contactSearchTerm]);
 
   const fetchStats = async () => {
     try {
@@ -806,6 +818,12 @@ const AdminDashboard = () => {
     }
   }, [selectedEventFilter, user]);
 
+  useEffect(() => {
+    if (activeTab === 'contacts' && user) {
+      fetchContacts();
+    }
+  }, [activeTab, contactStatusFilter, contactSearchTerm, user]);
+
   const fetchVisitorStats = async () => {
     try {
       const token = authService.getToken();
@@ -818,6 +836,105 @@ const AdminDashboard = () => {
       }
     } catch (err) {
       console.error('Error fetching visitor stats:', err);
+    }
+  };
+
+  const fetchContacts = async () => {
+    try {
+      const token = authService.getToken();
+      const queryParams = new URLSearchParams();
+      if (contactStatusFilter !== 'all') {
+        queryParams.append('status', contactStatusFilter);
+      }
+      if (contactSearchTerm) {
+        queryParams.append('search', contactSearchTerm);
+      }
+      
+      const response = await fetch(`${API_URL}/contact?${queryParams.toString()}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setContacts(data.contacts || []);
+        
+        // Calculate stats
+        const stats = {
+          total: data.total || 0,
+          new: data.contacts?.filter(c => c.status === 'new').length || 0,
+          read: data.contacts?.filter(c => c.status === 'read').length || 0,
+          replied: data.contacts?.filter(c => c.status === 'replied').length || 0,
+          archived: data.contacts?.filter(c => c.status === 'archived').length || 0,
+        };
+        setContactStats(stats);
+      }
+    } catch (err) {
+      console.error('Error fetching contacts:', err);
+    }
+  };
+
+  const updateContactStatus = async (contactId, status) => {
+    try {
+      const token = authService.getToken();
+      const response = await fetch(`${API_URL}/contact/${contactId}/status`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ status })
+      });
+      if (response.ok) {
+        await fetchContacts();
+      }
+    } catch (err) {
+      console.error('Error updating contact status:', err);
+      alert('Failed to update contact status');
+    }
+  };
+
+  const deleteContact = async (contactId) => {
+    if (!confirm('Are you sure you want to delete this contact?')) return;
+    
+    try {
+      const token = authService.getToken();
+      const response = await fetch(`${API_URL}/contact/${contactId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (response.ok) {
+        await fetchContacts();
+      } else {
+        alert('Failed to delete contact');
+      }
+    } catch (err) {
+      console.error('Error deleting contact:', err);
+      alert('Failed to delete contact');
+    }
+  };
+
+  const bulkDeleteContacts = async () => {
+    if (selectedContacts.length === 0) return;
+    if (!confirm(`Are you sure you want to delete ${selectedContacts.length} contact(s)?`)) return;
+    
+    try {
+      const token = authService.getToken();
+      const response = await fetch(`${API_URL}/contact/bulk-delete`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ ids: selectedContacts })
+      });
+      if (response.ok) {
+        setSelectedContacts([]);
+        await fetchContacts();
+      } else {
+        alert('Failed to delete contacts');
+      }
+    } catch (err) {
+      console.error('Error bulk deleting contacts:', err);
+      alert('Failed to delete contacts');
     }
   };
 
@@ -915,6 +1032,7 @@ const AdminDashboard = () => {
             {[
               { id: 'registrations', label: 'Registrations', icon: FileText },
               { id: 'visitors', label: 'Visitors', icon: Users },
+              { id: 'contacts', label: 'Contact Forms', icon: Mail },
               { id: 'database', label: 'Database Management', icon: Database }
             ].map(tab => (
               <button
@@ -1089,6 +1207,170 @@ const AdminDashboard = () => {
                     <p>Loading visitor statistics...</p>
                   </div>
                 )}
+              </div>
+            )}
+
+            {activeTab === 'contacts' && (
+              <div className="space-y-4">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
+                  <h2 className="text-2xl font-bold text-white">
+                    Contact Form Submissions ({contacts.length})
+                  </h2>
+                  {contactStats && (
+                    <div className="flex gap-2 text-sm flex-wrap">
+                      <div className="px-3 py-1 rounded-lg bg-purple-500/20 border border-purple-500/30">
+                        <span className="text-purple-300">Total: {contactStats.total}</span>
+                      </div>
+                      <div className="px-3 py-1 rounded-lg bg-yellow-500/20 border border-yellow-500/30">
+                        <span className="text-yellow-300">New: {contactStats.new}</span>
+                      </div>
+                      <div className="px-3 py-1 rounded-lg bg-blue-500/20 border border-blue-500/30">
+                        <span className="text-blue-300">Read: {contactStats.read}</span>
+                      </div>
+                      <div className="px-3 py-1 rounded-lg bg-green-500/20 border border-green-500/30">
+                        <span className="text-green-300">Replied: {contactStats.replied}</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Search and Filters */}
+                <div className="mb-6 flex flex-col sm:flex-row gap-4">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-white/60" />
+                    <input
+                      type="text"
+                      placeholder="Search by name, email, or subject..."
+                      value={contactSearchTerm}
+                      onChange={(e) => setContactSearchTerm(e.target.value)}
+                      className="w-full pl-10 pr-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white placeholder-white/40 focus:outline-none focus:border-purple-400/50"
+                    />
+                  </div>
+                  <select
+                    value={contactStatusFilter}
+                    onChange={(e) => setContactStatusFilter(e.target.value)}
+                    className="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:outline-none focus:border-purple-400/50"
+                  >
+                    <option value="all">All Status</option>
+                    <option value="new">New</option>
+                    <option value="read">Read</option>
+                    <option value="replied">Replied</option>
+                    <option value="archived">Archived</option>
+                  </select>
+                  {selectedContacts.length > 0 && (
+                    <button
+                      onClick={bulkDeleteContacts}
+                      className="flex items-center gap-2 px-4 py-2 rounded-lg bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 text-red-300 transition-all"
+                    >
+                      <Trash2 className="w-4 h-4" /> Delete Selected ({selectedContacts.length})
+                    </button>
+                  )}
+                </div>
+
+                {/* Contacts Table */}
+                <div className="overflow-x-auto">
+                  <table className="w-full min-w-[800px]">
+                    <thead>
+                      <tr className="border-b border-white/10">
+                        <th className="text-left py-3 px-4 text-white/80 text-sm font-semibold">
+                          <input
+                            type="checkbox"
+                            checked={contacts.length > 0 && selectedContacts.length === contacts.length}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setSelectedContacts(contacts.map(c => c._id));
+                              } else {
+                                setSelectedContacts([]);
+                              }
+                            }}
+                            className="rounded border-white/20 bg-white/5"
+                          />
+                        </th>
+                        <th className="text-left py-3 px-4 text-white/80 text-sm font-semibold">Name</th>
+                        <th className="text-left py-3 px-4 text-white/80 text-sm font-semibold">Email</th>
+                        <th className="text-left py-3 px-4 text-white/80 text-sm font-semibold">Subject</th>
+                        <th className="text-left py-3 px-4 text-white/80 text-sm font-semibold">Message</th>
+                        <th className="text-left py-3 px-4 text-white/80 text-sm font-semibold">Status</th>
+                        <th className="text-left py-3 px-4 text-white/80 text-sm font-semibold">Date</th>
+                        <th className="text-left py-3 px-4 text-white/80 text-sm font-semibold">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {contacts.length === 0 ? (
+                        <tr>
+                          <td colSpan="8" className="py-8 text-center text-white/60">
+                            No contact submissions found
+                          </td>
+                        </tr>
+                      ) : (
+                        contacts.map(contact => (
+                          <tr key={contact._id} className="border-b border-white/5 hover:bg-white/5">
+                            <td className="py-3 px-4">
+                              <input
+                                type="checkbox"
+                                checked={selectedContacts.includes(contact._id)}
+                                onChange={(e) => {
+                                  if (e.target.checked) {
+                                    setSelectedContacts([...selectedContacts, contact._id]);
+                                  } else {
+                                    setSelectedContacts(selectedContacts.filter(id => id !== contact._id));
+                                  }
+                                }}
+                                className="rounded border-white/20 bg-white/5"
+                              />
+                            </td>
+                            <td className="py-3 px-4 text-white">{contact.name}</td>
+                            <td className="py-3 px-4">
+                              <a href={`mailto:${contact.email}`} className="text-purple-300 hover:text-purple-200">
+                                {contact.email}
+                              </a>
+                            </td>
+                            <td className="py-3 px-4 text-white">{contact.subject}</td>
+                            <td className="py-3 px-4 text-white/70 max-w-xs truncate" title={contact.message}>
+                              {contact.message}
+                            </td>
+                            <td className="py-3 px-4">
+                              <select
+                                value={contact.status}
+                                onChange={(e) => updateContactStatus(contact._id, e.target.value)}
+                                className={`px-2 py-1 rounded text-xs font-medium ${
+                                  contact.status === 'new' ? 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30' :
+                                  contact.status === 'read' ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30' :
+                                  contact.status === 'replied' ? 'bg-green-500/20 text-green-300 border border-green-500/30' :
+                                  'bg-gray-500/20 text-gray-300 border border-gray-500/30'
+                                } focus:outline-none`}
+                              >
+                                <option value="new">New</option>
+                                <option value="read">Read</option>
+                                <option value="replied">Replied</option>
+                                <option value="archived">Archived</option>
+                              </select>
+                            </td>
+                            <td className="py-3 px-4 text-white/60 text-sm">
+                              {new Date(contact.created_at).toLocaleDateString()}
+                            </td>
+                            <td className="py-3 px-4">
+                              <div className="flex gap-2">
+                                <a
+                                  href={`mailto:${contact.email}?subject=Re: ${contact.subject}`}
+                                  className="px-3 py-1 rounded bg-purple-500/20 hover:bg-purple-500/30 border border-purple-500/30 text-purple-300 text-xs transition-all"
+                                >
+                                  Reply
+                                </a>
+                                <button
+                                  onClick={() => deleteContact(contact._id)}
+                                  className="px-3 py-1 rounded bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 text-red-300 text-xs transition-all"
+                                >
+                                  Delete
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             )}
 
