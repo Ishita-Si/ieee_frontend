@@ -333,32 +333,29 @@ export default function CodeForHerPage() {
         const authenticated = authService.isAuthenticated();
         setIsAuthenticated(authenticated);
         
-        if (!authenticated) {
-          router.push('/signin?redirect=/events/codeforher');
-          return;
-        }
-        
-        // Auto-fill team leader details from current user
-        try {
-          const currentUser = await authService.getCurrentUser();
-          if (currentUser) {
-            // Auto-fill the first member (team leader) with user's data
-            setMembers(prevMembers => {
-              const newMembers = [...prevMembers];
-              newMembers[0] = {
-                name: currentUser.full_name || "",
-                email: currentUser.email || "",
-                mobile: currentUser.phone_number || "",
-                college: currentUser.college || "",
-                course: "B.Tech", // Default, user can change
-                branch: currentUser.branch || "",
-                year: currentUser.year || ""
-              };
-              return newMembers;
-            });
+        // Only auto-fill if user is authenticated
+        if (authenticated) {
+          try {
+            const currentUser = await authService.getCurrentUser();
+            if (currentUser) {
+              // Auto-fill the first member (team leader) with user's data
+              setMembers(prevMembers => {
+                const newMembers = [...prevMembers];
+                newMembers[0] = {
+                  name: currentUser.full_name || "",
+                  email: currentUser.email || "",
+                  mobile: currentUser.phone_number || "",
+                  college: currentUser.college || "",
+                  course: "B.Tech", // Default, user can change
+                  branch: currentUser.branch || "",
+                  year: currentUser.year || ""
+                };
+                return newMembers;
+              });
+            }
+          } catch (error) {
+            console.error('Error fetching user data for auto-fill:', error);
           }
-        } catch (error) {
-          console.error('Error fetching user data for auto-fill:', error);
         }
       } catch (error) {
         console.error('Error in auth check:', error);
@@ -394,13 +391,15 @@ export default function CodeForHerPage() {
     ]
   };
 
-  if (!authChecked) {
-    return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
-        <Loader size="default" />
-      </div>
-    );
-  }
+  // Handle registration button click - check auth before showing registration form
+  const handleRegisterClick = () => {
+    if (!isAuthenticated) {
+      router.push('/signin?redirect=/events/codeforher');
+      return;
+    }
+    setView("registration");
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const handleMemberChange = (index, field, value) => {
     const newMembers = [...members];
@@ -511,7 +510,7 @@ export default function CodeForHerPage() {
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                     <button 
-                      onClick={() => { setView("registration"); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                      onClick={handleRegisterClick}
                       className="relative inline-flex h-14 overflow-hidden rounded-full p-[1px] focus:outline-none group"
                     >
                   <span className="absolute inset-[-1000%] animate-[spin_2s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#E2CBFF_0%,#393BB2_50%,#E2CBFF_100%)]" />
@@ -1080,7 +1079,7 @@ export default function CodeForHerPage() {
                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-600">MAKE HISTORY?</span>
               </h2>
                   <button 
-                    onClick={() => { setView("registration"); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                    onClick={handleRegisterClick}
                     className="inline-block group relative px-8 py-4 bg-white text-black font-bold text-lg rounded-full overflow-hidden hover:scale-105 transition-transform"
                   >
                     <span className="relative z-10 group-hover:text-white transition-colors">REGISTER TEAM NOW</span>
@@ -1096,6 +1095,21 @@ export default function CodeForHerPage() {
 
         {/* === REGISTRATION VIEW === */}
         {view === "registration" && (
+          <>
+            {!isAuthenticated ? (
+              <div className="container mx-auto px-4 py-12 md:py-20 text-center">
+                <div className="max-w-md mx-auto">
+                  <h2 className="text-2xl font-bold text-white mb-4">Authentication Required</h2>
+                  <p className="text-white/70 mb-6">Please sign in to register for this event.</p>
+                  <button
+                    onClick={() => router.push('/signin?redirect=/events/codeforher')}
+                    className="px-6 py-3 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl transition-colors"
+                  >
+                    Sign In to Register
+                  </button>
+                </div>
+              </div>
+            ) : (
           <div className="container mx-auto px-4 py-12 md:py-20 animate-fade-in-up">
             {/* Registration Header */}
             <div className="text-center mb-12 space-y-4">
@@ -1201,6 +1215,8 @@ export default function CodeForHerPage() {
             </form>
             <div className="h-20" />
           </div>
+            )}
+          </>
         )}
 
         {/* === SUCCESS VIEW === */}

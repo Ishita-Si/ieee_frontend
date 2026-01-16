@@ -636,6 +636,9 @@ export default function SignupPage() {
               <p className="text-white/70">
                 We sent a 6-digit code to <strong>{form.email}</strong>. Please enter it below.
               </p>
+              <p className="text-sm text-yellow-400/80 bg-yellow-400/10 border border-yellow-400/20 rounded-lg px-4 py-2">
+                📧 <strong>Note:</strong> Please check your spam/junk folder too if you don't see the email in your inbox.
+              </p>
             </div>
 
             <div className="space-y-2">

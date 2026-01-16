@@ -220,11 +220,15 @@ export const authService = {
 
       let response
       try {
+        // Create abort controller for timeout handling
+        const controller = new AbortController()
+        const timeoutId = setTimeout(() => controller.abort(), 10000) // 10 second timeout
+        
         response = await fetch(`${API_BASE_URL}/auth/me`, {
           headers: authService.getAuthHeaders(),
-          // Add signal to allow aborting if needed
-          signal: AbortSignal.timeout ? AbortSignal.timeout(5000) : undefined
+          signal: controller.signal
         }).catch((fetchError) => {
+          clearTimeout(timeoutId)
           // Catch fetch errors immediately
           if (fetchError.name === 'TypeError' || 
               fetchError.name === 'AbortError' ||
@@ -235,6 +239,9 @@ export const authService = {
           }
           throw fetchError
         })
+        
+        // Clear timeout on successful fetch
+        clearTimeout(timeoutId)
         
         // Check if fetch returned a network error marker
         if (response && response._networkError) {

@@ -17,8 +17,13 @@ export const metadata = {
   title: "IEEE Student Branch RGIPT",
   description: "Official Website of IEEE Student Branch RGIPT",
   icons: {
-    icon: '/logo.png',
-    apple: '/logo.png',
+    icon: [
+      { url: '/logo.png', type: 'image/png' },
+    ],
+    apple: [
+      { url: '/logo.png', type: 'image/png' },
+    ],
+    shortcut: '/logo.png',
   },
 };
 

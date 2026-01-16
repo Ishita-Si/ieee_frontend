@@ -203,6 +203,10 @@ export default function Home() {
                          `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
         sessionStorage.setItem('visitor_session_id', sessionId);
         
+        // Add timeout to prevent blocking
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+        
         await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/admin/visitors/track`, {
           method: 'POST',
           headers: {
@@ -212,15 +216,22 @@ export default function Home() {
             page_visited: window.location.pathname,
             referrer: document.referrer || '',
             session_id: sessionId
-          })
+          }),
+          signal: controller.signal
+        }).finally(() => {
+          clearTimeout(timeoutId);
         });
       } catch (error) {
         // Silently fail - don't interrupt user experience
-        console.log('Visitor tracking failed:', error);
+        if (error.name !== 'AbortError') {
+          console.log('Visitor tracking failed:', error);
+        }
       }
     };
     
-    trackVisitor();
+    // Delay tracking slightly to not block initial render
+    const timer = setTimeout(trackVisitor, 100);
+    return () => clearTimeout(timer);
   }, []);
 
   // Auto-play announcements

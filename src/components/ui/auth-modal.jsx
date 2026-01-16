@@ -646,6 +646,9 @@ const AuthModal = ({ isOpen, onClose, mode, onSwitchMode }) => {
 
               {step === 'otp' && (
                 <form onSubmit={handleVerifyOTP} className="space-y-4">
+                  <div className="text-sm text-yellow-400/90 bg-yellow-400/10 border border-yellow-400/20 rounded-lg px-4 py-2">
+                    📧 <strong>Note:</strong> Please check your spam/junk folder too if you don't see the email in your inbox.
+                  </div>
                   <div>
                     <label className="mb-2 block text-sm font-medium text-purple-100/90">
                       Enter 6-digit OTP

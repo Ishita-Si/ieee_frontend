@@ -275,11 +275,6 @@ export default function DataVisualizationChallengePage() {
     const checkAuth = async () => {
       const authenticated = authService.isAuthenticated();
       setIsAuthenticated(authenticated);
-      
-      if (!authenticated) {
-        router.push('/signin?redirect=/events/data-visualization-challenge-2');
-        return;
-      }
       setAuthChecked(true);
     };
     checkAuth();
@@ -310,13 +305,15 @@ export default function DataVisualizationChallengePage() {
     loadUser();
   }, [authChecked, isAuthenticated]);
 
-  if (!authChecked) {
-    return (
-      <div className="min-h-screen bg-[#050505] text-white flex items-center justify-center">
-        <Loader size="default" />
-      </div>
-    );
-  }
+  // Handle registration button click - check auth before showing registration form
+  const handleRegisterClick = () => {
+    if (!isAuthenticated) {
+      router.push('/signin?redirect=/events/data-visualization-challenge-2');
+      return;
+    }
+    setView("registration");
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   // Handle team size change
   const handleTeamSizeChange = (newSize) => {
@@ -484,6 +481,28 @@ export default function DataVisualizationChallengePage() {
 
   // === REGISTRATION VIEW ===
   if (view === "registration") {
+    // Check authentication before showing registration form
+    if (!isAuthenticated) {
+      return (
+        <div className="min-h-screen bg-[#050505] text-white font-sans">
+          <AnimatedBackground />
+          <PillNav items={navItems} />
+          <main className="relative z-10 container mx-auto px-4 py-12 md:py-20 text-center">
+            <div className="max-w-md mx-auto">
+              <h2 className="text-2xl font-bold text-white mb-4">Authentication Required</h2>
+              <p className="text-white/70 mb-6">Please sign in to register for this event.</p>
+              <button
+                onClick={() => router.push('/signin?redirect=/events/data-visualization-challenge-2')}
+                className="px-6 py-3 bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-xl transition-colors"
+              >
+                Sign In to Register
+              </button>
+            </div>
+          </main>
+        </div>
+      );
+    }
+
     return (
       <div className="min-h-screen bg-[#050505] text-white font-sans selection:bg-cyan-500/30 selection:text-white">
         <AnimatedBackground />
@@ -1163,14 +1182,7 @@ export default function DataVisualizationChallengePage() {
               Transform data into decisions. Register now and showcase your analytical skills!
             </p>
             <button 
-              onClick={() => { 
-                if (!isAuthenticated) {
-                  router.push('/signin?redirect=/events/data-visualization-challenge-2');
-                } else {
-                  setView("registration"); 
-                  window.scrollTo({ top: 0, behavior: 'smooth' }); 
-                }
-              }}
+              onClick={handleRegisterClick}
               className="inline-block group relative px-6 sm:px-8 py-3 sm:py-4 bg-white text-black font-bold text-base sm:text-lg rounded-full overflow-hidden hover:scale-105 transition-transform"
             >
               <span className="relative z-10 group-hover:text-white transition-colors">

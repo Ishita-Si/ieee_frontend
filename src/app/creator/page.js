@@ -222,48 +222,32 @@ export default function CreatorPage() {
         <section className="pt-32 pb-16 px-4 text-center">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 mb-6 font-code text-xs text-purple-300 animate-slide-up">
             <Command className="w-3 h-3" />
-            <span>git commit -m "Creators"</span>
+            <span>git commit -m "Creator"</span>
           </div>
           
           <h1 className="text-5xl md:text-7xl font-black tracking-tighter mb-6 animate-slide-up" style={{ animationDelay: '100ms' }}>
-            MEET THE <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-500 to-red-500">ARCHITECTS</span>
+            MEET THE <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-500 to-red-500">ARCHITECT</span>
           </h1>
           
           <p className="text-white/60 text-lg max-w-2xl mx-auto leading-relaxed font-code animate-slide-up" style={{ animationDelay: '200ms' }}>
-            // The minds behind the interface. <br/>
+            // The mind behind the interface. <br/>
             // Crafting digital experiences with code and creativity.
           </p>
         </section>
 
         {/* Developers Grid */}
         <section className="px-4 sm:px-6 lg:px-8 pb-32">
-          <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-8">
+          <div className="max-w-4xl mx-auto flex justify-center">
             
-            {/* Backend Dev - Kunal */}
-            <CodeWindow 
-              name="Kunal Kumar"
-              role="Backend Architect"
-              handle="kunal_server.js"
-              image="/images/kunal kumar.png"
-              type="backend"
-              delay={300}
-              skills={["Node.js", "Python", "MongoDB", "Docker", "AWS"]}
-              socialLinks={{
-                github: "https://github.com/kunal12kumar",
-                linkedin: "https://linkedin.com/in/kunalkrdev",
-                email: "mrkunalkr01@gmail.com"
-              }}
-            />
-
-            {/* Frontend Dev - Shashank */}
+            {/* Full Stack Developer - Shashank */}
             <CodeWindow 
               name="Shashank"
-              role="Frontend Developer"
-              handle="shashank_ui.jsx"
+              role="Full Stack Developer"
+              handle="shashank_fullstack.js"
               image="/images/shashank.png"
-              type="frontend"
-              delay={500}
-              skills={["React", "Next.js", "Tailwind", "Three.js", "Figma"]}
+              type="backend"
+              delay={300}
+              skills={["React", "Next.js", "Node.js", "Express", "MongoDB", "Tailwind", "Three.js", "JWT", "SendGrid"]}
               socialLinks={{
                 github: "https://github.com/shashank7109",
                 linkedin: "https://linkedin.com/in/shashankbindal07",
