@@ -23,15 +23,15 @@ const Hero = ({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Beams Background */}
+      {/* Beams Background (kept for full hero design, slightly tuned for smoother performance) */}
       <div className="absolute inset-0 w-full h-full z-0">
         <Beams
-          beamWidth={3}
-          beamHeight={30}
-          beamNumber={20}
+          beamWidth={2.5}
+          beamHeight={24}
+          beamNumber={16}
           lightColor="#ffffff"
-          speed={2}
-          noiseIntensity={1.75}
+          speed={1.6}
+          noiseIntensity={1.4}
           scale={0.2}
           rotation={49}
         />

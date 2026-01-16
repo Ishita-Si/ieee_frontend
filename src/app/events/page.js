@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import PillNav from "@/components/ui/PillNav";
 import EventsPage from "@/components/ui/events-page";
 import { authService } from "@/lib/auth";
-import { Loader2 } from "lucide-react";
+import Loader from "@/components/ui/Loader";
 
 const navItems = [
   { label: "IEEE", href: "/" },
@@ -37,7 +37,7 @@ export default function EventsRoute() {
   if (loading) {
     return (
       <div className="w-full min-h-screen bg-black text-white flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-purple-400" />
+        <Loader size="default" />
       </div>
     );
   }

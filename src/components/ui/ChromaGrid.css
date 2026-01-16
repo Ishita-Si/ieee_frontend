@@ -125,7 +125,8 @@
 
 @media (max-width: 768px) {
   .chroma-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    /* On mobile, show 1 card per row */
+    grid-template-columns: repeat(1, minmax(0, 1fr));
     padding: 1.5rem;
   }
 }

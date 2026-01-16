@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import PillNav from "@/components/ui/PillNav";
+import Loader from "@/components/ui/Loader";
 import { authService } from '@/lib/auth';
 
 const navItems = [
@@ -554,7 +555,8 @@ const DatabaseManagementTab = ({ API_URL, authService, registrations, setRegistr
                     <option value="">Select Branch</option>
                     <option value="CSE">CSE</option>
                     <option value="CSD">CSD</option>
-                    <option value="ECE">ECE</option>
+                    <option value="IDD CSE">IDD CSE</option>
+                    <option value="Electronics">Electronics</option>
                     <option value="EV">EV</option>
                     <option value="MnC">MnC</option>
                     <option value="IT">IT</option>
@@ -973,7 +975,7 @@ const AdminDashboard = () => {
   if (loading) {
     return (
       <div className="w-full min-h-screen bg-black flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-purple-400" />
+        <Loader size="default" />
       </div>
     );
   }

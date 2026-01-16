@@ -438,7 +438,8 @@ export default function SignupPage() {
                   <option value="">Select Branch</option>
                   <option value="CSE">CSE</option>
                   <option value="CSD">CSD</option>
-                  <option value="ECE">ECE</option>
+                  <option value="IDD CSE">IDD CSE</option>
+                  <option value="Electronics">Electronics</option>
                   <option value="EV">EV</option>
                   <option value="MnC">MnC</option>
                   <option value="IT">IT</option>

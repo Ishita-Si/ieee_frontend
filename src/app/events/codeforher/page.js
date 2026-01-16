@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import PillNav from "@/components/ui/PillNav";
+import Loader from "@/components/ui/Loader";
 import { authService } from "@/lib/auth";
 import { eventService } from "@/lib/events";
 import { 
@@ -220,6 +221,8 @@ const SelectField = ({ label, name, options, value, onChange, icon: Icon, requir
 
 const MemberFormSection = ({ index, data, onChange }) => {
   const isLeader = index === 0;
+  const isSecondMember = index === 1;
+  const isRequired = isLeader || isSecondMember;
   
   return (
     <div className="glass-panel rounded-2xl p-6 mb-6 animate-fade-in-up border border-white/10" style={{ animationDelay: `${index * 100}ms` }}>
@@ -242,7 +245,8 @@ const MemberFormSection = ({ index, data, onChange }) => {
           placeholder={isLeader ? "Team Leader Name" : "Member Name"} 
           icon={User}
           value={data.name} 
-          onChange={(e) => onChange(index, 'name', e.target.value)} 
+          onChange={(e) => onChange(index, 'name', e.target.value)}
+          required={isRequired}
         />
         <InputField 
           label="Email Address" 
@@ -251,7 +255,8 @@ const MemberFormSection = ({ index, data, onChange }) => {
           placeholder="email@example.com" 
           icon={Mail}
           value={data.email} 
-          onChange={(e) => onChange(index, 'email', e.target.value)} 
+          onChange={(e) => onChange(index, 'email', e.target.value)}
+          required={isRequired}
         />
         <InputField 
           label="Mobile Number" 
@@ -260,7 +265,8 @@ const MemberFormSection = ({ index, data, onChange }) => {
           placeholder="+91 98765 43210" 
           icon={Phone}
           value={data.mobile} 
-          onChange={(e) => onChange(index, 'mobile', e.target.value)} 
+          onChange={(e) => onChange(index, 'mobile', e.target.value)}
+          required={isRequired}
         />
         <InputField 
           label="College Name" 
@@ -268,7 +274,8 @@ const MemberFormSection = ({ index, data, onChange }) => {
           placeholder="Institute Name" 
           icon={School}
           value={data.college} 
-          onChange={(e) => onChange(index, 'college', e.target.value)} 
+          onChange={(e) => onChange(index, 'college', e.target.value)}
+          required={isRequired}
         />
         <SelectField 
           label="Course" 
@@ -276,15 +283,17 @@ const MemberFormSection = ({ index, data, onChange }) => {
           icon={GraduationCap}
           options={['B.Tech', 'M.Tech', 'B.Sc', 'M.Sc', 'Diploma', 'BVSc', 'BCA', 'MCA', 'PhD', 'Other']}
           value={data.course} 
-          onChange={(e) => onChange(index, 'course', e.target.value)} 
+          onChange={(e) => onChange(index, 'course', e.target.value)}
+          required={isRequired}
         />
         <SelectField 
           label="Branch/Stream" 
           name="branch" 
           icon={Layers}
-          options={['CSE', 'CSD', 'ECE', 'EV', 'MnC', 'IT', 'Mechanical', 'Chemical', 'Petroleum', 'Civil', 'Biotech', 'Other']}
+          options={['CSE', 'CSD', 'IDD CSE', 'Electronics', 'EV', 'MnC', 'IT', 'Mechanical', 'Chemical', 'Petroleum', 'Civil', 'Biotech', 'Other']}
           value={data.branch} 
-          onChange={(e) => onChange(index, 'branch', e.target.value)} 
+          onChange={(e) => onChange(index, 'branch', e.target.value)}
+          required={isRequired}
         />
         <SelectField 
           label="Year" 
@@ -292,7 +301,8 @@ const MemberFormSection = ({ index, data, onChange }) => {
           icon={BookOpen}
           options={['1st Year', '2nd Year', '3rd Year', '4th Year', '5th Year']}
           value={data.year} 
-          onChange={(e) => onChange(index, 'year', e.target.value)} 
+          onChange={(e) => onChange(index, 'year', e.target.value)}
+          required={isRequired}
         />
       </div>
     </div>
@@ -310,7 +320,6 @@ export default function CodeForHerPage() {
   
   // Form State - MUST be declared before any early returns
   const [teamName, setTeamName] = useState("");
-  const [track, setTrack] = useState("");
   const [previousExperience, setPreviousExperience] = useState("");
   const [members, setMembers] = useState(
     Array(4).fill(null).map(() => ({
@@ -388,7 +397,7 @@ export default function CodeForHerPage() {
   if (!authChecked) {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-purple-400" />
+        <Loader size="default" />
       </div>
     );
   }
@@ -441,7 +450,7 @@ export default function CodeForHerPage() {
           branch: m.branch || "",
           year: m.year || ""
         })),
-        feedback: `${track ? `Track: ${track}. ` : ''}${previousExperience || ''}`.trim()
+        feedback: `${previousExperience || ''}`.trim()
       };
 
       const result = await eventService.register(formData);
@@ -572,6 +581,289 @@ export default function CodeForHerPage() {
            </div>
         </section>
 
+        {/* Problem Statements Section */}
+        <section id="problem-statements" className="py-24 relative border-t border-white/5">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-5xl font-bold mb-4">Problem Statements</h2>
+              <p className="text-white/60 max-w-2xl mx-auto">
+                Choose from three impactful problem statements and build innovative solutions that empower women.
+              </p>
+            </div>
+
+            <div className="space-y-8">
+              {/* Problem Statement 1 */}
+              <GlassCard className="p-6 md:p-8 group hover:bg-white/5">
+                <div className="flex items-start gap-4 mb-6">
+                  <div className="w-12 h-12 rounded-xl bg-pink-500/20 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
+                    <Users className="w-6 h-6 text-pink-400" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-2xl md:text-3xl font-bold text-white mb-2">
+                      Problem Statement 1: Building a Safe, Trust-Driven, and Fair Gig Ecosystem for Women Workers
+                    </h3>
+                  </div>
+                </div>
+
+                <div className="space-y-6 text-white/80">
+                  <div>
+                    <h4 className="text-lg font-bold text-white mb-2 flex items-center gap-2">
+                      <Target className="w-5 h-5 text-pink-400" />
+                      Context
+                    </h4>
+                    <p className="text-white/70 leading-relaxed">
+                      The gig economy offers flexibility and income opportunities, yet women workers often face safety risks, wage inequality, lack of transparency, and limited job security. Existing platforms prioritize scale and speed over worker well-being, leading to trust deficits among women participants.
+                    </p>
+                  </div>
+
+                  <div>
+                    <h4 className="text-lg font-bold text-white mb-2 flex items-center gap-2">
+                      <Code className="w-5 h-5 text-purple-400" />
+                      Problem Definition
+                    </h4>
+                    <p className="text-white/70 leading-relaxed">
+                      There is a need for a digital gig ecosystem that embeds safety, fairness, transparency, and accountability into its core design, rather than treating them as optional features.
+                    </p>
+                  </div>
+
+                  <div>
+                    <h4 className="text-lg font-bold text-white mb-2 flex items-center gap-2">
+                      <Zap className="w-5 h-5 text-yellow-400" />
+                      Challenge for Participants
+                    </h4>
+                    <p className="text-white/70 leading-relaxed">
+                      Design and develop a tech-enabled solution that improves the working conditions of women gig workers while ensuring reliable and high-quality service delivery.
+                    </p>
+                  </div>
+
+                  <div>
+                    <h4 className="text-lg font-bold text-white mb-3 flex items-center gap-2">
+                      <Layers className="w-5 h-5 text-blue-400" />
+                      Key Focus Areas
+                    </h4>
+                    <ul className="space-y-2 text-white/70">
+                      <li className="flex items-start gap-2">
+                        <span className="text-pink-400 mt-1">•</span>
+                        <span>Worker safety and emergency support mechanisms</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-pink-400 mt-1">•</span>
+                        <span>Fair pay visibility and dispute resolution</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-pink-400 mt-1">•</span>
+                        <span>Trust and reputation systems for workers and clients</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-pink-400 mt-1">•</span>
+                        <span>Transparent job allocation and feedback processes</span>
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div className="p-4 rounded-xl bg-green-500/10 border border-green-500/20">
+                    <h4 className="text-lg font-bold text-white mb-2 flex items-center gap-2">
+                      <Trophy className="w-5 h-5 text-green-400" />
+                      Expected Outcomes
+                    </h4>
+                    <ul className="space-y-1 text-white/70 text-sm">
+                      <li>• Increased trust and participation of women in gig work</li>
+                      <li>• Reduction in safety-related incidents</li>
+                      <li>• Improved fairness and accountability in gig transactions</li>
+                    </ul>
+                  </div>
+                </div>
+              </GlassCard>
+
+              {/* Problem Statement 2 */}
+              <GlassCard className="p-6 md:p-8 group hover:bg-white/5">
+                <div className="flex items-start gap-4 mb-6">
+                  <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
+                    <Cpu className="w-6 h-6 text-blue-400" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-2xl md:text-3xl font-bold text-white mb-2">
+                      Problem Statement 2: Women Safety Analytics
+                    </h3>
+                  </div>
+                </div>
+
+                <div className="space-y-6 text-white/80">
+                  <div>
+                    <h4 className="text-lg font-bold text-white mb-2 flex items-center gap-2">
+                      <Target className="w-5 h-5 text-blue-400" />
+                      Context
+                    </h4>
+                    <p className="text-white/70 leading-relaxed">
+                      Women safety initiatives are largely reactive, responding after incidents occur. With the availability of data from cameras, sensors, and user reports, there is an opportunity to adopt AI-driven, predictive safety mechanisms.
+                    </p>
+                  </div>
+
+                  <div>
+                    <h4 className="text-lg font-bold text-white mb-2 flex items-center gap-2">
+                      <Code className="w-5 h-5 text-purple-400" />
+                      Problem Definition
+                    </h4>
+                    <p className="text-white/70 leading-relaxed">
+                      Cities and communities lack intelligent systems that can analyze patterns, detect risky situations, and identify safety hotspots using real-time and historical data.
+                    </p>
+                  </div>
+
+                  <div>
+                    <h4 className="text-lg font-bold text-white mb-2 flex items-center gap-2">
+                      <Zap className="w-5 h-5 text-yellow-400" />
+                      Challenge for Participants
+                    </h4>
+                    <p className="text-white/70 leading-relaxed">
+                      Build a data-driven women safety analytics solution that transforms raw data into actionable insights for prevention and early intervention.
+                    </p>
+                  </div>
+
+                  <div>
+                    <h4 className="text-lg font-bold text-white mb-3 flex items-center gap-2">
+                      <Layers className="w-5 h-5 text-blue-400" />
+                      Key Focus Areas
+                    </h4>
+                    <ul className="space-y-2 text-white/70">
+                      <li className="flex items-start gap-2">
+                        <span className="text-blue-400 mt-1">•</span>
+                        <span>Person detection and gender classification</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-blue-400 mt-1">•</span>
+                        <span>Identification of high-risk or unusual movement patterns</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-blue-400 mt-1">•</span>
+                        <span>Recognition of distress gestures or SOS signals</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-blue-400 mt-1">•</span>
+                        <span>Time and location-based safety hotspot analysis</span>
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div className="p-4 rounded-xl bg-yellow-500/10 border border-yellow-500/20">
+                    <h4 className="text-lg font-bold text-white mb-2 flex items-center gap-2">
+                      <FileText className="w-5 h-5 text-yellow-400" />
+                      Constraints to Consider
+                    </h4>
+                    <ul className="space-y-1 text-white/70 text-sm">
+                      <li>• Privacy preservation and ethical AI use</li>
+                      <li>• Avoidance of identity tracking</li>
+                      <li>• Real-time or near real-time feasibility</li>
+                    </ul>
+                  </div>
+
+                  <div className="p-4 rounded-xl bg-green-500/10 border border-green-500/20">
+                    <h4 className="text-lg font-bold text-white mb-2 flex items-center gap-2">
+                      <Trophy className="w-5 h-5 text-green-400" />
+                      Expected Outcomes
+                    </h4>
+                    <ul className="space-y-1 text-white/70 text-sm">
+                      <li>• Proactive identification of unsafe zones</li>
+                      <li>• Improved situational awareness for authorities or communities</li>
+                      <li>• Data-backed safety planning and interventions</li>
+                    </ul>
+                  </div>
+                </div>
+              </GlassCard>
+
+              {/* Problem Statement 3 */}
+              <GlassCard className="p-6 md:p-8 group hover:bg-white/5">
+                <div className="flex items-start gap-4 mb-6">
+                  <div className="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
+                    <Sparkles className="w-6 h-6 text-purple-400" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-2xl md:text-3xl font-bold text-white mb-2">
+                      Problem Statement 3: Disruptive Innovation for Women Empowerment
+                    </h3>
+                  </div>
+                </div>
+
+                <div className="space-y-6 text-white/80">
+                  <div>
+                    <h4 className="text-lg font-bold text-white mb-2 flex items-center gap-2">
+                      <Target className="w-5 h-5 text-purple-400" />
+                      Context
+                    </h4>
+                    <p className="text-white/70 leading-relaxed">
+                      Despite digital progress, many women continue to face barriers in livelihood access, skill development, legal awareness, and digital safety. Existing solutions are fragmented and often inaccessible to those most in need.
+                    </p>
+                  </div>
+
+                  <div>
+                    <h4 className="text-lg font-bold text-white mb-2 flex items-center gap-2">
+                      <Code className="w-5 h-5 text-pink-400" />
+                      Problem Definition
+                    </h4>
+                    <p className="text-white/70 leading-relaxed">
+                      There is a need for innovative, inclusive, and scalable digital solutions that empower women socially and economically.
+                    </p>
+                  </div>
+
+                  <div>
+                    <h4 className="text-lg font-bold text-white mb-2 flex items-center gap-2">
+                      <Zap className="w-5 h-5 text-yellow-400" />
+                      Challenge for Participants
+                    </h4>
+                    <p className="text-white/70 leading-relaxed">
+                      Develop a disruptive technology-driven solution that meaningfully enhances women's empowerment in one or more domains.
+                    </p>
+                  </div>
+
+                  <div>
+                    <h4 className="text-lg font-bold text-white mb-3 flex items-center gap-2">
+                      <Layers className="w-5 h-5 text-purple-400" />
+                      Key Focus Areas
+                    </h4>
+                    <ul className="space-y-2 text-white/70">
+                      <li className="flex items-start gap-2">
+                        <span className="text-purple-400 mt-1">•</span>
+                        <span>Women's livelihood generation and financial independence</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-purple-400 mt-1">•</span>
+                        <span>Skill development, learning, and employability</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-purple-400 mt-1">•</span>
+                        <span>Legal awareness, rights education, and digital safety</span>
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div className="p-4 rounded-xl bg-indigo-500/10 border border-indigo-500/20">
+                    <h4 className="text-lg font-bold text-white mb-2 flex items-center gap-2">
+                      <Globe className="w-5 h-5 text-indigo-400" />
+                      Innovation Scope
+                    </h4>
+                    <ul className="space-y-1 text-white/70 text-sm">
+                      <li>• Open-ended problem framing</li>
+                      <li>• Encouraged use of emerging technologies</li>
+                      <li>• Emphasis on real-world applicability and scalability</li>
+                    </ul>
+                  </div>
+
+                  <div className="p-4 rounded-xl bg-green-500/10 border border-green-500/20">
+                    <h4 className="text-lg font-bold text-white mb-2 flex items-center gap-2">
+                      <Trophy className="w-5 h-5 text-green-400" />
+                      Expected Outcomes
+                    </h4>
+                    <ul className="space-y-1 text-white/70 text-sm">
+                      <li>• Improved access to income or skills</li>
+                      <li>• Increased awareness of rights and protections</li>
+                      <li>• Sustainable empowerment through technology</li>
+                    </ul>
+                  </div>
+                </div>
+              </GlassCard>
+            </div>
+          </div>
+        </section>
+
         {/* --- STRUCTURE / ROUNDS --- */}
         <section id="structure" className="py-24 px-4">
            <div className="max-w-7xl mx-auto">
@@ -628,29 +920,6 @@ export default function CodeForHerPage() {
                        </div>
                     </div>
 
-                    {/* Decorative Code Block */}
-                    <div className="relative">
-                       <div className="absolute -inset-4 bg-gradient-to-r from-pink-500 to-purple-600 opacity-30 blur-3xl" />
-                       <GlassCard className="p-0 bg-[#0d1117] border-white/10 font-mono text-sm">
-                          <div className="flex items-center gap-2 px-4 py-3 border-b border-white/10 bg-white/5">
-                             <div className="w-3 h-3 rounded-full bg-red-500/50" />
-                             <div className="w-3 h-3 rounded-full bg-yellow-500/50" />
-                             <div className="w-3 h-3 rounded-full bg-green-500/50" />
-                             <span className="ml-2 text-xs text-white/30">hackathon_config.json</span>
-                          </div>
-                          <div className="p-6 overflow-x-auto">
-<pre className="text-blue-300">
-{`{
-  "event": "CodeForHer",
-  "team_size": {
-    "min": 2,
-    "max": 4
-  }
-}`}
-</pre>
-                          </div>
-                       </GlassCard>
-                    </div>
                  </div>
               </div>
            </div>
@@ -776,7 +1045,7 @@ export default function CodeForHerPage() {
                 <div className="text-center mb-12">
                   <h2 className="text-3xl md:text-5xl font-bold mb-4">Rewards & Opportunities</h2>
                   <p className="text-white/60 max-w-2xl mx-auto">
-                    Compete for exciting prizes, internships, and exclusive opportunities.
+                    Compete for exciting prizes, and exclusive opportunities.
                   </p>
                 </div>
                 <div className="grid md:grid-cols-3 gap-6">
@@ -789,14 +1058,7 @@ export default function CodeForHerPage() {
                     <p className="text-white/50 text-sm">Cash prizes, certificates, and exclusive IEEE goodies</p>
                   </GlassCard>
 
-                  <GlassCard className="p-8 text-center border-2 border-blue-500/30 bg-gradient-to-br from-blue-900/20 to-transparent">
-                    <div className="w-16 h-16 rounded-full bg-blue-500/20 flex items-center justify-center mx-auto mb-6">
-                      <Building className="w-8 h-8 text-blue-400" />
-                    </div>
-                    <h3 className="text-2xl font-bold text-white mb-4">Top 5 Teams</h3>
-                    <p className="text-white/70 text-lg mb-2">Internship Opportunities</p>
-                    <p className="text-white/50 text-sm">Exclusive internship opportunities with partner organizations</p>
-                  </GlassCard>
+                  
 
                   <GlassCard className="p-8 text-center border-2 border-purple-500/30 bg-gradient-to-br from-purple-900/20 to-transparent">
                     <div className="w-16 h-16 rounded-full bg-purple-500/20 flex items-center justify-center mx-auto mb-6">
@@ -867,14 +1129,6 @@ export default function CodeForHerPage() {
                     icon={Users}
                     value={teamName}
                     onChange={(e) => setTeamName(e.target.value)}
-                  />
-                  <SelectField 
-                    label="Preferred Track" 
-                    name="track" 
-                    icon={Layers}
-                    options={['FinTech', 'HealthTech', 'Open Innovation', 'EdTech', 'Sustainability']}
-                    value={track} 
-                    onChange={(e) => setTrack(e.target.value)} 
                   />
                 </div>
               </GlassCard>
@@ -972,7 +1226,7 @@ export default function CodeForHerPage() {
                   </p>
                   
                   <a 
-                    href="https://chat.whatsapp.com/your-group-link" 
+                    href="https://chat.whatsapp.com/Llf1wdb3fo47F1GrCo5U5N" 
                     target="_blank"
                     rel="noopener noreferrer"
                     className="w-full inline-flex items-center justify-center gap-2 px-6 py-4 bg-[#25D366] hover:bg-[#20bd5a] text-black font-bold rounded-xl transition-all hover:shadow-[0_0_20px_rgba(37,211,102,0.4)] hover:scale-105 group"

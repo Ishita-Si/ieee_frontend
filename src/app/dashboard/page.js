@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import PillNav from "@/components/ui/PillNav";
+import Loader from "@/components/ui/Loader";
 import { authService } from '@/lib/auth';
 import { EVENTS_DATA, isEventUpcoming } from '@/components/ui/events-page';
 
@@ -13,7 +14,7 @@ import {
   ArrowRight, Loader2, FileText, Code, Briefcase, 
   TrendingUp, ExternalLink, LogOut, Edit, Save, X,
   Linkedin, Github, Instagram, Image as ImageIcon, MapPin,
-  CreditCard, Download, ShieldCheck, Zap, Activity
+  CreditCard, Download, ShieldCheck, Zap, Activity, Sparkles
 } from 'lucide-react';
 
 // --- Custom CSS ---
@@ -299,7 +300,7 @@ const IdCardModal = ({ idCardImage, loading, error, onClose, onDownload }) => {
 
         {loading ? (
           <div className="flex flex-col items-center justify-center py-12">
-            <Loader2 className="w-10 h-10 animate-spin text-purple-500 mb-4" />
+            <Loader size="large" className="mb-4" />
             <p className="text-white/60 text-sm">Generating secure ID...</p>
           </div>
         ) : idCardImage ? (
@@ -527,7 +528,7 @@ const Dashboard = () => {
       <div className="w-full min-h-screen bg-[#050505] flex items-center justify-center">
         <style>{styleTag}</style>
         <div className="flex flex-col items-center gap-4">
-          <Loader2 className="w-10 h-10 animate-spin text-purple-500" />
+          <Loader size="large" />
           <p className="text-white/50 text-sm font-mono-theme animate-pulse">INITIALIZING DASHBOARD...</p>
         </div>
       </div>
@@ -549,33 +550,60 @@ const Dashboard = () => {
     <div className="min-h-screen bg-[#050505] text-white font-sans selection:bg-purple-500/30">
       <style>{styleTag}</style>
       <AnimatedBackground />
-      <PillNav items={navItems} />
-
+        <PillNav items={navItems} />
+        
       <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-28">
         
+        {/* --- CodeForHer Announcement Banner --- */}
+        <div className="mb-8 glass-panel rounded-2xl p-6 border-2 border-pink-500/30 bg-gradient-to-r from-pink-900/20 to-purple-900/20 relative overflow-hidden">
+          <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10" />
+          <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div className="flex items-start gap-4 flex-1">
+              <div className="w-12 h-12 rounded-xl bg-pink-500/20 flex items-center justify-center flex-shrink-0">
+                <Sparkles className="w-6 h-6 text-pink-400" />
+              </div>
+              <div>
+                <h3 className="text-xl md:text-2xl font-bold text-white mb-2 flex items-center gap-2">
+                  CodeForHer Problem Statements Are Out!
+                </h3>
+                <p className="text-white/70 text-sm md:text-base mb-3">
+                  Check out the three exciting problem statements for CodeForHer Hackathon 2026. Register your team now and start building innovative solutions!
+                </p>
+                <Link 
+                  href="/events/codeforher#problem-statements"
+                  className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white font-bold text-sm transition-all hover:scale-105 hover:shadow-[0_0_20px_rgba(236,72,153,0.4)]"
+                >
+                  View Problem Statements
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* --- Header Area --- */}
         <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
-          <div>
+            <div>
             <div className="flex items-center gap-2 mb-2">
                <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
                <span className="text-xs font-mono-theme text-green-400 uppercase tracking-widest">System Online</span>
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-2">
+              <h1 className="text-4xl md:text-5xl font-bold text-white mb-2">
               Welcome, <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">{user.full_name?.split(' ')[0]}</span>
-            </h1>
+              </h1>
             <p className="text-white/50 flex items-center gap-2">
               {isIEEEMember ? <ShieldCheck className="w-4 h-4 text-purple-400" /> : <User className="w-4 h-4" />}
               {isIEEEMember ? 'IEEE Core Member' : 'Guest Account'}
-            </p>
-          </div>
+              </p>
+            </div>
           
           <div className="flex gap-3">
-             <button 
-               onClick={handleLogout}
+            <button
+              onClick={handleLogout}
                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/20 border border-white/10 transition-all text-sm font-medium"
-             >
+            >
                <LogOut className="w-4 h-4" /> Disconnect
-             </button>
+            </button>
           </div>
         </header>
 
@@ -585,7 +613,7 @@ const Dashboard = () => {
           <StatCard icon={Award} label="Registrations" value={myRegistrations.length || 0} color="green" />
           <StatCard icon={Bell} label="Announcements" value={stats.announcements || 0} color="amber" />
           <StatCard icon={Activity} label="Activity Level" value="Active" color="blue" />
-        </div>
+          </div>
 
         {/* --- Dashboard Content Layout --- */}
         <div className="grid lg:grid-cols-3 gap-8">
@@ -601,7 +629,7 @@ const Dashboard = () => {
                  action={<Link href="/events" className="text-xs font-bold text-purple-400 hover:text-purple-300 uppercase tracking-wider">View All</Link>}
                />
                
-               <div className="space-y-4">
+                  <div className="space-y-4">
                   {EVENTS_DATA.filter(e => e.registrationOpen).slice(0, 3).map((event) => {
                     const isRegistered = isRegisteredForEvent(event.id);
                     return (
@@ -616,12 +644,12 @@ const Dashboard = () => {
                             <div className="flex gap-2 mt-1">
                                 <span className="inline-block text-xs px-2 py-0.5 rounded bg-white/10 text-white/60">{event.category}</span>
                                 {isRegistered && <span className="inline-block text-xs px-2 py-0.5 rounded bg-green-500/20 text-green-400 border border-green-500/30">Registered</span>}
-                            </div>
-                        </div>
+                  </div>
+                      </div>
                         <Link href={event.route || '#'} className="px-4 py-2 rounded-lg bg-white text-black font-bold text-xs hover:bg-purple-400 transition-colors">
                             Details
                         </Link>
-                        </div>
+                  </div>
                     );
                   })}
                   {EVENTS_DATA.filter(e => e.registrationOpen).length === 0 && (
@@ -639,12 +667,12 @@ const Dashboard = () => {
                         <div key={note.id} className="p-4 rounded-xl bg-gradient-to-r from-amber-500/5 to-transparent border-l-2 border-amber-500/50">
                         <h4 className="text-white font-medium mb-1">{note.title}</h4>
                         <p className="text-white/40 text-xs font-mono-theme">{note.date}</p>
-                        </div>
+                  </div>
                       ))
                   ) : (
                       <p className="text-white/40 text-center">No new announcements.</p>
                   )}
-               </div>
+                </div>
             </div>
 
           </div>
@@ -671,7 +699,7 @@ const Dashboard = () => {
                      >
                        <ImageIcon className="w-6 h-6 text-white" />
                      </button>
-                  </div>
+                        </div>
                   <h3 className="text-xl font-bold text-white">{user.full_name}</h3>
                   <p className="text-purple-400 text-sm mb-6">{user.designation || (isIEEEMember ? "Core Member" : "Guest")}</p>
                   
@@ -679,12 +707,12 @@ const Dashboard = () => {
                      <div className="flex justify-between text-sm py-2 border-b border-white/5">
                         <span className="text-white/40">ID</span>
                         <span className="font-mono-theme text-white/80">{user.ieee_membership_id || "N/A"}</span>
-                     </div>
+                          </div>
                      <div className="flex justify-between text-sm py-2 border-b border-white/5">
                         <span className="text-white/40">Branch</span>
                         <span className="text-white/80">{user.branch || "N/A"}</span>
-                     </div>
-                  </div>
+                          </div>
+                          </div>
 
                   <div className="grid grid-cols-2 gap-3 w-full mt-6">
                      <button 
@@ -693,13 +721,13 @@ const Dashboard = () => {
                      >
                        <CreditCard className="w-4 h-4" /> ID Card
                      </button>
-                     <button 
-                       onClick={handleOpenProfileForm}
+                      <button
+                        onClick={handleOpenProfileForm}
                        className="flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-white/5 text-white/70 border border-white/10 hover:bg-white/10 hover:text-white transition-all text-xs font-bold"
-                     >
+                      >
                        <Edit className="w-4 h-4" /> Edit
-                     </button>
-                  </div>
+                      </button>
+                    </div>
                </div>
             </div>
 
@@ -707,7 +735,7 @@ const Dashboard = () => {
             {isIEEEMember && (
               <div className="glass-panel rounded-3xl p-6">
                  <h3 className="text-sm font-bold text-white/50 uppercase tracking-wider mb-4">Social Links</h3>
-                 <div className="space-y-3">
+                      <div className="space-y-3">
                     {user.linkedin_url ? (
                        <a 
                          href={user.linkedin_url} 
@@ -717,7 +745,7 @@ const Dashboard = () => {
                        >
                           <div className="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform">
                              <Linkedin className="w-4 h-4" />
-                          </div>
+                            </div>
                           <span className="text-sm text-white/80 font-medium flex-1 truncate">LinkedIn</span>
                           <ExternalLink className="w-4 h-4 text-white/40" />
                        </a>
@@ -727,7 +755,7 @@ const Dashboard = () => {
                              <Linkedin className="w-4 h-4" />
                           </div>
                           <span className="text-sm text-white/60 font-medium">No LinkedIn</span>
-                       </div>
+                      </div>
                     )}
                     
                     {user.github_url ? (
@@ -749,7 +777,7 @@ const Dashboard = () => {
                              <Github className="w-4 h-4" />
                           </div>
                           <span className="text-sm text-white/60 font-medium">No GitHub</span>
-                       </div>
+                      </div>
                     )}
 
                     <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5">
@@ -765,8 +793,8 @@ const Dashboard = () => {
                     >
                        <Edit className="w-3 h-3" /> Update Social Links
                     </button>
-                 </div>
-              </div>
+                          </div>
+                      </div>
             )}
 
             {/* Quick Links / Resources */}
@@ -793,8 +821,8 @@ const Dashboard = () => {
                        </div>
                        <span className="text-sm text-white/80 font-medium">Project Portal</span>
                     </Link>
-                 </div>
-              </div>
+            </div>
+          </div>
             )}
 
             {!isIEEEMember && (
@@ -807,8 +835,8 @@ const Dashboard = () => {
                </div>
             )}
 
-          </div>
         </div>
+      </div>
       </main>
 
       {/* --- MODALS --- */}
@@ -823,19 +851,19 @@ const Dashboard = () => {
       )}
 
       {showProfileForm && isIEEEMember && (
-         <ProfileUpdateModal 
-            formData={profileFormData}
-            setFormData={setProfileFormData}
+        <ProfileUpdateModal
+          formData={profileFormData}
+          setFormData={setProfileFormData}
             profilePictureFile={profilePictureFile}
             setProfilePictureFile={setProfilePictureFile}
             profilePicturePreview={profilePicturePreview}
             setProfilePicturePreview={setProfilePicturePreview}
-            onSubmit={handleProfileUpdate}
+          onSubmit={handleProfileUpdate}
             onClose={() => setShowProfileForm(false)}
-            loading={profileLoading}
-            success={profileSuccess}
-            error={error}
-         />
+          loading={profileLoading}
+          success={profileSuccess}
+          error={error}
+        />
       )}
 
     </div>

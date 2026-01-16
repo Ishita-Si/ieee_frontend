@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import PillNav from "@/components/ui/PillNav";
+import Loader from "@/components/ui/Loader";
 import { authService } from "@/lib/auth";
 import { eventService } from "@/lib/events";
 import { 
@@ -312,7 +313,7 @@ export default function DataVisualizationChallengePage() {
   if (!authChecked) {
     return (
       <div className="min-h-screen bg-[#050505] text-white flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-purple-400" />
+        <Loader size="default" />
       </div>
     );
   }
