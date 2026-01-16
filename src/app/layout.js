@@ -16,6 +16,10 @@ const geistMono = Geist_Mono({
 export const metadata = {
   title: "IEEE Student Branch RGIPT",
   description: "Official Website of IEEE Student Branch RGIPT",
+  icons: {
+    icon: '/logo.png',
+    apple: '/logo.png',
+  },
 };
 
 export default function RootLayout({ children }) {

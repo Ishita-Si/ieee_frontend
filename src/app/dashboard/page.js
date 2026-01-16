@@ -267,6 +267,20 @@ const ProfileUpdateModal = ({ formData, setFormData, profilePictureFile, setProf
              />
           </div>
           
+          <div>
+             <label className="text-xs font-bold text-white/60 uppercase ml-1 mb-2">Email (Contact)</label>
+             <input 
+               type="email" 
+               value={formData.email || ''} 
+               onChange={(e) => setFormData({...formData, email: e.target.value})}
+               className="w-full mt-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500/50 transition-colors"
+               placeholder="your.email@example.com"
+               readOnly
+               title="Email cannot be changed for security reasons"
+             />
+             <p className="text-xs text-white/40 mt-1">Email is used for authentication and cannot be changed</p>
+          </div>
+          
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
              <input type="url" placeholder="LinkedIn URL" value={formData.linkedin_url || ''} onChange={(e) => setFormData({...formData, linkedin_url: e.target.value})} className="bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-purple-500/50" />
              <input type="url" placeholder="GitHub URL" value={formData.github_url || ''} onChange={(e) => setFormData({...formData, github_url: e.target.value})} className="bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-purple-500/50" />
@@ -426,6 +440,7 @@ const Dashboard = () => {
       bio: user.bio || '',
       branch: user.branch || '',
       achievements: user.achievements || '',
+      email: user.email || '',
       linkedin_url: user.linkedin_url || '',
       github_url: user.github_url || '',
       instagram_url: user.instagram_url || '',

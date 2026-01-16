@@ -2,7 +2,7 @@
 import { useParams, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import PillNav from "@/components/ui/PillNav";
-import { getMemberBySlug } from '@/data/team-data';
+import Loader from "@/components/ui/Loader";
 import { Linkedin, ArrowLeft, Mail, Award, Code, Users, Building2, Github, Instagram } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -21,17 +21,41 @@ export default function MemberDetailPage() {
   const router = useRouter();
   const [member, setMember] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (params?.slug) {
-      const memberData = getMemberBySlug(params.slug);
-      if (memberData) {
-        setMember(memberData);
-      } else {
-        router.push('/team');
+    const fetchMember = async () => {
+      if (!params?.slug) {
+        setLoading(false);
+        return;
       }
-      setLoading(false);
-    }
+
+      try {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+        const response = await fetch(`${apiUrl}/dashboard/team-members/${params.slug}`);
+        
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success && data.member) {
+            setMember(data.member);
+          } else {
+            setError('Member not found');
+            setTimeout(() => router.push('/team'), 2000);
+          }
+        } else {
+          setError('Member not found');
+          setTimeout(() => router.push('/team'), 2000);
+        }
+      } catch (err) {
+        console.error('Error fetching member:', err);
+        setError('Failed to load member profile');
+        setTimeout(() => router.push('/team'), 2000);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMember();
   }, [params, router]);
 
   const getInitials = (name) => {
@@ -46,13 +70,25 @@ export default function MemberDetailPage() {
   if (loading) {
     return (
       <div className="w-full min-h-screen bg-black relative flex items-center justify-center">
-        <div className="text-white text-xl">Loading...</div>
+        <div className="flex flex-col items-center gap-4">
+          <Loader size="default" />
+          <p className="text-white/50 text-sm">Loading member profile...</p>
+        </div>
       </div>
     );
   }
 
-  if (!member) {
-    return null;
+  if (error || !member) {
+    return (
+      <div className="w-full min-h-screen bg-black relative flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-white text-xl mb-4">{error || 'Member not found'}</p>
+          <Link href="/team" className="text-purple-400 hover:text-purple-300">
+            Return to Team
+          </Link>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -75,12 +111,11 @@ export default function MemberDetailPage() {
               {/* Enlarged Avatar Section - Centered */}
               <div className="flex justify-center mb-8 md:mb-12">
                 <div className="relative w-64 h-64 sm:w-80 sm:h-80 md:w-96 md:h-96 lg:w-[400px] lg:h-[400px] rounded-2xl overflow-hidden border-2 border-white/20 bg-gradient-to-br from-purple-500/20 to-blue-500/20 shadow-[0_0_40px_rgba(147,51,234,0.3)]">
-                  {member.image && member.image.startsWith('/') ? (
-                    <Image
+                  {member.image ? (
+                    <img
                       src={member.image}
                       alt={member.name}
-                      fill
-                      className="object-cover"
+                      className="w-full h-full object-cover"
                       onError={(e) => {
                         if (e.target) {
                           e.target.style.display = 'none';
@@ -88,7 +123,7 @@ export default function MemberDetailPage() {
                       }}
                     />
                   ) : null}
-                  <div className="absolute inset-0 flex items-center justify-center text-white font-bold text-6xl md:text-7xl lg:text-8xl bg-gradient-to-br from-purple-500/30 to-blue-500/30">
+                  <div className={`absolute inset-0 flex items-center justify-center text-white font-bold text-6xl md:text-7xl lg:text-8xl bg-gradient-to-br from-purple-500/30 to-blue-500/30 ${member.image ? 'opacity-0' : 'opacity-100'}`}>
                     {getInitials(member.name)}
                   </div>
                 </div>
@@ -105,6 +140,15 @@ export default function MemberDetailPage() {
                 
                 {/* Social Links */}
                 <div className="flex items-center justify-center gap-4 mt-8 mb-12 flex-wrap">
+                  {member.email && (
+                    <a
+                      href={`mailto:${member.email}`}
+                      className="p-4 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 hover:scale-110 hover:border-purple-400/50 cursor-pointer transition-all"
+                      title={`Email: ${member.email}`}
+                    >
+                      <Mail className="w-7 h-7 text-purple-400" />
+                    </a>
+                  )}
                   <a
                     href={member.linkedin || '#'}
                     target={member.linkedin ? "_blank" : undefined}
@@ -175,15 +219,15 @@ export default function MemberDetailPage() {
                 </div>
               )}
 
-              {/* Journey Section */}
-              {member.journey && (
+              {/* Achievements Section */}
+              {member.achievements && (
                 <div className="mt-8 pt-8 border-t border-white/10">
                   <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
                     <Award className="w-6 h-6 text-yellow-400" />
-                    Role & Journey
+                    Achievements
                   </h2>
                   <p className="text-white/80 leading-relaxed text-lg">
-                    {member.journey}
+                    {member.achievements}
                   </p>
                 </div>
               )}

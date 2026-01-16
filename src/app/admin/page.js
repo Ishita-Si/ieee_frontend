@@ -19,7 +19,7 @@ import {
   Search, Download, 
   Loader2, Check, BarChart3,
   UserCheck, Clock, X, Database,
-  Plus, Trash2, Upload, FileUp, Mail
+  Plus, Trash2, Upload, FileUp, Mail, Bell, Image as ImageIcon
 } from 'lucide-react';
 
 // StatCard component
@@ -673,6 +673,10 @@ const AdminDashboard = () => {
   const [modalType, setModalType] = useState(null);
   const [selectedItem, setSelectedItem] = useState(null);
   const [selectedEventFilter, setSelectedEventFilter] = useState('all');
+  const [announcements, setAnnouncements] = useState([]);
+  const [showAnnouncementModal, setShowAnnouncementModal] = useState(false);
+  const [announcementForm, setAnnouncementForm] = useState({ heading: '', body: '', image: null });
+  const [announcementImagePreview, setAnnouncementImagePreview] = useState(null);
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
@@ -826,6 +830,12 @@ const AdminDashboard = () => {
     }
   }, [activeTab, contactStatusFilter, contactSearchTerm, user]);
 
+  useEffect(() => {
+    if (activeTab === 'announcements' && user) {
+      fetchAnnouncements();
+    }
+  }, [activeTab, user]);
+
   const fetchVisitorStats = async () => {
     try {
       const token = authService.getToken();
@@ -940,6 +950,76 @@ const AdminDashboard = () => {
     }
   };
 
+  const fetchAnnouncements = async () => {
+    try {
+      const response = await fetch(`${API_URL}/announcements`);
+      if (response.ok) {
+        const data = await response.json();
+        setAnnouncements(data.announcements || []);
+      }
+    } catch (err) {
+      console.error('Error fetching announcements:', err);
+    }
+  };
+
+  const createAnnouncement = async (e) => {
+    e.preventDefault();
+    if (!announcementForm.heading || !announcementForm.body) {
+      alert('Please fill in heading and body');
+      return;
+    }
+
+    try {
+      const token = authService.getToken();
+      const formData = new FormData();
+      formData.append('heading', announcementForm.heading);
+      formData.append('body', announcementForm.body);
+      if (announcementForm.image) {
+        formData.append('image', announcementForm.image);
+      }
+
+      const response = await fetch(`${API_URL}/announcements`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` },
+        body: formData
+      });
+
+      if (response.ok) {
+        alert('Announcement created successfully!');
+        setShowAnnouncementModal(false);
+        setAnnouncementForm({ heading: '', body: '', image: null });
+        setAnnouncementImagePreview(null);
+        await fetchAnnouncements();
+      } else {
+        const error = await response.json();
+        alert(error.error || 'Failed to create announcement');
+      }
+    } catch (err) {
+      console.error('Error creating announcement:', err);
+      alert('Failed to create announcement');
+    }
+  };
+
+  const deleteAnnouncement = async (id) => {
+    if (!confirm('Are you sure you want to delete this announcement?')) return;
+    
+    try {
+      const token = authService.getToken();
+      const response = await fetch(`${API_URL}/announcements/${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (response.ok) {
+        await fetchAnnouncements();
+      } else {
+        alert('Failed to delete announcement');
+      }
+    } catch (err) {
+      console.error('Error deleting announcement:', err);
+      alert('Failed to delete announcement');
+    }
+  };
+
   const handleExportCSV = async () => {
     try {
       const token = authService.getToken();
@@ -1035,6 +1115,7 @@ const AdminDashboard = () => {
               { id: 'registrations', label: 'Registrations', icon: FileText },
               { id: 'visitors', label: 'Visitors', icon: Users },
               { id: 'contacts', label: 'Contact Forms', icon: Mail },
+              { id: 'announcements', label: 'Announcements', icon: Bell },
               { id: 'database', label: 'Database Management', icon: Database }
             ].map(tab => (
               <button
@@ -1376,6 +1457,66 @@ const AdminDashboard = () => {
               </div>
             )}
 
+            {activeTab === 'announcements' && (
+              <div className="space-y-4">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
+                  <h2 className="text-2xl font-bold text-white">
+                    Announcements ({announcements.length})
+                  </h2>
+                  <button
+                    onClick={() => setShowAnnouncementModal(true)}
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-purple-500/20 hover:bg-purple-500/30 border border-purple-500/30 text-purple-300 transition-all"
+                  >
+                    <Plus className="w-4 h-4" />
+                    Create Announcement
+                  </button>
+                </div>
+
+                {/* Announcements List */}
+                <div className="space-y-4">
+                  {announcements.length === 0 ? (
+                    <div className="text-center py-12 text-white/60">
+                      No announcements yet. Create one to get started!
+                    </div>
+                  ) : (
+                    announcements.map(announcement => (
+                      <div key={announcement._id} className="p-6 rounded-lg bg-white/5 border border-white/10">
+                        <div className="flex justify-between items-start mb-4">
+                          <div className="flex-1">
+                            <h3 className="text-xl font-bold text-white mb-2">{announcement.heading}</h3>
+                            <p className="text-white/70 whitespace-pre-wrap">{announcement.body}</p>
+                            {announcement.image_url && (
+                              <div className="mt-4">
+                                <img 
+                                  src={announcement.image_url} 
+                                  alt={announcement.heading}
+                                  className="max-w-full h-auto rounded-lg border border-white/10"
+                                  style={{ maxHeight: '400px' }}
+                                />
+                              </div>
+                            )}
+                            <div className="mt-4 text-sm text-white/50">
+                              Created: {new Date(announcement.created_at).toLocaleString()}
+                              {announcement.created_by && (
+                                <span> by {announcement.created_by.full_name || announcement.created_by.email}</span>
+                              )}
+                            </div>
+                          </div>
+                          <button
+                            onClick={() => deleteAnnouncement(announcement._id)}
+                            className="ml-4 p-2 rounded-lg bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 text-red-300 transition-all"
+                            title="Delete announcement"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            )}
+
             {activeTab === 'database' && (
               <DatabaseManagementTab
                 API_URL={API_URL}
@@ -1388,6 +1529,119 @@ const AdminDashboard = () => {
           </div>
         </div>
       </div>
+
+      {/* Announcement Creation Modal */}
+      {showAnnouncementModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+          <div className="bg-black/90 border border-white/10 rounded-2xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                <Bell className="w-5 h-5 text-purple-400" /> Create Announcement
+              </h3>
+              <button 
+                onClick={() => {
+                  setShowAnnouncementModal(false);
+                  setAnnouncementForm({ heading: '', body: '', image: null });
+                  setAnnouncementImagePreview(null);
+                }}
+                className="text-white/60 hover:text-white"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={createAnnouncement} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-white/80 mb-2">
+                  Heading <span className="text-red-400">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={announcementForm.heading}
+                  onChange={(e) => setAnnouncementForm({...announcementForm, heading: e.target.value})}
+                  placeholder="Enter announcement heading"
+                  maxLength={200}
+                  required
+                  className="w-full px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white placeholder-white/40 focus:outline-none focus:border-purple-400/50"
+                />
+                <p className="text-xs text-white/40 mt-1">{announcementForm.heading.length}/200 characters</p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-white/80 mb-2">
+                  Body <span className="text-red-400">*</span>
+                </label>
+                <textarea
+                  value={announcementForm.body}
+                  onChange={(e) => setAnnouncementForm({...announcementForm, body: e.target.value})}
+                  placeholder="Enter announcement body text"
+                  rows={6}
+                  maxLength={5000}
+                  required
+                  className="w-full px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white placeholder-white/40 focus:outline-none focus:border-purple-400/50 resize-none"
+                />
+                <p className="text-xs text-white/40 mt-1">{announcementForm.body.length}/5000 characters</p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-white/80 mb-2">
+                  Image (Optional, max 2MB)
+                </label>
+                {announcementImagePreview && (
+                  <div className="mb-3">
+                    <img 
+                      src={announcementImagePreview} 
+                      alt="Preview" 
+                      className="max-w-full h-auto rounded-lg border border-white/10"
+                      style={{ maxHeight: '200px' }}
+                    />
+                  </div>
+                )}
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                      if (file.size > 2 * 1024 * 1024) {
+                        alert('Image must be less than 2MB');
+                        return;
+                      }
+                      setAnnouncementForm({...announcementForm, image: file});
+                      const reader = new FileReader();
+                      reader.onloadend = () => setAnnouncementImagePreview(reader.result);
+                      reader.readAsDataURL(file);
+                    }
+                  }}
+                  className="w-full text-sm text-white/70 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-purple-500 file:text-white hover:file:bg-purple-600 bg-white/5 rounded-xl border border-white/10"
+                />
+                <p className="text-xs text-white/40 mt-1">Supported formats: JPEG, PNG, GIF, WebP</p>
+              </div>
+
+              <div className="flex justify-end gap-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowAnnouncementModal(false);
+                    setAnnouncementForm({ heading: '', body: '', image: null });
+                    setAnnouncementImagePreview(null);
+                  }}
+                  className="px-6 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-white transition-all"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-6 py-2 rounded-lg bg-purple-500/20 hover:bg-purple-500/30 border border-purple-500/30 text-purple-300 transition-all flex items-center gap-2"
+                >
+                  <Plus className="w-4 h-4" />
+                  Create Announcement
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
