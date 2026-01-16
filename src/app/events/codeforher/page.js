@@ -40,7 +40,8 @@ import {
   X,
   ArrowLeft,
   Share2,
-  Camera
+  Camera,
+  Download
 } from "lucide-react";
 
 const navItems = [
@@ -520,6 +521,14 @@ export default function CodeForHerPage() {
                     </button>
                 <a href="#structure" className="inline-flex h-14 items-center justify-center rounded-full px-8 text-sm font-bold text-white/70 border border-white/10 hover:bg-white/5 transition-colors">
                   View Guidelines
+                </a>
+                <a
+                  href="/data/pptforcodeforher.pptx"
+                  download="CodeForHer_PPT_Template.pptx"
+                  className="inline-flex h-14 items-center justify-center gap-2 rounded-full px-8 text-sm font-bold text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 border border-purple-500/30 hover:shadow-[0_0_20px_rgba(168,85,247,0.4)] transition-all"
+                >
+                  <Download className="w-4 h-4" />
+                  Download PPT Template
                 </a>
               </div>
             </div>
@@ -1126,6 +1135,31 @@ export default function CodeForHerPage() {
               <p className="text-white/60 max-w-xl mx-auto">
                 Fill in the details below to register for Code for Her 2026. Team leader details have been auto-filled from your profile. Make sure you have details of all team members ready (2-4 members required).
               </p>
+            </div>
+
+            {/* PPT Template Download */}
+            <div className="max-w-4xl mx-auto mb-8">
+              <GlassCard className="p-6 md:p-8 border-2 border-purple-500/30 bg-gradient-to-br from-purple-900/20 to-transparent">
+                <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center">
+                      <FileText className="w-6 h-6 text-purple-400" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold text-white mb-1">PPT Template Available</h3>
+                      <p className="text-white/60 text-sm">Download the presentation template for your pitch</p>
+                    </div>
+                  </div>
+                  <a
+                    href="/data/pptforcodeforher.pptx"
+                    download="CodeForHer_PPT_Template.pptx"
+                    className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold rounded-xl transition-all hover:shadow-[0_0_20px_rgba(168,85,247,0.4)] hover:scale-105"
+                  >
+                    <Download className="w-5 h-5" />
+                    Download PPT Template
+                  </a>
+                </div>
+              </GlassCard>
             </div>
 
             <form onSubmit={handleSubmit} className="max-w-4xl mx-auto space-y-8">
