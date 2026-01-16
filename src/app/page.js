@@ -139,10 +139,6 @@ export default function Home() {
   };
 
   const handleEventsClick = () => {
-    if (!authService.isAuthenticated()) {
-      router.push('/signin?redirect=/events');
-      return;
-    }
     router.push('/events');
   };
 
