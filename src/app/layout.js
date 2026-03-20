@@ -14,8 +14,41 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "IEEE Student Branch RGIPT",
-  description: "Official Website of IEEE Student Branch RGIPT",
+  title: {
+    default: "IEEE Student Branch RGIPT",
+    template: "%s | IEEE RGIPT",
+  },
+  description: "Official Website of IEEE Student Branch RGIPT. Discover our events, hackathons like KodeKurrent, workshops, and join our tech community.",
+  keywords: ["IEEE", "RGIPT", "Student Branch", "KodeKurrent", "Hackathon", "Engineering", "Technology", "Events", "India", "College Hackathon"],
+  authors: [{ name: "IEEE RGIPT Web Team" }],
+  creator: "IEEE Student Branch RGIPT",
+  publisher: "IEEE Student Branch RGIPT",
+  metadataBase: new URL("https://ieeergipt.in"),
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    type: "website",
+    locale: "en_IN",
+    url: "https://ieeergipt.in",
+    siteName: "IEEE SB RGIPT",
+    title: "IEEE Student Branch RGIPT",
+    description: "Official Website of IEEE Student Branch RGIPT. Discover out events, hackathons, and tech community at Rajiv Gandhi Institute of Petroleum Technology.",
+    images: [
+      {
+        url: "/logo.png",
+        width: 800,
+        height: 600,
+        alt: "IEEE RGIPT Logo",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "IEEE SB RGIPT",
+    description: "Official Website of IEEE Student Branch RGIPT. Discover our events and hackathons.",
+    images: ["/logo.png"],
+  },
   icons: {
     icon: [
       { url: '/logo.png', type: 'image/png' },
