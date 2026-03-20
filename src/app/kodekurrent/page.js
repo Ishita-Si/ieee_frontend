@@ -1,7 +1,7 @@
 import Link from "next/link";
 import PillNav from "@/components/ui/PillNav";
 import Footer from "@/components/ui/Footer";
-import { ArrowRight, Code2, Zap, Trophy, Calendar, Users, Target, Rocket } from "lucide-react";
+import { ArrowRight, Code2, Zap, Trophy, Calendar, Users, Target, Rocket, Terminal } from "lucide-react";
 
 export const metadata = {
   title: "KodeKurrent 2.0 — Hackathon | IEEE RGIPT",
@@ -19,10 +19,18 @@ const navItems = [
 ];
 
 const timeline = [
-  { phase: "Registration Opens", date: "Coming Soon", icon: Users, done: false },
-  { phase: "Team Formation Deadline", date: "TBA", icon: Target, done: false },
-  { phase: "Hackathon Begins", date: "TBA", icon: Rocket, done: false }, // Swapped to Rocket for space theme
-  { phase: "Judging & Results", date: "TBA", icon: Trophy, done: false },
+  { phase: "Registration Starts", date: "25 March, 2026", icon: Users, done: false },
+  { phase: "Phase 1", date: "25 March - 5 April 2026", icon: Target, done: false },
+  { phase: "Phase 2 & Opening Ceremony", date: "11-13 April (Opening 7PM 11th)", icon: Code2, done: false },
+  { phase: "KodeKurrent 24-hr Hackathon", date: "10:30 PM 11th April - 10:30 PM 12th April", icon: Rocket, done: false },
+  { phase: "Valedictory Ceremony", date: "13th April 2026", icon: Trophy, done: false },
+];
+
+const organizers = [
+  { name: "Organizer Name", role: "Lead Organizer", team: "KodeKurrent Team" },
+  { name: "Organizer Name", role: "Technical Head", team: "KodeKurrent Team" },
+  { name: "Organizer Name", role: "Design Lead", team: "KodeKurrent Team" },
+  { name: "Organizer Name", role: "Event Manager", team: "KodeKurrent Team" },
 ];
 
 const tracks = [
@@ -94,7 +102,7 @@ export default function KodekurrentPage() {
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <a
-                href="https://kodekurrent.ieeergipt.in/register"
+                href="https://kodekurrent.ieeergipt.in/"
                 target="_self"
                 rel="noreferrer"
                 className="group inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-400 hover:to-purple-500 text-white font-bold text-lg rounded-2xl shadow-[0_0_30px_rgba(99,102,241,0.4)] hover:shadow-[0_0_50px_rgba(168,85,247,0.6)] transition-all hover:scale-105 active:scale-95"
@@ -209,6 +217,31 @@ export default function KodekurrentPage() {
           </div>
         </section>
 
+        {/* ORGANISERS */}
+        <section className="w-full py-20 px-4 sm:px-8 lg:px-12 relative">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-12">
+              <p className="text-xs uppercase tracking-[0.5em] text-indigo-300/50 mb-4 font-mono">Command Center</p>
+              <h2 className="text-4xl sm:text-5xl font-bold">Organising Team</h2>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {organizers.map((org, i) => (
+                <div key={i} className="group relative p-6 rounded-2xl border border-indigo-500/20 bg-[#0c0c20]/60 backdrop-blur-xl hover:border-indigo-400/50 transition-all hover:-translate-y-1">
+                  <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-20 transition duration-500 blur-2xl bg-gradient-to-br from-indigo-500/80 to-purple-600/80"></div>
+                  <div className="relative z-10 flex flex-col items-center text-center">
+                    <div className="w-16 h-16 rounded-full bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center mb-4 text-indigo-300 group-hover:scale-110 group-hover:text-white transition-all shadow-[0_0_15px_rgba(99,102,241,0.2)]">
+                      <Terminal className="w-8 h-8" />
+                    </div>
+                    <h3 className="font-bold text-lg text-white mb-1 group-hover:text-indigo-200 transition-colors">{org.name}</h3>
+                    <p className="text-indigo-300/80 text-sm font-medium mb-1">{org.role}</p>
+                    <p className="font-mono text-xs text-indigo-200/40 uppercase tracking-wider">{org.team}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
         {/* CTA */}
         <section className="w-full py-20 px-4 sm:px-8 lg:px-12 relative">
           <div className="max-w-3xl mx-auto text-center">
@@ -228,10 +261,10 @@ export default function KodekurrentPage() {
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <a
-                    href="https://kodekurrent.ieeergipt.in/register"
+                    href="https://kodekurrent.ieeergipt.in/"
                     className="group inline-flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold rounded-2xl shadow-[0_0_30px_rgba(99,102,241,0.4)] hover:shadow-[0_0_50px_rgba(168,85,247,0.6)] transition-all hover:scale-105"
                   >
-                    Register on KodeKurrent
+                    Go to KodeKurrent Portal
                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                   </a>
                   <Link
