@@ -3,11 +3,9 @@
 import { Suspense, useRef, useState, useEffect, useCallback, useMemo } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import PillNav from "@/components/ui/PillNav";
 import Footer from "@/components/ui/Footer";
-import { authService } from "@/lib/auth";
 
 // Lazy load heavy components
 const HeroGeometric = dynamic(() => import("@/components/ui/shape-landing-hero").then(mod => ({ default: mod.HeroGeometric })), {
@@ -121,7 +119,6 @@ const chapterCards = [
 ];
 
 export default function Home() {
-  const router = useRouter();
   const [isVideoMuted, setIsVideoMuted] = useState(true);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [isVideoHovered, setIsVideoHovered] = useState(false);
@@ -129,18 +126,6 @@ export default function Home() {
   const [currentAnnouncement, setCurrentAnnouncement] = useState(0);
   const announcementIntervalRef = useRef(null);
   const chaptersContainerRef = useRef(null);
-
-  const handleRegisterClick = () => {
-    if (!authService.isAuthenticated()) {
-      router.push('/signup');
-    } else {
-      router.push('/dashboard');
-    }
-  };
-
-  const handleEventsClick = () => {
-    router.push('/events');
-  };
 
   const toggleVideoAudio = () => {
     setIsVideoMuted((prev) => {
@@ -356,9 +341,8 @@ export default function Home() {
         <PillNav items={navItems} />
 
         <HeroGeometric
-          badge="IEEE RGIPT Student Branch"
-          title1="IEEE"
-          title2="Student Branch"
+          imageSrc="/ieee logo.png"
+          imageAlt="IEEE"
         />
 
         {/* Announcement Section - Slider with 9:16 Images */}
