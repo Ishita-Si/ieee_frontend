@@ -90,32 +90,20 @@ const isTimelinePast = (dateString) => {
 
 // --- Events Data (Current & Upcoming) ---
 export const EVENTS_DATA = [
-  {
-    id: 'codeforher',
-    category: 'Hackathons',
-    date: 'Jan 10 - Feb 1, 2025',
-    time: 'TBA',
-    location: 'TBA',
-    difficulty: 'Intermediate',
-    title: 'CodeForHer Hackathon 2025',
-    description: 'An empowering hackathon focused on encouraging women in technology. Build innovative solutions and showcase your coding skills.',
-    fullDescription: 'CodeForHer Hackathon 2025 is a flagship event designed to empower women in technology. Teams will work together to build innovative solutions addressing real-world challenges. This event provides a platform for networking, learning, and showcasing technical skills.',
-    language: 'Any',
-    seatsLimited: true,
-    totalSeats: 200,
-    registeredSeats: 0,
-    image: '/images/posters/6.png',
-    requirements: ['Team (2-4)', 'Laptop', 'GitHub Account'],
-    prizes: ['Cash Prizes', 'Certificates', 'Internship Opportunities'],
-    route: '/events/codeforher',
-    event_slug: 'codeforher',
-    registrationOpen: true,
-    timeline: 'Jan 10 - Feb 1, 2025'
-  },
+  // Bootcamp events are shown via the /events/[slug] dynamic route
+  // Add upcoming events here when registration opens
 ];
 
-// --- New Past Events Data ---
+// --- Past Events Data ---
 const PAST_EVENTS = [
+  {
+    id: 'codeforher',
+    title: 'CodeForHer Hackathon 2025',
+    category: 'Hackathon',
+    date: 'Jan 2025',
+    description: 'An empowering women-in-tech hackathon. Teams built innovative solutions addressing real-world challenges with cash prizes and internship opportunities.',
+    image: '/images/posters/6.png'
+  },
   {
     id: 'dataviz',
     title: 'Data Visualisation Challenge 2.0',
@@ -406,10 +394,6 @@ const EventModal = ({ event, onClose }) => {
                 className="flex-1 py-3.5 rounded-xl bg-white text-black font-bold hover:bg-purple-400 hover:text-white transition-colors flex items-center justify-center gap-2 group"
                 onClick={() => {
                   try {
-                    if (!authService.isAuthenticated()) {
-                      router.push(`/signin?redirect=${event.route || `/events#${event.id}`}`);
-                      return;
-                    }
                     if (event.route) {
                       router.push(event.route);
                     } else {
@@ -493,10 +477,6 @@ const EventsPage = ({ isOpen, onClose, isFullPage = false }) => {
 
   const handleEventClick = (event) => {
     try {
-      if (!authService.isAuthenticated()) {
-        router.push(`/signin?redirect=${event.route || '/events'}`);
-        return;
-      }
       if (event.route) {
         router.push(event.route);
       } else {
@@ -504,7 +484,6 @@ const EventsPage = ({ isOpen, onClose, isFullPage = false }) => {
       }
     } catch (error) {
       console.error('Error handling event click:', error);
-      // Fallback to showing event details
       setSelectedEvent(event);
     }
   };

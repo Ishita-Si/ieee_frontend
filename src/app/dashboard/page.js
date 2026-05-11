@@ -582,32 +582,6 @@ const Dashboard = () => {
         
       <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-28">
         
-        {/* --- CodeForHer Announcement Banner --- */}
-        <div className="mb-8 glass-panel rounded-2xl p-6 border-2 border-pink-500/30 bg-gradient-to-r from-pink-900/20 to-purple-900/20 relative overflow-hidden">
-          <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10" />
-          <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-            <div className="flex items-start gap-4 flex-1">
-              <div className="w-12 h-12 rounded-xl bg-pink-500/20 flex items-center justify-center flex-shrink-0">
-                <Sparkles className="w-6 h-6 text-pink-400" />
-              </div>
-              <div>
-                <h3 className="text-xl md:text-2xl font-bold text-white mb-2 flex items-center gap-2">
-                  CodeForHer Problem Statements Are Out!
-                </h3>
-                <p className="text-white/70 text-sm md:text-base mb-3">
-                  Check out the three exciting problem statements for CodeForHer Hackathon 2026. Register your team now and start building innovative solutions!
-                </p>
-                <Link 
-                  href="/events/codeforher#problem-statements"
-                  className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white font-bold text-sm transition-all hover:scale-105 hover:shadow-[0_0_20px_rgba(236,72,153,0.4)]"
-                >
-                  View Problem Statements
-                  <ArrowRight className="w-4 h-4" />
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
 
         {/* --- Header Area --- */}
         <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">

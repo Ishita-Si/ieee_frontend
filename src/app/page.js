@@ -42,12 +42,12 @@ const announcements = [
   {
     id: 1,
     image: "/images/posters/6.png",
-    badge: "Hackathon",
-    title: "CodeForHer Hackathon 2026",
-    description: "Join us for CodeForHer, a hackathon aimed at encouraging innovation, creativity, and problem-solving among students through technology-driven solutions. Focused on promoting women participation in tech and inclusive innovation.",
-    description2: "Open to all undergraduate female students across India. Teams of 2-4 members (same college) can participate. Registration is now open! Showcase your skills and win exciting certificates and IEEE goodies.",
-    primaryButton: { text: "Learn More", href: "/events/codeforher" },
-    secondaryButton: { text: "Register Now", href: "/events/codeforher" }
+    badge: "Bootcamp",
+    title: "DEVWAVE 2026 — Now Open",
+    description: "DEVWAVE 2026 is IEEE RGIPT's flagship full-stack development bootcamp. Learn modern web technologies, build real projects, and get mentored by senior developers and IEEE professionals.",
+    description2: "Open to all undergraduate students. Limited seats available. Register now to secure your spot and get access to exclusive study material, live sessions, and project reviews.",
+    primaryButton: { text: "Learn More", href: "/events/devwave-2026" },
+    secondaryButton: { text: "Register Now", href: "/events/devwave-2026" }
   },
   {
     id: 2,
