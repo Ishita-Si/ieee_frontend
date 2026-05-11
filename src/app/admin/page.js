@@ -1069,6 +1069,7 @@ const AdminDashboard = () => {
     const searchLower = searchTerm.toLowerCase();
     return (
       reg.event_name?.toLowerCase().includes(searchLower) ||
+      reg.source?.toLowerCase().includes(searchLower) ||
       reg.team_name?.toLowerCase().includes(searchLower) ||
       reg.user_id?.full_name?.toLowerCase().includes(searchLower) ||
       reg.user_id?.email?.toLowerCase().includes(searchLower) ||
@@ -1242,7 +1243,16 @@ const AdminDashboard = () => {
                       ) : (
                         filteredRegistrations.map(reg => (
                           <tr key={reg._id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
-                            <td className="py-3 px-4 text-white text-sm">{reg.event_name}</td>
+                            <td className="py-3 px-4 text-white text-sm">
+                              <div className="flex flex-col gap-1">
+                                <span>{reg.event_name}</span>
+                                {reg.source && reg.source !== 'event' && (
+                                  <span className="w-fit px-2 py-0.5 rounded bg-white/10 text-white/50 text-[10px] uppercase tracking-wider">
+                                    {reg.source}
+                                  </span>
+                                )}
+                              </div>
+                            </td>
                             <td className="py-3 px-4 text-white/90 text-sm font-medium">{reg.team_name}</td>
                             <td className="py-3 px-4 text-white/80 text-sm">
                               {reg.members?.[0]?.name || reg.user_id?.full_name || '-'}
