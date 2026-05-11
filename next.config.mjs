@@ -7,8 +7,8 @@ const nextConfig = {
   poweredByHeader: false,
 
   // ── Compiler ──────────────────────────────────────────────────────────────
+  // swcMinify was removed in Next.js 15 — SWC minification is always enabled.
   reactCompiler: true,
-  swcMinify: true,
 
   // ── Experimental ─────────────────────────────────────────────────────────
   experimental: {
@@ -60,10 +60,15 @@ const nextConfig = {
         source: '/data/(.*)',
         headers: [{ key: 'Cache-Control', value: 'public, max-age=3600, stale-while-revalidate=600' }],
       },
-      {
-        source: '/(.*)\\.(?:svg|png|jpg|jpeg|gif|webp|ico|woff|woff2|ttf|otf)',
-        headers: [{ key: 'Cache-Control', value: 'public, max-age=2592000, stale-while-revalidate=86400' }],
-      },
+      // Individual extension rules — path-to-regexp doesn't support (?:...) groups
+      { source: '/:path*.svg',  headers: [{ key: 'Cache-Control', value: 'public, max-age=2592000, stale-while-revalidate=86400' }] },
+      { source: '/:path*.png',  headers: [{ key: 'Cache-Control', value: 'public, max-age=2592000, stale-while-revalidate=86400' }] },
+      { source: '/:path*.jpg',  headers: [{ key: 'Cache-Control', value: 'public, max-age=2592000, stale-while-revalidate=86400' }] },
+      { source: '/:path*.jpeg', headers: [{ key: 'Cache-Control', value: 'public, max-age=2592000, stale-while-revalidate=86400' }] },
+      { source: '/:path*.webp', headers: [{ key: 'Cache-Control', value: 'public, max-age=2592000, stale-while-revalidate=86400' }] },
+      { source: '/:path*.ico',  headers: [{ key: 'Cache-Control', value: 'public, max-age=2592000, stale-while-revalidate=86400' }] },
+      { source: '/:path*.woff', headers: [{ key: 'Cache-Control', value: 'public, max-age=2592000, stale-while-revalidate=86400' }] },
+      { source: '/:path*.woff2',headers: [{ key: 'Cache-Control', value: 'public, max-age=2592000, stale-while-revalidate=86400' }] },
     ];
   },
 };
