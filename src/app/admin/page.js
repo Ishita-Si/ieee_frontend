@@ -1655,18 +1655,6 @@ const AdminDashboard = () => {
                 >
                   <Plus className="w-4 h-4" />
                   Create Announcement
-                                  onClick={() => deleteContact(contact._id)}
-                                  className="px-3 py-1 rounded bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 text-red-300 text-xs transition-all"
-                                >
-                                  Delete
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        ))
-                      )}
-                    </tbody>
-                  </table>
                 </div>
               </div>
             )}
@@ -1744,7 +1732,7 @@ const AdminDashboard = () => {
         </div>
       </div>
 
-          </>
+    </>
   );
 };
 
