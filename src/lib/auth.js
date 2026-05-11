@@ -222,7 +222,7 @@ export const authService = {
       try {
         // Create abort controller for timeout handling
         const controller = new AbortController()
-        const timeoutId = setTimeout(() => controller.abort(), 10000) // 10 second timeout
+        const timeoutId = setTimeout(() => controller.abort(), 5000) // 5 second timeout
         
         response = await fetch(`${API_BASE_URL}/auth/me`, {
           headers: authService.getAuthHeaders(),

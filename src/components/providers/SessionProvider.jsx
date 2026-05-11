@@ -17,47 +17,48 @@ export const useAuth = () => {
   return context;
 };
 
+function getCachedUser() {
+  if (typeof window === 'undefined') return null;
+  try {
+    const raw = localStorage.getItem('userData');
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
 export default function SessionProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const hasToken = typeof window !== 'undefined' ? !!authService.getToken() : false;
+  const cached = hasToken ? getCachedUser() : null;
+
+  const [user, setUser] = useState(cached);
+  const [loading, setLoading] = useState(!cached);
+  const [isAuthenticated, setIsAuthenticated] = useState(!!cached);
 
   const refreshUser = async () => {
-    if (authService.isAuthenticated()) {
-      try {
-        const userData = await authService.getCurrentUser();
-        setUser(userData);
-        setIsAuthenticated(!!userData);
-      } catch (error) {
-        console.error('Error fetching user:', error);
-        
-        // Check if it's a network error (backend might be down)
-        if (error.name === 'TypeError' && error.message.includes('fetch')) {
-          // Network error - try to use cached data
-          try {
-            const cachedUser = localStorage.getItem('userData');
-            if (cachedUser) {
-              const user = JSON.parse(cachedUser);
-              setUser(user);
-              setIsAuthenticated(true);
-              setLoading(false);
-              return; // Don't remove token on network errors
-            }
-          } catch (e) {
-            // Invalid cached data, continue to clear state
-          }
-        }
-        
-        // Only clear user state if it's not a network error
-        // Don't remove token on network errors - might be temporary
+    if (!authService.isAuthenticated()) {
+      setUser(null);
+      setIsAuthenticated(false);
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const userData = await authService.getCurrentUser();
+      setUser(userData);
+      setIsAuthenticated(!!userData);
+    } catch (error) {
+      const fallback = getCachedUser();
+      if (fallback) {
+        setUser(fallback);
+        setIsAuthenticated(true);
+      } else {
         setUser(null);
         setIsAuthenticated(false);
       }
-    } else {
-      setUser(null);
-      setIsAuthenticated(false);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   useEffect(() => {

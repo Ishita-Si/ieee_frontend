@@ -1,5 +1,5 @@
 "use client"
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import PillNav from "@/components/ui/PillNav";
 import Loader from "@/components/ui/Loader";
@@ -64,27 +64,40 @@ const DatabaseManagementTab = ({ API_URL, authService, registrations, setRegistr
   const [loading, setLoading] = useState(false);
   const [activeSubTab, setActiveSubTab] = useState('users');
   const [searchTerm, setSearchTerm] = useState('');
+  const [fetchError, setFetchError] = useState('');
+  const searchDebounceRef = React.useRef(null);
 
   useEffect(() => {
     if (activeSubTab === 'users') {
-      fetchUsers();
+      fetchUsers(searchTerm);
     }
-  }, [activeSubTab, searchTerm]);
+  }, [activeSubTab]);
 
-  const fetchUsers = async () => {
+  const handleSearchChange = (value) => {
+    setSearchTerm(value);
+    if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current);
+    searchDebounceRef.current = setTimeout(() => fetchUsers(value), 400);
+  };
+
+  const fetchUsers = async (search = '') => {
     try {
       setLoading(true);
+      setFetchError('');
       const token = authService.getToken();
-      const query = searchTerm ? `?search=${encodeURIComponent(searchTerm)}` : '';
+      const query = search ? `?search=${encodeURIComponent(search)}` : '';
       const response = await fetch(`${API_URL}/admin/users${query}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (response.ok) {
         const data = await response.json();
         setDbUsers(data.users || []);
+      } else {
+        const err = await response.json().catch(() => ({}));
+        setFetchError(err.error || `Error ${response.status}: Failed to load users`);
       }
     } catch (err) {
       console.error('Error fetching users:', err);
+      setFetchError('Network error – could not reach the server.');
     } finally {
       setLoading(false);
     }
@@ -287,7 +300,7 @@ const DatabaseManagementTab = ({ API_URL, authService, registrations, setRegistr
                 type="text"
                 placeholder="Search users..."
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={(e) => handleSearchChange(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white placeholder-white/40 focus:outline-none focus:border-purple-400/50"
               />
             </div>
@@ -331,6 +344,13 @@ const DatabaseManagementTab = ({ API_URL, authService, registrations, setRegistr
                   <tr>
                     <td colSpan="7" className="py-8 text-center">
                       <Loader2 className="w-6 h-6 animate-spin mx-auto text-purple-400" />
+                    </td>
+                  </tr>
+                ) : fetchError ? (
+                  <tr>
+                    <td colSpan="7" className="py-8 text-center">
+                      <p className="text-red-400 mb-2">{fetchError}</p>
+                      <button onClick={() => fetchUsers(searchTerm)} className="text-purple-400 underline text-sm">Retry</button>
                     </td>
                   </tr>
                 ) : filteredUsers.length === 0 ? (
@@ -719,7 +739,6 @@ const AdminDashboard = () => {
               try {
                 const user = JSON.parse(cachedUser);
                 setUser(user);
-                // Fire all data fetches in parallel
                 await Promise.all([fetchStats(), fetchRegistrations(), fetchVisitorStats()]);
                 setLoading(false);
                 return;
@@ -756,7 +775,6 @@ const AdminDashboard = () => {
         }
 
         setUser(currentUser);
-        // Fire all data fetches in parallel — cuts load time from ~3000ms to ~800ms
         await Promise.all([fetchStats(), fetchRegistrations(), fetchVisitorStats(), fetchContacts()]);
       } catch (err) {
         console.error('Auth error:', err);
