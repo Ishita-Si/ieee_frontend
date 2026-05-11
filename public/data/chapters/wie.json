@@ -1,0 +1,86 @@
+{
+  "hero": {
+    "title": "IEEE Women In Engineering",
+    "subtitle": "Join a global community of women shaping the future of technology, engineering, and empowerment worldwide.",
+    "buttons": {
+      "primary": {
+        "text": "View Events",
+        "href": "/events"
+      },
+      "secondary": {
+        "text": "Join WIE",
+        "href": "/contact"
+      }
+    }
+  },
+  "about": {
+    "title": "About IEEE WIE",
+    "description": "IEEE Women in Engineering is one of the world's largest global professional organizations dedicated to promoting women engineers, scientists, and innovators across STEM fields."
+  },
+  "features": {
+    "title": "What We Offer",
+    "items": [
+      {
+        "title": "Join IEEE WIE",
+        "description": "Become part of a global network promoting women engineers, scientists, and inspiring girls to pursue STEM careers."
+      },
+      {
+        "title": "Affinity Group Activities",
+        "description": "IEEE WIE groups worldwide create impactful programs, events, and community-oriented initiatives."
+      },
+      {
+        "title": "Volunteering",
+        "description": "Get involved with IEEE WIE through mentorship, event organizing, outreach programs, and leadership roles."
+      },
+      {
+        "title": "Pre-University Outreach (STAR Program)",
+        "description": "Encourage girls to pursue STEM through IEEE's Student-Teacher and Research Engineer/Scientist program."
+      },
+      {
+        "title": "WIE Global Network",
+        "description": "Connect with women engineers and educators worldwide through IEEE Collabratec™."
+      },
+      {
+        "title": "Member & Career Resources",
+        "description": "Access valuable member resources, professional development tools, and exclusive opportunities."
+      }
+    ]
+  },
+  "activities": {
+    "title": "Our Activities",
+    "subtitle": "IEEE WIE volunteers and affinity groups host impactful programs that inspire and uplift communities.",
+    "items": [
+      {
+        "title": "Community Engagement",
+        "description": "WIE affinity groups host events that empower women in tech—panels, workshops, mentorship circles, and more."
+      },
+      {
+        "title": "Pre-University STEM Activities",
+        "description": "Conduct STEM sessions, demonstrations, and interactive programs for school students worldwide."
+      },
+      {
+        "title": "Professional Development",
+        "description": "Workshops, talks, and mentorship programs designed to uplift women in engineering careers."
+      },
+      {
+        "title": "Global Collaboration",
+        "description": "Engage with engineers around the world via WIE's online platforms, conferences, and networks."
+      }
+    ]
+  },
+  "cta": {
+    "title": "Be Part of a Global Movement",
+    "description": "Empower women, inspire future innovators, and help build an inclusive STEM community.",
+    "buttons": {
+      "primary": {
+        "text": "Join WIE",
+        "href": "/contact"
+      },
+      "secondary": {
+        "text": "View Events",
+        "href": "/events"
+      }
+    }
+  }
+}
+

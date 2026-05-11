@@ -1,0 +1,134 @@
+.chroma-grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+  gap: 1.5rem;
+  padding: 2rem;
+  border-radius: 32px;
+  background: radial-gradient(circle at var(--x, 50%) var(--y, 50%), rgba(99, 102, 241, 0.15), transparent 40%);
+  overflow: hidden;
+}
+
+.chroma-card {
+  position: relative;
+  border-radius: 24px;
+  padding: 0;
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: border 0.3s ease, transform 0.3s ease;
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.chroma-card::before {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  border-radius: 23px;
+  background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255, 255, 255, 0.08), transparent 55%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.chroma-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 24px;
+  border: 1px solid var(--card-border);
+  opacity: 0.4;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.chroma-card:hover {
+  border-color: var(--card-border);
+  transform: translateY(-6px);
+}
+
+.chroma-card:hover::before {
+  opacity: 1;
+}
+
+.chroma-img-wrapper {
+  width: 100%;
+  height: 0;
+  padding-bottom: 75%;
+  border-radius: 24px 24px 0 0;
+  overflow: hidden;
+  border: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--card-gradient);
+  flex-shrink: 0;
+  position: relative;
+}
+
+.chroma-img-wrapper img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.chroma-info {
+  padding: 1.5rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.chroma-info .name {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #fff;
+  margin: 0 0 0.5rem;
+}
+
+.chroma-info .role {
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 1rem;
+  margin: 0 0 0.5rem;
+  font-weight: 500;
+}
+
+.chroma-info .handle,
+.chroma-info .location {
+  display: block;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.55);
+  margin-top: 0.25rem;
+}
+
+.chroma-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(circle at var(--x, 50%) var(--y, 50%), rgba(99, 102, 241, 0.25), transparent 40%);
+  transition: opacity 0.3s ease;
+}
+
+.chroma-fade {
+  position: absolute;
+  inset: 0;
+  border-radius: 32px;
+  background: radial-gradient(circle, rgba(15, 23, 42, 0.8), rgba(15, 23, 42, 0.2));
+  pointer-events: none;
+  opacity: 1;
+}
+
+@media (max-width: 768px) {
+  .chroma-grid {
+    /* On mobile, show 1 card per row */
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    padding: 1.5rem;
+  }
+}
+
+

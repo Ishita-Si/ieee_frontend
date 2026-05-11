@@ -1,0 +1,135 @@
+{
+  "event": {
+    "title": "CodeForHer Hackathon 2025",
+    "subtitle": "Empowering Women in Technology Through Innovation",
+    "organizer": "IEEE Student Branch, Rajiv Gandhi Institute of Petroleum Technology (RGIPT)",
+    "badge": "Hackathon",
+    "image": "/images/posters/6.png"
+  },
+  "introduction": {
+    "title": "Introduction",
+    "content": "The IEEE Student Branch of Rajiv Gandhi Institute of Petroleum Technology (RGIPT) proposes to organize a hackathon titled \"CodeforHer\", aimed at encouraging innovation, creativity, and problem-solving among students through technology-driven solutions. The hackathon focuses on promoting women participation in tech and inclusive innovation, in line with IEEE's mission to advance technology for humanity."
+  },
+  "objectives": {
+    "title": "Objectives",
+    "items": [
+      "To foster a spirit of innovation and problem-solving among students.",
+      "To encourage participants to design impactful digital solutions to real-world challenges.",
+      "To promote gender inclusivity and empower women in technology.",
+      "To provide hands-on experience in developing end-to-end web-based solutions."
+    ]
+  },
+  "eventStructure": {
+    "title": "Event Structure",
+    "rounds": [
+      {
+        "round": "Round 1",
+        "name": "Ideation and Presentation Round",
+        "duration": "15th – 22nd December, 2025",
+        "description": "Participants will receive one problem statement (PS) provided by the organizing committee. Each team must prepare a PowerPoint Presentation (PPT) describing their proposed solution, idea flow, and implementation strategy.",
+        "submissionDeadline": "22nd December, 2025",
+        "presentationDate": "26th December, 2025",
+        "shortlistAnnouncement": "27th December, 2025",
+        "evaluationCriteria": [
+          "Creativity and innovation",
+          "Relevance to the problem statement",
+          "Technical feasibility",
+          "Presentation quality"
+        ]
+      },
+      {
+        "round": "Round 2",
+        "name": "Prototype Development & Demonstration",
+        "duration": "28th December, 2025 – 3rd January, 2026",
+        "description": "Shortlisted teams from Round 1 will proceed to develop a fully functional website based on their proposed idea.",
+        "submissions": [
+          "The website link / hosted prototype",
+          "A demonstration video (3–5 minutes) showcasing features and working of the website"
+        ],
+        "submissionDeadline": "3rd January, 2026",
+        "evaluationCriteria": [
+          "Functionality and completeness",
+          "User interface and experience",
+          "Innovation and originality",
+          "Technical robustness",
+          "Presentation in video"
+        ]
+      }
+    ]
+  },
+  "resultsAndAwards": {
+    "title": "Results and Awards",
+    "resultsAnnouncement": "4th January, 2026",
+    "description": "Winners will be announced via IEEE RGIPT social media handles and official website. Exciting certificates and IEEE goodies will be awarded to top-performing teams."
+  },
+  "eligibility": {
+    "title": "Eligibility and Team Formation",
+    "items": [
+      "Open to all undergraduate female students across India.",
+      "Each team can consist of 3 to 4 members.",
+      "All team members must be female and from the same college."
+    ]
+  },
+  "timeline": {
+    "title": "Timeline",
+    "events": [
+      {
+        "activity": "Problem Statement Release",
+        "date": "15th December 2025"
+      },
+      {
+        "activity": "Round 1 Submission Deadline",
+        "date": "22nd December 2025"
+      },
+      {
+        "activity": "Round 1 Presentations",
+        "date": "26th December 2025"
+      },
+      {
+        "activity": "Announcement of Finalists",
+        "date": "27th December 2025"
+      },
+      {
+        "activity": "Round 2 Development Phase",
+        "date": "28th December 2025 – 3rd January 2026"
+      },
+      {
+        "activity": "Prototype & Video Submission",
+        "date": "3rd January 2026"
+      },
+      {
+        "activity": "Results Announcement",
+        "date": "4th January 2026"
+      }
+    ]
+  },
+  "organizingCommittee": {
+    "title": "Organizing Committee",
+    "facultyCoordinator": "Dr. Vijay Kumar Singh, IEEE RGIPT Advisor",
+    "wieFacultyCoordinator": "Dr. Sajal Agarwal",
+    "studentCoordinators": {
+      "technical": "IEEE CS Society",
+      "designAndOutreach": "IEEE Design Team"
+    }
+  },
+  "expectedOutcomes": {
+    "title": "Expected Outcomes",
+    "items": [
+      "Enhanced technical and presentation skills among participants.",
+      "Promotion of innovation and inclusivity through practical learning.",
+      "Strengthened collaboration among students across institutions.",
+      "Greater visibility and recognition of IEEE RGIPT's commitment to student-led innovation."
+    ]
+  },
+  "conclusion": {
+    "title": "Conclusion",
+    "content": "\"CodeforHer\" stands as a platform to empower creativity, celebrate diversity, and encourage impactful technological solutions. This event will set a benchmark for inclusive hackathons and innovation-driven learning."
+  },
+  "cta": {
+    "registerText": "Register Now",
+    "registerHref": "/contact",
+    "learnMoreText": "Learn More",
+    "learnMoreHref": "/events"
+  }
+}
+

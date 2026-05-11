@@ -1,0 +1,94 @@
+{
+  "hero": {
+    "title": "Robotics and Automation Society",
+    "subtitle": "Empowering the next generation of robotics engineers through innovation, research, and hands-on learning experiences.",
+    "buttons": {
+      "primary": {
+        "text": "View Events",
+        "href": "/events"
+      },
+      "secondary": {
+        "text": "Join Us",
+        "href": "/contact"
+      }
+    }
+  },
+  "about": {
+    "title": "About IEEE RAS",
+    "description": "The IEEE Robotics and Automation Society (RAS) is dedicated to advancing innovation and excellence in robotics and automation. Our student chapter provides a platform for students to explore, learn, and contribute to the rapidly evolving field of robotics.",
+    "mission": {
+      "title": "Our Mission",
+      "description": "To foster innovation in robotics and automation by providing students with opportunities to engage in research, competitions, and collaborative projects that push the boundaries of technology."
+    },
+    "vision": {
+      "title": "Our Vision",
+      "description": "To become a leading student chapter in robotics and automation, recognized for excellence in research, innovation, and contribution to the global robotics community."
+    }
+  },
+  "features": {
+    "title": "What We Offer",
+    "items": [
+      {
+        "title": "Robotics Research",
+        "description": "Explore cutting-edge robotics technologies and autonomous systems through hands-on projects and research initiatives."
+      },
+      {
+        "title": "Automation Systems",
+        "description": "Learn about industrial automation, control systems, and intelligent manufacturing processes."
+      },
+      {
+        "title": "AI & Machine Learning",
+        "description": "Integrate artificial intelligence and machine learning algorithms into robotic systems for enhanced capabilities."
+      },
+      {
+        "title": "Competitions",
+        "description": "Participate in national and international robotics competitions, hackathons, and technical challenges."
+      },
+      {
+        "title": "Networking",
+        "description": "Connect with industry professionals, researchers, and fellow robotics enthusiasts from around the world."
+      },
+      {
+        "title": "Workshops & Seminars",
+        "description": "Attend technical workshops, seminars, and guest lectures by experts in robotics and automation."
+      }
+    ]
+  },
+  "activities": {
+    "title": "Our Activities",
+    "subtitle": "Explore the exciting projects and activities we organize throughout the year",
+    "items": [
+      {
+        "title": "Line Follower Robots",
+        "description": "Build and program autonomous robots that can follow lines using sensors and PID control algorithms."
+      },
+      {
+        "title": "Obstacle Avoidance Systems",
+        "description": "Develop intelligent navigation systems using ultrasonic sensors, LiDAR, and computer vision."
+      },
+      {
+        "title": "Robotic Arm Projects",
+        "description": "Design and control robotic manipulators for various applications including pick-and-place operations."
+      },
+      {
+        "title": "Drone Technology",
+        "description": "Explore unmanned aerial vehicles (UAVs) and their applications in surveillance, delivery, and mapping."
+      }
+    ]
+  },
+  "cta": {
+    "title": "Ready to Join the Robotics Revolution?",
+    "description": "Become part of our community and help shape the future of robotics and automation. Whether you're a beginner or an experienced engineer, there's a place for you here.",
+    "buttons": {
+      "primary": {
+        "text": "Get Involved",
+        "href": "/contact"
+      },
+      "secondary": {
+        "text": "View Upcoming Events",
+        "href": "/events"
+      }
+    }
+  }
+}
+

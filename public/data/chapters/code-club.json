@@ -1,0 +1,94 @@
+{
+  "hero": {
+    "title": "Computer Society",
+    "subtitle": "Empowering the next generation of computer scientists through coding, innovation, and collaborative learning experiences.",
+    "buttons": {
+      "primary": {
+        "text": "View Events",
+        "href": "/events"
+      },
+      "secondary": {
+        "text": "Join Us",
+        "href": "/contact"
+      }
+    }
+  },
+  "about": {
+    "title": "About Computer Society",
+    "description": "The Computer Society is dedicated to fostering excellence in computer science and software development. Our community provides a platform for students to learn, code, and innovate together, preparing them for successful careers in technology.",
+    "mission": {
+      "title": "Our Mission",
+      "description": "To empower students with programming skills, foster innovation in software development, and create a vibrant community of passionate coders who collaborate, learn, and grow together."
+    },
+    "vision": {
+      "title": "Our Vision",
+      "description": "To become a leading computer science community recognized for excellence in coding, innovation, and contribution to the global tech ecosystem."
+    }
+  },
+  "features": {
+    "title": "What We Offer",
+    "items": [
+      {
+        "title": "Programming Excellence",
+        "description": "Master various programming languages and frameworks through hands-on coding sessions and collaborative projects."
+      },
+      {
+        "title": "Software Development",
+        "description": "Learn full-stack development, mobile app creation, and software engineering best practices."
+      },
+      {
+        "title": "Competitive Programming",
+        "description": "Participate in coding contests, hackathons, and algorithmic challenges to sharpen your problem-solving skills."
+      },
+      {
+        "title": "Open Source",
+        "description": "Contribute to open-source projects and build a portfolio that showcases your coding expertise."
+      },
+      {
+        "title": "Tech Community",
+        "description": "Connect with fellow developers, industry professionals, and tech enthusiasts from around the world."
+      },
+      {
+        "title": "Workshops & Seminars",
+        "description": "Attend technical workshops, coding bootcamps, and guest lectures by industry experts."
+      }
+    ]
+  },
+  "activities": {
+    "title": "Our Activities",
+    "subtitle": "Explore the exciting coding projects and activities we organize throughout the year",
+    "items": [
+      {
+        "title": "Web Development Projects",
+        "description": "Build modern web applications using React, Next.js, Node.js, and other cutting-edge technologies."
+      },
+      {
+        "title": "Mobile App Development",
+        "description": "Create iOS and Android applications using Flutter, React Native, and native development tools."
+      },
+      {
+        "title": "Data Structures & Algorithms",
+        "description": "Master fundamental computer science concepts through practice problems and coding challenges."
+      },
+      {
+        "title": "Machine Learning Projects",
+        "description": "Explore AI and ML through hands-on projects using Python, TensorFlow, and other ML frameworks."
+      }
+    ]
+  },
+  "cta": {
+    "title": "Ready to Code the Future?",
+    "description": "Become part of our coding community and help shape the future of technology. Whether you're a beginner or an experienced developer, there's a place for you here.",
+    "buttons": {
+      "primary": {
+        "text": "Get Involved",
+        "href": "/contact"
+      },
+      "secondary": {
+        "text": "View Upcoming Events",
+        "href": "/events"
+      }
+    }
+  }
+}
+

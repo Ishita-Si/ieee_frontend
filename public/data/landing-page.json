@@ -1,0 +1,155 @@
+{
+  "hero": {
+    "headline": {
+      "line1": "IEEE",
+      "line2": "Student Branch"
+    },
+    "subtitle": "Rajiv Gandhi Institute Of Petroleum Technology",
+    "buttons": {
+      "primary": {
+        "text": "About Us",
+        "href": "/about"
+      },
+      "secondary": {
+        "text": "Explore Events",
+        "href": "/events"
+      }
+    }
+  },
+  "announcements": [
+    {
+      "id": 1,
+      "image": "/images/posters/6.png",
+      "badge": "Hackathon",
+      "title": "CodeForHer Hackathon 2026",
+      "description": "Join us for CodeForHer, a hackathon aimed at encouraging innovation, creativity, and problem-solving among students through technology-driven solutions. Focused on promoting women participation in tech and inclusive innovation.",
+      "description2": "Open to all undergraduate female students across India. Teams of 2-4 members (same college) can participate. Registration is now open! Showcase your skills and win exciting certificates and IEEE goodies.",
+      "primaryButton": {
+        "text": "Learn More",
+        "href": "/events/codeforher"
+      },
+      "secondaryButton": {
+        "text": "Register Now",
+        "href": "/events/codeforher"
+      }
+    },
+    {
+      "id": 2,
+      "image": "/images/posters/4.png",
+      "badge": "Announcement",
+      "title": "Join Our Upcoming Event",
+      "description": "We're excited to announce our upcoming IEEE event that brings together students, professionals, and innovators from across the region. This is an opportunity to network, learn, and be part of the future of technology.",
+      "description2": "Don't miss out on this incredible opportunity to connect with industry leaders, participate in hands-on workshops, and explore cutting-edge technologies that are shaping tomorrow.",
+      "primaryButton": {
+        "text": "Learn More",
+        "href": "/events"
+      },
+      "secondaryButton": {
+        "text": "Contact Us",
+        "href": "/contact"
+      }
+    },
+    {
+      "id": 3,
+      "image": "/images/posters/9.png",
+      "badge": "Workshop",
+      "title": "Technical Workshop Series",
+      "description": "Join us for an intensive technical workshop series covering the latest trends in robotics, AI, and automation. Learn from industry experts and get hands-on experience with cutting-edge technologies.",
+      "description2": "Our workshops are designed for all skill levels, from beginners to advanced practitioners. Register now to secure your spot!",
+      "primaryButton": {
+        "text": "Register Now",
+        "href": "/events"
+      },
+      "secondaryButton": {
+        "text": "View Schedule",
+        "href": "/events"
+      }
+    },
+    {
+      "id": 4,
+      "image": "/images/posters/2.png",
+      "badge": "Competition",
+      "title": "IEEE Robotics Competition 2025",
+      "description": "Showcase your robotics skills in our annual competition. Compete with teams from across the region and win exciting prizes. Registration is now open!",
+      "description2": "This year's competition features new challenges and categories. Whether you're a beginner or an expert, there's a category for you.",
+      "primaryButton": {
+        "text": "Register",
+        "href": "/events"
+      },
+      "secondaryButton": {
+        "text": "Learn More",
+        "href": "/events"
+      }
+    }
+  ],
+  "video": {
+    "src": "/videos/vid_ieee.mp4",
+    "audioButton": {
+      "muted": "🔊 Audio",
+      "unmuted": "🔇 Mute"
+    }
+  },
+  "chapters": {
+    "label": "Chapters",
+    "title": "IEEE Societies & Fellowships",
+    "description": "Scroll to explore the four verticals steering innovation at IEEE RGIPT — each tile jumps you into its deep dives, labs, and flagship releases.",
+    "jumpInText": "Jump In",
+    "cards": [
+      {
+        "id": "ras",
+        "title": "IEEE RAS",
+        "subtitle": "Robotics & Automation Society",
+        "description": "Autonomous systems, bio-mechanics labs, and rapid prototyping rigs driven by our RAS fellows.",
+        "accent": "from-cyan-400/80 via-blue-500/80 to-purple-600/80",
+        "href": "/chapters/ras"
+      },
+      {
+        "id": "cs",
+        "title": "IEEE Computer Society",
+        "subtitle": "Code Club",
+        "description": "Flagship hackathons, full-stack build weeks, and low-level labs curated by the Computer Society.",
+        "accent": "from-violet-500/80 via-fuchsia-500/80 to-pink-500/80",
+        "href": "/chapters/code-club"
+      },
+      {
+        "id": "wie",
+        "title": "IEEE WIE",
+        "subtitle": "Women in Engineering",
+        "description": "Leadership cohorts, industry mentorship, and inclusive labs amplifying women technologists.",
+        "accent": "from-rose-400/80 via-orange-400/80 to-amber-400/80",
+        "href": "/chapters/women"
+      },
+      {
+        "id": "comsic",
+        "title": "IEEE COMSOC",
+        "subtitle": "Comms & Signal Chapter",
+        "description": "Deep dives into SDR, radar labs, and futuristic comms challenges across the COMSOC stack.",
+        "accent": "from-emerald-400/80 via-teal-400/80 to-sky-400/80",
+        "href": "/chapters/comsoc"
+      }
+    ]
+  },
+  "membership": {
+    "label": "Become A Member",
+    "title": "Access perks, labs, and the IEEE RGIPT portal",
+    "description": "Join us to unlock chapter-specific mentorship, lab reservations, and the unified payment portal (₹2200 via Razorpay) that keeps your membership active across all societies.",
+    "buttons": {
+      "primary": {
+        "text": "View Perks & Join",
+        "href": "/membership"
+      },
+      "secondary": [
+        {
+          "text": "Sign In",
+          "href": "/signin"
+        },
+        {
+          "text": "Sign Up",
+          "href": "/signup"
+        }
+      ]
+    },
+    "footer": "Secure Razorpay payments, instant receipts, and member dashboard access the moment your ₹2200 fee is confirmed."
+  }
+}
+

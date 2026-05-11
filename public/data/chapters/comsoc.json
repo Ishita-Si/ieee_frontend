@@ -1,0 +1,86 @@
+{
+  "hero": {
+    "title": "Communication & Signal Society",
+    "subtitle": "Empowering future engineers in communication systems, signal processing, and IoT technologies.",
+    "buttons": {
+      "primary": {
+        "text": "View Events",
+        "href": "/events"
+      },
+      "secondary": {
+        "text": "Join Us",
+        "href": "/contact"
+      }
+    }
+  },
+  "about": {
+    "title": "About IEEE COMSOC",
+    "description": "The IEEE Communication & Signal Chapter is committed to advancing research and innovation in communication technologies. We provide students and members with opportunities to learn, collaborate, and create real-world solutions."
+  },
+  "features": {
+    "title": "What We Offer",
+    "items": [
+      {
+        "title": "Embedded Systems",
+        "description": "Learn microcontroller programming and embedded software design for communication devices."
+      },
+      {
+        "title": "IoT & Wireless",
+        "description": "Explore communication modules, sensors, and wireless technologies for IoT applications."
+      },
+      {
+        "title": "Signal Processing",
+        "description": "Analyze and manipulate signals using DSP techniques for communication systems."
+      },
+      {
+        "title": "Competitions",
+        "description": "Participate in communication system design challenges, hackathons, and technical contests."
+      },
+      {
+        "title": "Networking",
+        "description": "Connect with industry professionals, researchers, and fellow communication enthusiasts."
+      },
+      {
+        "title": "Workshops & Seminars",
+        "description": "Attend technical workshops and guest lectures on communication and signal processing topics."
+      }
+    ]
+  },
+  "activities": {
+    "title": "Our Activities",
+    "subtitle": "Explore the exciting projects and activities organized throughout the year",
+    "items": [
+      {
+        "title": "Wireless Sensor Networks",
+        "description": "Design and implement wireless sensor networks for monitoring and data collection."
+      },
+      {
+        "title": "RFID & NFC Systems",
+        "description": "Develop RFID and NFC applications for automation, security, and communication projects."
+      },
+      {
+        "title": "Digital Signal Processing",
+        "description": "Apply DSP algorithms to audio, video, and communication signals using MATLAB and Python."
+      },
+      {
+        "title": "IoT Communication Modules",
+        "description": "Work with Zigbee, LoRa, and WiFi modules to build connected communication projects."
+      }
+    ]
+  },
+  "cta": {
+    "title": "Ready to Join the Communication Revolution?",
+    "description": "Become part of our community and help shape the future of communication and signal systems.",
+    "buttons": {
+      "primary": {
+        "text": "Get Involved",
+        "href": "/contact"
+      },
+      "secondary": {
+        "text": "View Upcoming Events",
+        "href": "/events"
+      }
+    }
+  }
+}
+
