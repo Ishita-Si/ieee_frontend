@@ -1655,82 +1655,13 @@ const AdminDashboard = () => {
                 >
                   <Plus className="w-4 h-4" />
                   Create Announcement
-                </div>
+                </button>
               </div>
-            )}
-
-            {activeTab === 'announcements' && (
-              <div className="space-y-4">
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
-                  <h2 className="text-2xl font-bold text-white">
-                    Announcements ({announcements.length})
-                  </h2>
-                  <button
-                    onClick={() => setShowAnnouncementModal(true)}
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-purple-500/20 hover:bg-purple-500/30 border border-purple-500/30 text-purple-300 transition-all"
-                  >
-                    <Plus className="w-4 h-4" />
-                    Create Announcement
-                  </button>
-                </div>
-
-                {/* Announcements List */}
-                <div className="space-y-4">
-                  {announcements.length === 0 ? (
-                    <div className="text-center py-12 text-white/60">
-                      No announcements yet. Create one to get started!
-                    </div>
-                  ) : (
-                    announcements.map(announcement => (
-                      <div key={announcement._id} className="p-6 rounded-lg bg-white/5 border border-white/10">
-                        <div className="flex justify-between items-start mb-4">
-                          <div className="flex-1">
-                            <h3 className="text-xl font-bold text-white mb-2">{announcement.heading}</h3>
-                            <p className="text-white/70 whitespace-pre-wrap">{announcement.body}</p>
-                            {announcement.image_url && (
-                              <div className="mt-4">
-                                <img 
-                                  src={announcement.image_url} 
-                                  alt={announcement.heading}
-                                  className="max-w-full h-auto rounded-lg border border-white/10"
-                                  style={{ maxHeight: '400px' }}
-                                />
-                              </div>
-                            )}
-                            <div className="mt-4 text-sm text-white/50">
-                              Created: {new Date(announcement.created_at).toLocaleString()}
-                              {announcement.created_by && (
-                                <span> by {announcement.created_by.full_name || announcement.created_by.email}</span>
-                              )}
-                            </div>
-                          </div>
-                          <button
-                            onClick={() => deleteAnnouncement(announcement._id)}
-                            className="ml-4 p-2 rounded-lg bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 text-red-300 transition-all"
-                            title="Delete announcement"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </div>
-                    ))
-                  )}
-                </div>
-              </div>
-            )}
-
-            {activeTab === 'database' && (
-              <DatabaseManagementTab
-                API_URL={API_URL}
-                authService={authService}
-                registrations={registrations}
-                setRegistrations={setRegistrations}
-                fetchRegistrations={fetchRegistrations}
-              />
-            )}
+            </form>
           </div>
         </div>
-      </div>
+
+      )}
 
     </>
   );
