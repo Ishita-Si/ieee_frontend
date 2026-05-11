@@ -19,39 +19,13 @@ import {
 
 // --- Custom CSS ---
 const styleTag = `
-  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;600;700&display=swap');
-
-  :root {
-    --neon-purple: #a855f7;
-    --neon-blue: #3b82f6;
-    --bg-black: #050505;
-  }
-
-  body {
-    font-family: 'Inter', sans-serif;
-    background-color: var(--bg-black);
-    color: white;
-  }
-
-  .font-mono-theme { font-family: 'JetBrains Mono', monospace; }
-
-  /* Glass Panel — no backdrop-filter (expensive on mobile/low-end) */
-  .glass-panel {
-    background: rgba(22, 22, 30, 0.92);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
-  }
-
-  .glass-panel:hover {
-    border-color: rgba(255, 255, 255, 0.15);
-    background: rgba(28, 28, 38, 0.95);
-  }
-
-  /* Scrollbar */
-  ::-webkit-scrollbar { width: 6px; }
+  :root { --bg: #0a0a0a; }
+  body { background: var(--bg); color: #fff; }
+  .card { background: #111; border: 1px solid #222; border-radius: 12px; }
+  .card:hover { border-color: #333; }
+  ::-webkit-scrollbar { width: 5px; }
   ::-webkit-scrollbar-track { background: #0a0a0a; }
-  ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
-  ::-webkit-scrollbar-thumb:hover { background: #555; }
+  ::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 3px; }
 `;
 
 // Helper function to check if event is currently happening
@@ -124,47 +98,19 @@ const navItems = [
 
 // --- Sub-Components ---
 
-const AnimatedBackground = () => (
-  <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-    <div className="absolute inset-0 bg-[#050505]" />
-    <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10" />
-    <div className="absolute top-[-10%] right-[-10%] w-96 h-96 bg-purple-600/20 rounded-full blur-[120px] animate-float" />
-    <div className="absolute bottom-[-10%] left-[-10%] w-96 h-96 bg-blue-600/20 rounded-full blur-[120px] animate-float" style={{animationDelay: '2s'}} />
+const StatCard = ({ icon: Icon, label, value }) => (
+  <div className="card p-5">
+    <div className="flex items-center justify-between mb-3">
+      <p className="text-xs text-white/40 uppercase tracking-widest">{label}</p>
+      <Icon className="w-4 h-4 text-white/30" />
+    </div>
+    <p className="text-3xl font-semibold text-white">{value}</p>
   </div>
 );
 
-const StatCard = ({ icon: Icon, label, value, color = "purple" }) => {
-  const gradients = {
-    purple: "from-purple-500/20 to-pink-500/20 border-purple-500/30 text-purple-400",
-    blue: "from-blue-500/20 to-cyan-500/20 border-blue-500/30 text-blue-400",
-    green: "from-emerald-500/20 to-green-500/20 border-emerald-500/30 text-emerald-400",
-    amber: "from-amber-500/20 to-orange-500/20 border-amber-500/30 text-amber-400",
-  };
-
-  return (
-    <div className={`glass-panel p-5 rounded-2xl relative overflow-hidden group hover:bg-white/5 transition-all`}>
-      <div className={`absolute inset-0 bg-gradient-to-br ${gradients[color]} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
-      <div className="relative z-10 flex items-start justify-between">
-        <div>
-          <p className="text-white/50 text-xs uppercase tracking-wider font-semibold mb-1">{label}</p>
-          <h3 className="text-3xl font-bold text-white font-mono-theme">{value}</h3>
-        </div>
-        <div className={`p-2.5 rounded-xl bg-white/5 border border-white/10 ${gradients[color].split(' ').pop()}`}>
-          <Icon className="w-5 h-5" />
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const SectionHeader = ({ title, icon: Icon, action }) => (
-  <div className="flex items-center justify-between mb-6">
-    <div className="flex items-center gap-3">
-      <div className="p-2 rounded-lg bg-white/5 border border-white/10">
-        <Icon className="w-5 h-5 text-purple-400" />
-      </div>
-      <h2 className="text-xl font-bold text-white">{title}</h2>
-    </div>
+const SectionHeader = ({ title, action }) => (
+  <div className="flex items-center justify-between mb-5">
+    <h2 className="text-sm font-semibold text-white/50 uppercase tracking-widest">{title}</h2>
     {action}
   </div>
 );
@@ -553,12 +499,8 @@ const Dashboard = () => {
 
   if (loading) {
     return (
-      <div className="w-full min-h-screen bg-[#050505] flex items-center justify-center">
-        <style>{styleTag}</style>
-        <div className="flex flex-col items-center gap-4">
-          <Loader size="large" />
-          <p className="text-white/50 text-sm font-mono-theme animate-pulse">INITIALIZING DASHBOARD...</p>
-        </div>
+      <div className="w-full min-h-screen bg-[#0a0a0a] flex items-center justify-center">
+        <Loader size="large" />
       </div>
     );
   }
@@ -575,332 +517,265 @@ const Dashboard = () => {
   const stats = dashboardData.stats || {};
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white font-sans selection:bg-purple-500/30">
+    <div className="min-h-screen bg-[#0a0a0a] text-white">
       <style>{styleTag}</style>
-      <AnimatedBackground />
-        <PillNav items={navItems} />
-        
-      <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-28">
-        
+      <PillNav items={navItems} />
 
-        {/* --- Header Area --- */}
-        <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
-            <div>
-            <div className="flex items-center gap-2 mb-2">
-               <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-               <span className="text-xs font-mono-theme text-green-400 uppercase tracking-widest">System Online</span>
-            </div>
-              <h1 className="text-4xl md:text-5xl font-bold text-white mb-2">
-              Welcome, <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">{user.full_name?.split(' ')[0]}</span>
-              </h1>
-            <p className="text-white/50 flex items-center gap-2">
-              {isIEEEMember ? <ShieldCheck className="w-4 h-4 text-purple-400" /> : <User className="w-4 h-4" />}
-              {isIEEEMember ? 'IEEE Core Member' : 'Guest Account'}
-              </p>
-            </div>
-          
-          <div className="flex gap-3">
-            <button
-              onClick={handleLogout}
-               className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/20 border border-white/10 transition-all text-sm font-medium"
-            >
-               <LogOut className="w-4 h-4" /> Disconnect
-            </button>
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+
+        {/* Header */}
+        <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-10 pb-6 border-b border-white/10">
+          <div>
+            <p className="text-xs text-white/30 uppercase tracking-widest mb-1">Member Dashboard</p>
+            <h1 className="text-2xl font-semibold text-white">Welcome back, {user.full_name?.split(' ')[0]}</h1>
+            <p className="text-sm text-white/40 mt-0.5">
+              {user.membership_type === 'ieee_member' ? 'IEEE Core Member' : 'Guest Account'}
+              {user.ieee_membership_id ? ` · ${user.ieee_membership_id}` : ''}
+            </p>
           </div>
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-2 px-4 py-2 rounded-lg border border-white/10 hover:border-red-500/30 hover:text-red-400 text-white/50 text-sm transition-colors"
+          >
+            <LogOut className="w-4 h-4" /> Sign out
+          </button>
         </header>
 
-        {/* --- Stats Grid --- */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
-          <StatCard icon={Calendar} label="Total Events" value={stats.total_events || 0} color="purple" />
-          <StatCard icon={Award} label="Registrations" value={myRegistrations.length || 0} color="green" />
-          <StatCard icon={Bell} label="Announcements" value={stats.announcements || 0} color="amber" />
-          <StatCard icon={Activity} label="Activity Level" value="Active" color="blue" />
-          </div>
+        {/* Stats */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
+          <StatCard icon={Calendar} label="Total Events" value={stats.total_events || 0} />
+          <StatCard icon={Award} label="Registrations" value={myRegistrations.length || 0} />
+          <StatCard icon={Bell} label="Announcements" value={stats.announcements || 0} />
+          <StatCard icon={Activity} label="Status" value="Active" />
+        </div>
 
-        {/* --- Dashboard Content Layout --- */}
-        <div className="grid lg:grid-cols-3 gap-8">
-          
-          {/* LEFT COLUMN (Main Feed) */}
-          <div className="lg:col-span-2 space-y-8">
-            
-            {/* Events Section */}
-            <div className="glass-panel rounded-3xl p-6 md:p-8">
-               <SectionHeader 
-                 title="Upcoming Events" 
-                 icon={Zap} 
-                 action={<Link href="/events" className="text-xs font-bold text-purple-400 hover:text-purple-300 uppercase tracking-wider">View All</Link>}
-               />
-               
-                  <div className="space-y-4">
+        {/* Main Grid */}
+        <div className="grid lg:grid-cols-3 gap-6">
+
+          {/* Left: main content */}
+          <div className="lg:col-span-2 space-y-6">
+
+            {/* Bootcamp Events */}
+            {bootcampEvents.length > 0 && (
+              <div className="card p-6">
+                <SectionHeader
+                  title="Current Programs"
+                  action={<Link href="/events" className="text-xs text-white/40 hover:text-white">Browse all →</Link>}
+                />
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {bootcampEvents.map((ev) => {
+                    const reg = bootcampSlugs.has(ev.slug);
+                    return (
+                      <div key={ev.slug} className="border border-white/10 rounded-lg overflow-hidden">
+                        <div className="h-28 bg-white/5">
+                          <img
+                            src={ev.banner_url?.startsWith('http') ? ev.banner_url : (ev.banner_url || '/images/posters/6.png')}
+                            alt=""
+                            className="w-full h-full object-cover opacity-80"
+                          />
+                        </div>
+                        <div className="p-4">
+                          <h4 className="text-sm font-semibold text-white">{ev.title}</h4>
+                          <p className="text-xs text-white/40 mt-1 line-clamp-2">{ev.tagline || ev.short_description}</p>
+                          <div className="mt-3 flex items-center justify-between">
+                            {reg && <span className="text-xs text-green-400">✓ Registered</span>}
+                            <Link
+                              href={`/events/${ev.slug}`}
+                              className="ml-auto text-xs px-3 py-1.5 rounded-lg bg-white text-black font-semibold hover:bg-white/80 transition-colors"
+                            >View</Link>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Upcoming Events */}
+            <div className="card p-6">
+              <SectionHeader
+                title="Upcoming Events"
+                action={<Link href="/events" className="text-xs text-white/40 hover:text-white">See all →</Link>}
+              />
+              {EVENTS_DATA.filter(e => e.registrationOpen).length === 0 ? (
+                <p className="text-sm text-white/30 py-4">No upcoming events open for registration.</p>
+              ) : (
+                <div className="space-y-2">
                   {EVENTS_DATA.filter(e => e.registrationOpen).slice(0, 3).map((event) => {
                     const isRegistered = isRegisteredForEvent(event.id);
                     return (
-                        <div key={event.id} className="group flex items-center gap-5 p-4 rounded-xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.05] hover:border-purple-500/30 transition-all">
-                        <div className="flex-shrink-0 w-14 h-14 rounded-lg bg-purple-500/10 border border-purple-500/20 flex flex-col items-center justify-center text-purple-400">
-                            {/* Simple date parsing assuming format "MMM DD, YYYY" or similar */}
-                            <span className="text-xs font-bold uppercase">{event.date.split(' ')[0]}</span>
-                            <span className="text-lg font-bold">{event.date.split(' ')[1]?.replace(',','') || 'TBA'}</span>
+                      <div key={event.id} className="flex items-center justify-between p-3 rounded-lg border border-white/5 hover:border-white/10 transition-colors">
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-white truncate">{event.title}</p>
+                          <p className="text-xs text-white/30 mt-0.5">{event.date} · {event.category}</p>
                         </div>
-                        <div className="flex-1">
-                            <h4 className="text-lg font-bold text-white group-hover:text-purple-300 transition-colors">{event.title}</h4>
-                            <div className="flex gap-2 mt-1">
-                                <span className="inline-block text-xs px-2 py-0.5 rounded bg-white/10 text-white/60">{event.category}</span>
-                                {isRegistered && <span className="inline-block text-xs px-2 py-0.5 rounded bg-green-500/20 text-green-400 border border-green-500/30">Registered</span>}
-                  </div>
+                        <div className="flex items-center gap-2 ml-3">
+                          {isRegistered && <span className="text-xs text-green-400">✓</span>}
+                          <Link href={event.route || '#'} className="text-xs px-3 py-1.5 rounded-lg bg-white text-black font-semibold hover:bg-white/80 transition-colors">View</Link>
+                        </div>
                       </div>
-                        <Link href={event.route || '#'} className="px-4 py-2 rounded-lg bg-white text-black font-bold text-xs hover:bg-purple-400 transition-colors">
-                            Details
-                        </Link>
-                  </div>
                     );
                   })}
-                  {EVENTS_DATA.filter(e => e.registrationOpen).length === 0 && (
-                      <p className="text-white/40 text-center py-4">No upcoming events open for registration.</p>
-                  )}
-               </div>
-            </div>
-
-            {bootcampEvents.length > 0 && (
-            <div className="glass-panel rounded-3xl p-6 md:p-8">
-               <SectionHeader
-                 title="Bootcamp programs"
-                 icon={BookOpen}
-                 action={<Link href="/events" className="text-xs font-bold text-purple-400 hover:text-purple-300 uppercase tracking-wider">Browse</Link>}
-               />
-               <div className="grid gap-4 md:grid-cols-2">
-                 {bootcampEvents.map((ev) => {
-                   const reg = bootcampSlugs.has(ev.slug);
-                   return (
-                     <div key={ev.slug} className="rounded-2xl border border-white/10 bg-white/[0.02] overflow-hidden flex flex-col">
-                       <div className="h-36 bg-white/5 relative">
-                         <img src={ev.banner_url?.startsWith('http') ? ev.banner_url : (ev.banner_url || '/images/posters/6.png')} alt="" className="w-full h-full object-cover opacity-90" />
-                       </div>
-                       <div className="p-4 flex-1 flex flex-col">
-                         <h4 className="text-lg font-bold text-white">{ev.title}</h4>
-                         <p className="text-white/50 text-sm mt-1 line-clamp-2">{ev.tagline || ev.short_description}</p>
-                         <p className="text-xs text-purple-300 mt-2">{ev.duration}</p>
-                         <div className="mt-auto pt-4 flex items-center justify-between gap-2">
-                           {reg && <span className="text-xs text-green-400 border border-green-500/30 rounded-full px-2 py-0.5">Registered</span>}
-                           <Link href={`/events/${ev.slug}`} className="ml-auto px-4 py-2 rounded-lg bg-white text-black font-bold text-xs hover:bg-purple-400 transition-colors">
-                             View details
-                           </Link>
-                         </div>
-                       </div>
-                     </div>
-                   );
-                 })}
-               </div>
-            </div>
-            )}
-
-            {/* Announcements Section */}
-            <div className="glass-panel rounded-3xl p-6 md:p-8">
-               <SectionHeader title="System Notices" icon={Bell} />
-               <div className="grid gap-4">
-                  {dashboardData.announcements && dashboardData.announcements.length > 0 ? (
-                      dashboardData.announcements.map((note) => (
-                        <div key={note.id} className="p-4 rounded-xl bg-gradient-to-r from-amber-500/5 to-transparent border-l-2 border-amber-500/50">
-                        <h4 className="text-white font-medium mb-1">{note.title}</h4>
-                        <p className="text-white/40 text-xs font-mono-theme">{note.date}</p>
-                  </div>
-                      ))
-                  ) : (
-                      <p className="text-white/40 text-center">No new announcements.</p>
-                  )}
                 </div>
+              )}
             </div>
 
+            {/* Announcements */}
+            <div className="card p-6">
+              <SectionHeader title="Announcements" />
+              {dashboardData.announcements && dashboardData.announcements.length > 0 ? (
+                <div className="space-y-2">
+                  {dashboardData.announcements.map((note) => (
+                    <div key={note.id} className="p-3 rounded-lg border-l-2 border-white/20 bg-white/[0.02]">
+                      <p className="text-sm text-white">{note.title}</p>
+                      <p className="text-xs text-white/30 mt-0.5">{note.date}</p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-white/30">No announcements.</p>
+              )}
+            </div>
           </div>
 
-          {/* RIGHT COLUMN (Sidebar) */}
-          <div className="space-y-8">
-            
-            {/* Profile Dossier */}
-            <div className="glass-panel rounded-3xl p-6 relative overflow-hidden">
-               <div className="absolute top-0 right-0 w-32 h-32 bg-purple-600/20 blur-[50px] rounded-full pointer-events-none" />
-               
-               <div className="relative z-10 flex flex-col items-center text-center">
-                  <div className="relative w-24 h-24 rounded-full p-1 bg-gradient-to-br from-purple-500 to-blue-500 mb-4 shadow-lg shadow-purple-500/20 group">
-                     <img 
-                       src={user.profile_image_url || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80"} 
-                       alt="Profile" 
-                       className="w-full h-full rounded-full object-cover border-4 border-black"
-                       onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80" }}
-                     />
-                     <button
-                       onClick={handleOpenProfileForm}
-                       className="absolute inset-0 w-full h-full rounded-full bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center cursor-pointer"
-                       title="Edit Profile Picture"
-                     >
-                       <ImageIcon className="w-6 h-6 text-white" />
-                     </button>
-                        </div>
-                  <h3 className="text-xl font-bold text-white">{user.full_name}</h3>
-                  <p className="text-purple-400 text-sm mb-6">{user.designation || (isIEEEMember ? "Core Member" : "Guest")}</p>
-                  
-                  <div className="w-full space-y-3">
-                     <div className="flex justify-between text-sm py-2 border-b border-white/5">
-                        <span className="text-white/40">ID</span>
-                        <span className="font-mono-theme text-white/80">{user.ieee_membership_id || "N/A"}</span>
-                          </div>
-                     <div className="flex justify-between text-sm py-2 border-b border-white/5">
-                        <span className="text-white/40">Branch</span>
-                        <span className="text-white/80">{user.branch || "N/A"}</span>
-                          </div>
-                          </div>
+          {/* Right: profile sidebar */}
+          <div className="space-y-4">
 
-                  <div className="grid grid-cols-2 gap-3 w-full mt-6">
-                     <button 
-                       onClick={handleShowIdCard}
-                       className="flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-blue-500/10 text-blue-400 border border-blue-500/20 hover:bg-blue-500 hover:text-white transition-all text-xs font-bold"
-                     >
-                       <CreditCard className="w-4 h-4" /> ID Card
-                     </button>
-                      <button
-                        onClick={handleOpenProfileForm}
-                       className="flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-white/5 text-white/70 border border-white/10 hover:bg-white/10 hover:text-white transition-all text-xs font-bold"
-                      >
-                       <Edit className="w-4 h-4" /> Edit
-                      </button>
-                    </div>
-               </div>
+            {/* Profile Card */}
+            <div className="card p-6">
+              <div className="flex flex-col items-center text-center">
+                <div className="relative w-20 h-20 rounded-full overflow-hidden border border-white/10 mb-4 group">
+                  <img
+                    src={user.profile_image_url || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80"}
+                    alt="Profile"
+                    className="w-full h-full object-cover"
+                    onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80" }}
+                  />
+                  <button
+                    onClick={handleOpenProfileForm}
+                    className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                  >
+                    <ImageIcon className="w-5 h-5 text-white" />
+                  </button>
+                </div>
+                <p className="font-semibold text-white">{user.full_name}</p>
+                <p className="text-xs text-white/40 mt-0.5">{user.designation || (isIEEEMember ? 'Core Member' : 'Guest')}</p>
+              </div>
+
+              <div className="mt-5 space-y-2 text-sm">
+                <div className="flex justify-between py-1.5 border-b border-white/5">
+                  <span className="text-white/40">IEEE ID</span>
+                  <span className="text-white/70 font-mono text-xs">{user.ieee_membership_id || '—'}</span>
+                </div>
+                <div className="flex justify-between py-1.5 border-b border-white/5">
+                  <span className="text-white/40">Branch</span>
+                  <span className="text-white/70">{user.branch || '—'}</span>
+                </div>
+                <div className="flex justify-between py-1.5 border-b border-white/5">
+                  <span className="text-white/40">Year</span>
+                  <span className="text-white/70">{user.year || '—'}</span>
+                </div>
+              </div>
+
+              <div className="mt-4 grid grid-cols-2 gap-2">
+                <button
+                  onClick={handleShowIdCard}
+                  className="flex items-center justify-center gap-1.5 py-2 rounded-lg border border-white/10 text-xs text-white/60 hover:text-white hover:border-white/20 transition-colors"
+                >
+                  <CreditCard className="w-3.5 h-3.5" /> ID Card
+                </button>
+                <button
+                  onClick={handleOpenProfileForm}
+                  className="flex items-center justify-center gap-1.5 py-2 rounded-lg border border-white/10 text-xs text-white/60 hover:text-white hover:border-white/20 transition-colors"
+                >
+                  <Edit className="w-3.5 h-3.5" /> Edit
+                </button>
+              </div>
             </div>
 
-            {/* Social Links for IEEE Members */}
+            {/* Social Links */}
             {isIEEEMember && (
-              <div className="glass-panel rounded-3xl p-6">
-                 <h3 className="text-sm font-bold text-white/50 uppercase tracking-wider mb-4">Social Links</h3>
-                      <div className="space-y-3">
-                    {user.linkedin_url ? (
-                       <a 
-                         href={user.linkedin_url} 
-                         target="_blank" 
-                         rel="noopener noreferrer"
-                         className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition-colors group border border-white/5"
-                       >
-                          <div className="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform">
-                             <Linkedin className="w-4 h-4" />
-                            </div>
-                          <span className="text-sm text-white/80 font-medium flex-1 truncate">LinkedIn</span>
-                          <ExternalLink className="w-4 h-4 text-white/40" />
-                       </a>
-                    ) : (
-                       <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5 opacity-50">
-                          <div className="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center text-blue-400">
-                             <Linkedin className="w-4 h-4" />
-                          </div>
-                          <span className="text-sm text-white/60 font-medium">No LinkedIn</span>
-                      </div>
-                    )}
-                    
-                    {user.github_url ? (
-                       <a 
-                         href={user.github_url} 
-                         target="_blank" 
-                         rel="noopener noreferrer"
-                         className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition-colors group border border-white/5"
-                       >
-                          <div className="w-8 h-8 rounded-lg bg-gray-500/20 flex items-center justify-center text-gray-300 group-hover:scale-110 transition-transform">
-                             <Github className="w-4 h-4" />
-                          </div>
-                          <span className="text-sm text-white/80 font-medium flex-1 truncate">GitHub</span>
-                          <ExternalLink className="w-4 h-4 text-white/40" />
-                       </a>
-                    ) : (
-                       <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5 opacity-50">
-                          <div className="w-8 h-8 rounded-lg bg-gray-500/20 flex items-center justify-center text-gray-300">
-                             <Github className="w-4 h-4" />
-                          </div>
-                          <span className="text-sm text-white/60 font-medium">No GitHub</span>
-                      </div>
-                    )}
-
-                    <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5">
-                       <div className="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center text-purple-400">
-                          <User className="w-4 h-4" />
-                       </div>
-                       <span className="text-sm text-white/80 font-medium flex-1 truncate">{user.email}</span>
-                    </div>
-
-                    <button 
-                       onClick={handleOpenProfileForm}
-                       className="w-full mt-4 py-2 px-4 rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20 hover:bg-purple-500/20 hover:text-purple-300 transition-all text-xs font-bold flex items-center justify-center gap-2"
-                    >
-                       <Edit className="w-3 h-3" /> Update Social Links
-                    </button>
-                          </div>
-                      </div>
+              <div className="card p-5">
+                <p className="text-xs text-white/30 uppercase tracking-widest mb-3">Social</p>
+                <div className="space-y-2">
+                  {user.linkedin_url ? (
+                    <a href={user.linkedin_url} target="_blank" rel="noopener noreferrer"
+                      className="flex items-center gap-2.5 py-2 text-sm text-white/60 hover:text-white transition-colors">
+                      <Linkedin className="w-4 h-4" /> LinkedIn
+                    </a>
+                  ) : <p className="text-xs text-white/20">No LinkedIn added</p>}
+                  {user.github_url && (
+                    <a href={user.github_url} target="_blank" rel="noopener noreferrer"
+                      className="flex items-center gap-2.5 py-2 text-sm text-white/60 hover:text-white transition-colors">
+                      <Github className="w-4 h-4" /> GitHub
+                    </a>
+                  )}
+                  <button
+                    onClick={handleOpenProfileForm}
+                    className="w-full mt-2 py-2 rounded-lg border border-white/10 text-xs text-white/40 hover:text-white hover:border-white/20 transition-colors"
+                  >
+                    Update links
+                  </button>
+                </div>
+              </div>
             )}
 
-            {/* Quick Links / Resources */}
-            {isIEEEMember && (
-              <div className="glass-panel rounded-3xl p-6">
-                 <h3 className="text-sm font-bold text-white/50 uppercase tracking-wider mb-4">Resources</h3>
-                 <div className="space-y-2">
-                    {dashboardData.learning_resources && dashboardData.learning_resources.length > 0 ? (
-                         dashboardData.learning_resources.slice(0, 3).map((res) => (
-                            <a key={res.id} href={res.url} target="_blank" className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition-colors group">
-                                <div className="w-8 h-8 rounded-lg bg-pink-500/20 flex items-center justify-center text-pink-400 group-hover:scale-110 transition-transform">
-                                    <BookOpen className="w-4 h-4" />
-                                </div>
-                                <span className="text-sm text-white/80 font-medium truncate">{res.title}</span>
-                            </a>
-                         ))
-                    ) : (
-                        <p className="text-white/40 text-xs">No resources available yet.</p>
-                    )}
-                    
-                    <Link href="/projects" className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition-colors group">
-                       <div className="w-8 h-8 rounded-lg bg-cyan-500/20 flex items-center justify-center text-cyan-400 group-hover:scale-110 transition-transform">
-                          <Briefcase className="w-4 h-4" />
-                       </div>
-                       <span className="text-sm text-white/80 font-medium">Project Portal</span>
-                    </Link>
-            </div>
-          </div>
+            {/* Resources */}
+            {isIEEEMember && dashboardData.learning_resources?.length > 0 && (
+              <div className="card p-5">
+                <p className="text-xs text-white/30 uppercase tracking-widest mb-3">Resources</p>
+                <div className="space-y-1">
+                  {dashboardData.learning_resources.slice(0, 4).map((res) => (
+                    <a key={res.id} href={res.url} target="_blank"
+                      className="flex items-center gap-2 py-2 text-sm text-white/60 hover:text-white transition-colors">
+                      <BookOpen className="w-3.5 h-3.5 shrink-0" />
+                      <span className="truncate">{res.title}</span>
+                    </a>
+                  ))}
+                </div>
+              </div>
             )}
 
+            {/* Join CTA */}
             {!isIEEEMember && (
-               <div className="glass-panel rounded-3xl p-6 border-l-4 border-l-purple-500">
-                  <h3 className="text-lg font-bold text-white mb-2">Join IEEE</h3>
-                  <p className="text-sm text-white/60 mb-4">Unlock full access to events, resources, and ID cards.</p>
-                  <Link href="/contact" className="block w-full py-2 bg-white text-black font-bold text-center rounded-lg hover:bg-purple-400 transition-colors">
-                     Contact to Join
-                  </Link>
-               </div>
+              <div className="card p-5 border-l-2 border-white/20">
+                <p className="text-sm font-semibold text-white mb-1">Become an IEEE Member</p>
+                <p className="text-xs text-white/40 mb-4">Unlock events, resources, and your IEEE ID card.</p>
+                <Link href="/contact" className="block text-center py-2 rounded-lg bg-white text-black text-xs font-semibold hover:bg-white/80 transition-colors">
+                  Contact us to join
+                </Link>
+              </div>
             )}
-
+          </div>
         </div>
-      </div>
       </main>
 
-      {/* --- MODALS --- */}
+      {/* Modals */}
       {showIdCard && (
-        <IdCardModal 
-            idCardImage={idCardImage} 
-            loading={idCardLoading} 
-            error={error} 
-            onClose={() => setShowIdCard(false)} 
-            onDownload={handleDownloadIdCard}
+        <IdCardModal
+          idCardImage={idCardImage}
+          loading={idCardLoading}
+          error={error}
+          onClose={() => setShowIdCard(false)}
+          onDownload={handleDownloadIdCard}
         />
       )}
-
       {showProfileForm && isIEEEMember && (
         <ProfileUpdateModal
           formData={profileFormData}
           setFormData={setProfileFormData}
-            profilePictureFile={profilePictureFile}
-            setProfilePictureFile={setProfilePictureFile}
-            profilePicturePreview={profilePicturePreview}
-            setProfilePicturePreview={setProfilePicturePreview}
+          profilePictureFile={profilePictureFile}
+          setProfilePictureFile={setProfilePictureFile}
+          profilePicturePreview={profilePicturePreview}
+          setProfilePicturePreview={setProfilePicturePreview}
           onSubmit={handleProfileUpdate}
-            onClose={() => setShowProfileForm(false)}
+          onClose={() => setShowProfileForm(false)}
           loading={profileLoading}
           success={profileSuccess}
           error={error}
         />
       )}
-
     </div>
   );
 };

@@ -24,26 +24,15 @@ import {
 } from 'lucide-react';
 
 // StatCard component
-const StatCard = ({ icon: Icon, label, value, color = 'purple' }) => {
-  const colorClasses = {
-    purple: 'border-purple-400/30 bg-purple-500/10',
-    blue: 'border-blue-400/30 bg-blue-500/10',
-    green: 'border-green-400/30 bg-green-500/10',
-    yellow: 'border-yellow-400/30 bg-yellow-500/10',
-    cyan: 'border-cyan-400/30 bg-cyan-500/10',
-    red: 'border-red-400/30 bg-red-500/10',
-  };
-
-  return (
-    <div className={`p-4 rounded-lg border ${colorClasses[color]}`}>
-      <div className="flex items-center justify-between mb-2">
-        <Icon className={`w-5 h-5 text-${color}-400`} />
-      </div>
-      <p className="text-3xl font-bold text-white mb-1">{value}</p>
-      <p className="text-white/60 text-sm">{label}</p>
+const StatCard = ({ icon: Icon, label, value }) => (
+  <div style={{ background: '#111', border: '1px solid #222', borderRadius: '10px', padding: '16px' }}>
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+      <p style={{ fontSize: '11px', color: '#555', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{label}</p>
+      <Icon style={{ width: '14px', height: '14px', color: '#444' }} />
     </div>
-  );
-};
+    <p style={{ fontSize: '28px', fontWeight: '600', color: '#fff' }}>{value}</p>
+  </div>
+);
 
 // StatRow component
 const StatRow = ({ label, value }) => (
@@ -1094,68 +1083,73 @@ const AdminDashboard = () => {
   const eventSlugs = [...new Set(registrations.map(r => r.event_slug).filter(Boolean))];
 
   return (
-    <div className="w-full min-h-screen bg-black text-white relative overflow-x-hidden">
-      <div className="relative z-10 w-full bg-black">
-        <PillNav items={navItems} />
-        
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-          {/* Header */}
-          <div className="mb-8">
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-2">Admin Dashboard</h1>
-            <p className="text-white/70">Manage users, events, and registrations</p>
-          </div>
+    <div style={{ minHeight: '100vh', background: '#0a0a0a', color: '#fff' }}>
+      <PillNav items={navItems} />
 
-          {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-            {registrationStats && (
-              <>
-                <StatCard icon={FileText} label="Total Registrations" value={registrationStats.total} color="purple" />
-                <StatCard icon={Check} label="Confirmed" value={registrationStats.confirmed} color="green" />
-                <StatCard icon={Clock} label="Pending" value={registrationStats.pending} color="yellow" />
-                <StatCard icon={X} label="Cancelled" value={registrationStats.cancelled} color="red" />
-              </>
-            )}
-            {visitorStats && (
-              <>
-                <StatCard icon={Users} label="Total Visitors" value={visitorStats.total} color="blue" />
-                <StatCard icon={UserCheck} label="Unique Visitors" value={visitorStats.unique} color="cyan" />
-                <StatCard icon={Calendar} label="Today" value={visitorStats.today} color="green" />
-                <StatCard icon={BarChart3} label="This Week" value={visitorStats.thisWeek} color="purple" />
-              </>
-            )}
-          </div>
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '96px 24px 48px' }}>
 
-          {/* Tabs */}
-          <div className="mb-6 flex flex-wrap items-end justify-between gap-3 border-b border-white/10 pb-1">
-            <div className="flex flex-wrap gap-2">
+        {/* Header */}
+        <div style={{ marginBottom: '32px', paddingBottom: '24px', borderBottom: '1px solid #1a1a1a' }}>
+          <p style={{ fontSize: '11px', color: '#444', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '4px' }}>Admin Panel</p>
+          <h1 style={{ fontSize: '22px', fontWeight: '600', color: '#fff' }}>Dashboard</h1>
+          <p style={{ fontSize: '13px', color: '#555', marginTop: '2px' }}>Manage users, events, and registrations</p>
+        </div>
+
+        {/* Stats */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '12px', marginBottom: '32px' }}>
+          {registrationStats && (
+            <>
+              <StatCard icon={FileText} label="Total Registrations" value={registrationStats.total} />
+              <StatCard icon={Check} label="Confirmed" value={registrationStats.confirmed} />
+              <StatCard icon={Clock} label="Pending" value={registrationStats.pending} />
+              <StatCard icon={X} label="Cancelled" value={registrationStats.cancelled} />
+            </>
+          )}
+          {visitorStats && (
+            <>
+              <StatCard icon={Users} label="Total Visitors" value={visitorStats.total} />
+              <StatCard icon={UserCheck} label="Unique" value={visitorStats.unique} />
+              <StatCard icon={Calendar} label="Today" value={visitorStats.today} />
+              <StatCard icon={BarChart3} label="This Week" value={visitorStats.thisWeek} />
+            </>
+          )}
+        </div>
+
+        {/* Tab bar */}
+        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: '8px', borderBottom: '1px solid #1a1a1a', marginBottom: '24px' }}>
+          <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
             {[
               { id: 'registrations', label: 'Registrations', icon: FileText },
               { id: 'visitors', label: 'Visitors', icon: Users },
-              { id: 'contacts', label: 'Contact Forms', icon: Mail },
+              { id: 'contacts', label: 'Contacts', icon: Mail },
               { id: 'announcements', label: 'Announcements', icon: Bell },
-              { id: 'database', label: 'Database Management', icon: Database }
+              { id: 'database', label: 'Database', icon: Database },
             ].map(tab => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-4 py-2 border-b-2 transition-colors ${
-                  activeTab === tab.id
-                    ? 'border-purple-400 text-white'
-                    : 'border-transparent text-white/60 hover:text-white'
-                }`}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: '6px',
+                  padding: '8px 14px', fontSize: '13px', fontWeight: '500',
+                  background: 'none', border: 'none', cursor: 'pointer',
+                  borderBottom: activeTab === tab.id ? '2px solid #fff' : '2px solid transparent',
+                  color: activeTab === tab.id ? '#fff' : '#555',
+                  transition: 'color 0.15s',
+                  marginBottom: '-1px',
+                }}
               >
-                <tab.icon className="w-4 h-4" />
-                <span>{tab.label}</span>
+                <tab.icon style={{ width: '14px', height: '14px' }} />
+                {tab.label}
               </button>
             ))}
-            </div>
-            <Link
-              href="/admin/events"
-              className="shrink-0 px-4 py-2 text-sm rounded-lg border border-purple-500/40 text-purple-300 hover:bg-purple-500/10"
-            >
-              Bootcamp programs →
-            </Link>
           </div>
+          <Link
+            href="/admin/events"
+            style={{ fontSize: '12px', color: '#666', padding: '6px 12px', border: '1px solid #2a2a2a', borderRadius: '6px', textDecoration: 'none' }}
+          >
+            Bootcamp programs →
+          </Link>
+        </div>
 
           {/* Search and Filters */}
           {activeTab === 'registrations' && (
@@ -1191,7 +1185,7 @@ const AdminDashboard = () => {
           )}
 
           {/* Content */}
-          <div className="bg-black/40 border border-white/10 rounded-lg p-6 backdrop-blur-md">
+          <div style={{ background: '#111', border: '1px solid #1a1a1a', borderRadius: '10px', padding: '24px' }}>
             {activeTab === 'registrations' && (
               <div className="space-y-4">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
