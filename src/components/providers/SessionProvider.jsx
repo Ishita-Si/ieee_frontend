@@ -47,7 +47,7 @@ export default function SessionProvider({ children }) {
       const userData = await authService.getCurrentUser();
       setUser(userData);
       setIsAuthenticated(!!userData);
-    } catch (error) {
+    } catch {
       const fallback = getCachedUser();
       if (fallback) {
         setUser(fallback);

@@ -1,5 +1,5 @@
 "use client"
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import PillNav from "@/components/ui/PillNav";
 import Loader from "@/components/ui/Loader";
@@ -65,7 +65,7 @@ const DatabaseManagementTab = ({ API_URL, authService, registrations, setRegistr
   const [activeSubTab, setActiveSubTab] = useState('users');
   const [searchTerm, setSearchTerm] = useState('');
   const [fetchError, setFetchError] = useState('');
-  const searchDebounceRef = React.useRef(null);
+  const searchDebounceRef = useRef(null);
 
   useEffect(() => {
     if (activeSubTab === 'users') {
@@ -350,7 +350,7 @@ const DatabaseManagementTab = ({ API_URL, authService, registrations, setRegistr
                   <tr>
                     <td colSpan="7" className="py-8 text-center">
                       <p className="text-red-400 mb-2">{fetchError}</p>
-                      <button onClick={() => fetchUsers(searchTerm)} className="text-purple-400 underline text-sm">Retry</button>
+                      <button type="button" onClick={() => fetchUsers(searchTerm)} className="text-purple-400 underline text-sm">Retry</button>
                     </td>
                   </tr>
                 ) : filteredUsers.length === 0 ? (
