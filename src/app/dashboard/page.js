@@ -402,21 +402,29 @@ const Dashboard = () => {
         setUser(currentUser);
 
         const token = authService.getToken();
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/dashboard/`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        });
+        const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
-        if (response.ok) {
-          const data = await response.json();
+        // Fire both requests in parallel
+        const [dashRes, regsRes] = await Promise.all([
+          fetch(`${API}/dashboard/`, {
+            headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
+          }),
+          fetch(`${API}/events/my-registrations`, {
+            headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
+          }),
+        ]);
+
+        if (dashRes.ok) {
+          const data = await dashRes.json();
           setDashboardData(data);
         } else {
           setError('Failed to load dashboard data');
         }
 
-        await fetchMyRegistrations();
+        if (regsRes.ok) {
+          const regsData = await regsRes.json();
+          if (regsData.success) setMyRegistrations(regsData.registrations || []);
+        }
       } catch (err) {
         console.error('Dashboard error:', err);
         setError('An error occurred while loading dashboard');
