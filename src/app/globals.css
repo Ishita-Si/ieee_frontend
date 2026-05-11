@@ -8,10 +8,9 @@
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 80px; /* Offset for fixed navigation */
+  scroll-padding-top: 80px;
 }
 
-/* Ensure smooth scrolling for all scrollable elements */
 [data-scroll-container],
 .scroll-container {
   scroll-behavior: smooth;
@@ -35,42 +34,31 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
-  /* Performance optimizations */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
-  scroll-behavior: smooth;
+  /* text-rendering: optimizeLegibility removed — triggers full layout pass per glyph */
   overflow-x: hidden;
 }
 
-/* Performance optimizations */
 * {
   -webkit-tap-highlight-color: transparent;
   box-sizing: border-box;
 }
 
-/* Performance: Optimize animations and transitions */
-[class*="animate-"],
-[class*="transition-"] {
-  will-change: transform, opacity;
-  transform: translateZ(0);
-  -webkit-transform: translateZ(0);
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-}
+/* Do NOT apply will-change globally — it creates compositing layers for every element.
+   Only apply will-change per-component where truly needed. */
 
-/* Performance: Optimize images */
 img {
   content-visibility: auto;
-  image-rendering: -webkit-optimize-contrast;
 }
 
-/* Performance: Reduce repaints for common elements */
+/* Contain layout/paint per section to reduce repaint scope */
 section {
-  contain: layout style paint;
+  contain: layout style;
+  /* 'paint' containment removed — it clips overflow and breaks sticky nav */
 }
 
-/* Optimize animations */
+/* Respect reduced-motion */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -86,43 +74,20 @@ section {
   overflow: hidden;
 }
 
-/* Custom scrollbar styles for chapters vertical scroll (mobile) */
-.chapters-vertical-scroll::-webkit-scrollbar {
-  width: 8px;
-}
-
+/* Chapters mobile scroll */
+.chapters-vertical-scroll::-webkit-scrollbar { width: 8px; }
 .chapters-vertical-scroll::-webkit-scrollbar-track {
   background: rgba(255, 255, 255, 0.05);
   border-radius: 10px;
 }
-
 .chapters-vertical-scroll::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.2);
   border-radius: 10px;
-  transition: background 0.3s;
 }
-
 .chapters-vertical-scroll::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.3);
 }
-
-/* Firefox scrollbar */
 .chapters-vertical-scroll {
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.2) rgba(255, 255, 255, 0.05);
-}
-
-/* Sponsors section smooth scrolling */
-.sponsors-scroll-container {
-  scroll-behavior: auto; /* Disable smooth scroll for programmatic scrolling */
-  -webkit-overflow-scrolling: touch;
-}
-
-.sponsors-scroll-container::-webkit-scrollbar {
-  display: none; /* Hide scrollbar */
-}
-
-.sponsors-scroll-container {
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
 }

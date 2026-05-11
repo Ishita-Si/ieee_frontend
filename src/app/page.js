@@ -439,14 +439,14 @@ export default function Home() {
               {/* Navigation Buttons */}
               <button
                 onClick={goToPreviousAnnouncement}
-                className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 md:w-14 md:h-14 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 backdrop-blur-md flex items-center justify-center transition-all hover:scale-110 active:scale-95"
+                className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 md:w-14 md:h-14 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center transition-colors active:scale-95"
                 aria-label="Previous announcement"
               >
                 <ChevronLeft className="w-6 h-6 md:w-7 md:h-7 text-white" />
               </button>
               <button
                 onClick={goToNextAnnouncement}
-                className="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 md:w-14 md:h-14 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 backdrop-blur-md flex items-center justify-center transition-all hover:scale-110 active:scale-95"
+                className="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 md:w-14 md:h-14 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center transition-colors active:scale-95"
                 aria-label="Next announcement"
               >
                 <ChevronRight className="w-6 h-6 md:w-7 md:h-7 text-white" />
@@ -611,7 +611,7 @@ export default function Home() {
 
         {/* Membership CTA - Reduced padding and tighter internal spacing */}
         <section className="w-full py-6 sm:py-8 md:py-12 px-4 sm:px-6 md:px-8 lg:px-12">
-          <div className="max-w-5xl mx-auto rounded-2xl md:rounded-3xl border border-white/15 bg-white/5 backdrop-blur-2xl p-6 md:p-8 space-y-4 md:space-y-6 text-center">
+        <div className="max-w-5xl mx-auto rounded-2xl md:rounded-3xl border border-white/15 bg-white/5 p-6 md:p-8 space-y-4 md:space-y-6 text-center">
             <p className="text-xs sm:text-sm uppercase tracking-[0.4em] md:tracking-[0.5em] text-white/60">
               Become A Member
             </p>

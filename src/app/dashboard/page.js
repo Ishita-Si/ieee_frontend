@@ -35,30 +35,16 @@ const styleTag = `
 
   .font-mono-theme { font-family: 'JetBrains Mono', monospace; }
 
-  @keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
-  }
-  @keyframes glow-pulse {
-    0%, 100% { box-shadow: 0 0 5px rgba(168, 85, 247, 0.2); }
-    50% { box-shadow: 0 0 20px rgba(168, 85, 247, 0.5); }
-  }
-
-  .animate-float { animation: float 6s ease-in-out infinite; }
-  .animate-glow { animation: glow-pulse 3s infinite; }
-
-  /* Glass Panel */
+  /* Glass Panel — no backdrop-filter (expensive on mobile/low-end) */
   .glass-panel {
-    background: rgba(20, 20, 20, 0.6);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    background: rgba(22, 22, 30, 0.92);
     border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
   }
 
   .glass-panel:hover {
     border-color: rgba(255, 255, 255, 0.15);
-    background: rgba(25, 25, 25, 0.7);
+    background: rgba(28, 28, 38, 0.95);
   }
 
   /* Scrollbar */

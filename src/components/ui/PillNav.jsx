@@ -130,21 +130,24 @@ const PillNav = ({
     return () => window.removeEventListener('resize', onResize);
   }, [items, ease, initialLoadAnimation]);
 
-  // Check authentication status
+  // Check authentication status — use cached user data to avoid network call on every route change
   useEffect(() => {
-    const checkAuth = async () => {
-      const authenticated = authService.isAuthenticated();
-      setIsAuthenticated(authenticated);
-      if (authenticated) {
-        try {
-          const userData = await authService.getCurrentUser();
-          setUser(userData);
-        } catch (error) {
-          console.error('Error fetching user:', error);
+    const authenticated = authService.isAuthenticated();
+    setIsAuthenticated(authenticated);
+    if (authenticated) {
+      // Try localStorage cache first (set by authService on login)
+      try {
+        const cached = localStorage.getItem('userData');
+        if (cached) {
+          setUser(JSON.parse(cached));
+          return;
         }
-      }
-    };
-    checkAuth();
+      } catch (_) {}
+      // Only fetch if no cache
+      authService.getCurrentUser()
+        .then(userData => { if (userData) setUser(userData); })
+        .catch(() => {});
+    }
   }, [pathname]);
 
   const handleEnter = i => {

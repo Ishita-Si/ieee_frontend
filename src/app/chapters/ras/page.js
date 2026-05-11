@@ -341,87 +341,27 @@ const styleTag = `
 
 // --- Components ---
 
-// Dynamically import Spline to avoid async client component issues
-const Spline = dynamic(
-  () => import('@splinetool/react-spline'),
-  { 
-    ssr: false,
-    loading: () => (
-      <div className="absolute inset-0 w-full h-full z-0 flex items-center justify-center bg-black">
-        <div className="text-cyan-500/50 text-sm font-mono-theme">Loading 3D Scene...</div>
-      </div>
-    )
-  }
+// Lightweight CSS hero background (replaces Spline 3D scene)
+const FullScreenSpline = () => (
+  <div
+    className="absolute inset-0 w-full h-full z-0"
+    aria-hidden="true"
+    style={{ overflow: 'hidden', background: 'radial-gradient(ellipse 80% 60% at 50% 30%, rgba(6,182,212,0.08) 0%, transparent 70%)' }}
+  >
+    <svg className="absolute inset-0 w-full h-full opacity-10" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <pattern id="grid" width="60" height="60" patternUnits="userSpaceOnUse">
+          <path d="M 60 0 L 0 0 0 60" fill="none" stroke="#06b6d4" strokeWidth="0.5" />
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#grid)" />
+    </svg>
+    <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-96 h-96 rounded-full"
+      style={{ background: 'radial-gradient(circle, rgba(6,182,212,0.12) 0%, transparent 70%)' }} />
+    <div className="absolute bottom-0 right-1/4 w-64 h-64 rounded-full"
+      style={{ background: 'radial-gradient(circle, rgba(59,130,246,0.08) 0%, transparent 70%)' }} />
+  </div>
 );
-
-// Full Screen Spline Component
-// Add ?v=timestamp or version number to bust cache when scene is updated
-const FullScreenSpline = () => {
-  const containerRef = React.useRef(null);
-  
-  // Cache-busting: Update this version number when you update the scene in Spline
-  const sceneVersion = 'v2'; // Change this when you update the scene
-  const sceneUrl = `https://prod.spline.design/w12PaRYS19rGu5vn/scene.splinecode?v=${sceneVersion}`;
-  
-  // Force Spline canvas/iframe to stay behind text
-  React.useEffect(() => {
-    const setSplineZIndex = () => {
-      if (containerRef.current) {
-        const canvas = containerRef.current.querySelector('canvas');
-        const iframe = containerRef.current.querySelector('iframe');
-        
-        if (canvas) {
-          canvas.style.zIndex = '1';
-          canvas.style.position = 'relative';
-        }
-        if (iframe) {
-          iframe.style.zIndex = '1';
-          iframe.style.position = 'relative';
-        }
-      }
-    };
-    
-    // Set immediately and also after a delay to catch late-rendered elements
-    setSplineZIndex();
-    const timer = setTimeout(setSplineZIndex, 100);
-    const timer2 = setTimeout(setSplineZIndex, 500);
-    
-    return () => {
-      clearTimeout(timer);
-      clearTimeout(timer2);
-    };
-  }, [sceneVersion]);
-  
-  return (
-    <div 
-      ref={containerRef}
-      className="absolute inset-0 w-full h-full spline-container" 
-      style={{ 
-        zIndex: 1,
-        position: 'absolute',
-        top: '250px',
-        left: 0,
-        right: 0,
-        bottom: '-250px',
-        height: 'calc(100% + 250px)'
-      }}
-    >
-      <Spline
-        scene={sceneUrl}
-        style={{ 
-          width: '100%', 
-          height: '100%',
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          zIndex: 1,
-          objectFit: 'cover'
-        }}
-        key={sceneVersion}
-      />
-    </div>
-  );
-};
 
 const FeatureCard = ({ icon: Icon, title, description }) => (
   <div className="hud-card p-4 sm:p-5 md:p-6 lg:p-8 group h-full">
