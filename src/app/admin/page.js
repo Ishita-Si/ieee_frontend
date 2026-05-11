@@ -1,6 +1,7 @@
 "use client"
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import PillNav from "@/components/ui/PillNav";
 import Loader from "@/components/ui/Loader";
 import { authService } from '@/lib/auth';
@@ -1125,7 +1126,8 @@ const AdminDashboard = () => {
           </div>
 
           {/* Tabs */}
-          <div className="mb-6 flex flex-wrap gap-2 border-b border-white/10">
+          <div className="mb-6 flex flex-wrap items-end justify-between gap-3 border-b border-white/10 pb-1">
+            <div className="flex flex-wrap gap-2">
             {[
               { id: 'registrations', label: 'Registrations', icon: FileText },
               { id: 'visitors', label: 'Visitors', icon: Users },
@@ -1146,6 +1148,13 @@ const AdminDashboard = () => {
                 <span>{tab.label}</span>
               </button>
             ))}
+            </div>
+            <Link
+              href="/admin/events"
+              className="shrink-0 px-4 py-2 text-sm rounded-lg border border-purple-500/40 text-purple-300 hover:bg-purple-500/10"
+            >
+              Bootcamp programs →
+            </Link>
           </div>
 
           {/* Search and Filters */}

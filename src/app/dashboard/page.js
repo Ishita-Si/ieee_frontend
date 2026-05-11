@@ -353,6 +353,8 @@ const Dashboard = () => {
 
   const [myRegistrations, setMyRegistrations] = useState([]);
   const [registrationsLoading, setRegistrationsLoading] = useState(false);
+  const [bootcampEvents, setBootcampEvents] = useState([]);
+  const [bootcampSlugs, setBootcampSlugs] = useState(() => new Set());
 
   // --- Data Fetching ---
   const fetchMyRegistrations = async () => {
@@ -404,12 +406,15 @@ const Dashboard = () => {
         const token = authService.getToken();
         const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
-        // Fire both requests in parallel
-        const [dashRes, regsRes] = await Promise.all([
+        const [dashRes, regsRes, bootListRes, bootMineRes] = await Promise.all([
           fetch(`${API}/dashboard/`, {
             headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
           }),
           fetch(`${API}/events/my-registrations`, {
+            headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
+          }),
+          fetch(`${API}/bootcamp/events`),
+          fetch(`${API}/bootcamp/my-registrations`, {
             headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
           }),
         ]);
@@ -424,6 +429,20 @@ const Dashboard = () => {
         if (regsRes.ok) {
           const regsData = await regsRes.json();
           if (regsData.success) setMyRegistrations(regsData.registrations || []);
+        }
+
+        if (bootListRes.ok) {
+          const b = await bootListRes.json();
+          if (b.success) setBootcampEvents(b.events || []);
+        }
+        if (bootMineRes.ok) {
+          const bm = await bootMineRes.json();
+          const slugs = new Set(
+            (bm.registrations || [])
+              .map((r) => r.event?.slug)
+              .filter(Boolean)
+          );
+          setBootcampSlugs(slugs);
         }
       } catch (err) {
         console.error('Dashboard error:', err);
@@ -680,6 +699,39 @@ const Dashboard = () => {
                   )}
                </div>
             </div>
+
+            {bootcampEvents.length > 0 && (
+            <div className="glass-panel rounded-3xl p-6 md:p-8">
+               <SectionHeader
+                 title="Bootcamp programs"
+                 icon={BookOpen}
+                 action={<Link href="/events" className="text-xs font-bold text-purple-400 hover:text-purple-300 uppercase tracking-wider">Browse</Link>}
+               />
+               <div className="grid gap-4 md:grid-cols-2">
+                 {bootcampEvents.map((ev) => {
+                   const reg = bootcampSlugs.has(ev.slug);
+                   return (
+                     <div key={ev.slug} className="rounded-2xl border border-white/10 bg-white/[0.02] overflow-hidden flex flex-col">
+                       <div className="h-36 bg-white/5 relative">
+                         <img src={ev.banner_url?.startsWith('http') ? ev.banner_url : (ev.banner_url || '/images/posters/6.png')} alt="" className="w-full h-full object-cover opacity-90" />
+                       </div>
+                       <div className="p-4 flex-1 flex flex-col">
+                         <h4 className="text-lg font-bold text-white">{ev.title}</h4>
+                         <p className="text-white/50 text-sm mt-1 line-clamp-2">{ev.tagline || ev.short_description}</p>
+                         <p className="text-xs text-purple-300 mt-2">{ev.duration}</p>
+                         <div className="mt-auto pt-4 flex items-center justify-between gap-2">
+                           {reg && <span className="text-xs text-green-400 border border-green-500/30 rounded-full px-2 py-0.5">Registered</span>}
+                           <Link href={`/events/${ev.slug}`} className="ml-auto px-4 py-2 rounded-lg bg-white text-black font-bold text-xs hover:bg-purple-400 transition-colors">
+                             View details
+                           </Link>
+                         </div>
+                       </div>
+                     </div>
+                   );
+                 })}
+               </div>
+            </div>
+            )}
 
             {/* Announcements Section */}
             <div className="glass-panel rounded-3xl p-6 md:p-8">
