@@ -20,7 +20,8 @@ import {
   Search, Download, 
   Loader2, Check, BarChart3,
   UserCheck, Clock, X, Database,
-  Plus, Trash2, Upload, FileUp, Mail, Bell, Image as ImageIcon
+  Plus, Trash2, Upload, FileUp, Mail, Bell, Image as ImageIcon,
+  ChevronDown
 } from 'lucide-react';
 
 // StatCard component
@@ -41,6 +42,68 @@ const StatRow = ({ label, value }) => (
     <span className="text-white font-semibold">{value}</span>
   </div>
 );
+
+const FilterDropdown = ({ value, onChange, options, className = '' }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef(null);
+  const selectedOption = options.find(option => option.value === value) || options[0];
+
+  useEffect(() => {
+    const handlePointerDown = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handlePointerDown);
+    return () => document.removeEventListener('mousedown', handlePointerDown);
+  }, []);
+
+  return (
+    <div ref={dropdownRef} className={`relative ${className}`}>
+      <button
+        type="button"
+        onClick={() => setIsOpen(open => !open)}
+        className="flex min-h-11 w-full items-center justify-between gap-3 rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-left text-white transition-all hover:bg-white/10 focus:outline-none focus:border-purple-400/50"
+        aria-haspopup="listbox"
+        aria-expanded={isOpen}
+      >
+        <span className="truncate">{selectedOption?.label}</span>
+        <ChevronDown className={`h-4 w-4 shrink-0 text-white/70 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+      </button>
+      {isOpen && (
+        <div
+          role="listbox"
+          className="absolute right-0 z-40 mt-2 max-h-72 w-full min-w-56 overflow-auto rounded-lg border border-white/10 bg-[#121212] p-1 shadow-2xl shadow-black/50"
+        >
+          {options.map(option => {
+            const isSelected = option.value === value;
+            return (
+              <button
+                key={option.value}
+                type="button"
+                role="option"
+                aria-selected={isSelected}
+                onClick={() => {
+                  onChange(option.value);
+                  setIsOpen(false);
+                }}
+                className={`flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-sm transition-colors ${
+                  isSelected
+                    ? 'bg-purple-500/25 text-purple-100'
+                    : 'text-white/80 hover:bg-white/10 hover:text-white'
+                }`}
+              >
+                <span className="truncate">{option.label}</span>
+                {isSelected && <Check className="ml-3 h-4 w-4 shrink-0 text-purple-200" />}
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+};
 
 // Database Management Tab Component
 const DatabaseManagementTab = ({ API_URL, authService, registrations, setRegistrations, fetchRegistrations }) => {
@@ -1082,6 +1145,17 @@ const AdminDashboard = () => {
 
   // Get unique event slugs for filter
   const eventSlugs = [...new Set(registrations.map(r => r.event_slug).filter(Boolean))];
+  const eventFilterOptions = [
+    { value: 'all', label: 'All Events' },
+    ...eventSlugs.map(slug => ({ value: slug, label: slug }))
+  ];
+  const contactStatusOptions = [
+    { value: 'all', label: 'All Status' },
+    { value: 'new', label: 'New' },
+    { value: 'read', label: 'Read' },
+    { value: 'replied', label: 'Replied' },
+    { value: 'archived', label: 'Archived' }
+  ];
 
   return (
     <>
@@ -1166,16 +1240,12 @@ const AdminDashboard = () => {
                   className="w-full pl-10 pr-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white placeholder-white/40 focus:outline-none focus:border-purple-400/50"
                 />
               </div>
-              <select
+              <FilterDropdown
                 value={selectedEventFilter}
-                onChange={(e) => setSelectedEventFilter(e.target.value)}
-                className="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:outline-none focus:border-purple-400/50"
-              >
-                <option value="all">All Events</option>
-                {eventSlugs.map(slug => (
-                  <option key={slug} value={slug}>{slug}</option>
-                ))}
-              </select>
+                onChange={setSelectedEventFilter}
+                options={eventFilterOptions}
+                className="sm:w-72"
+              />
               <button
                 onClick={handleExportCSV}
                 className="flex items-center gap-2 px-6 py-2 rounded-lg bg-green-500/20 hover:bg-green-500/30 border border-green-500/30 text-green-300 transition-all"
@@ -1358,17 +1428,12 @@ const AdminDashboard = () => {
                       className="w-full pl-10 pr-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white placeholder-white/40 focus:outline-none focus:border-purple-400/50"
                     />
                   </div>
-                  <select
+                  <FilterDropdown
                     value={contactStatusFilter}
-                    onChange={(e) => setContactStatusFilter(e.target.value)}
-                    className="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:outline-none focus:border-purple-400/50"
-                  >
-                    <option value="all">All Status</option>
-                    <option value="new">New</option>
-                    <option value="read">Read</option>
-                    <option value="replied">Replied</option>
-                    <option value="archived">Archived</option>
-                  </select>
+                    onChange={setContactStatusFilter}
+                    options={contactStatusOptions}
+                    className="sm:w-48"
+                  />
                   {selectedContacts.length > 0 && (
                     <button
                       onClick={bulkDeleteContacts}
