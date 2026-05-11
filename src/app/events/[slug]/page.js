@@ -7,6 +7,7 @@ import PillNav from "@/components/ui/PillNav";
 import Footer from "@/components/ui/Footer";
 import { bootcampService } from "@/lib/bootcamp";
 import { useAuth } from "@/components/providers/SessionProvider";
+import { authService } from "@/lib/auth";
 import {
   ArrowLeft,
   Calendar,
@@ -251,12 +252,14 @@ export default function BootcampEventPage() {
               <button
                 type="button"
                 onClick={handleRegister}
-                disabled={regLoading}
-                className="px-8 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-blue-600 font-semibold disabled:opacity-50"
+                disabled={regLoading || authLoading}
+                className="px-8 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-blue-600 font-semibold disabled:opacity-50 min-w-[160px]"
               >
                 {regLoading ? (
                   <Loader2 className="w-5 h-5 animate-spin mx-auto" />
-                ) : user ? (
+                ) : authLoading ? (
+                  <Loader2 className="w-5 h-5 animate-spin mx-auto" />
+                ) : (user || authService.isAuthenticated()) ? (
                   "Register now"
                 ) : (
                   "Sign in to register"
