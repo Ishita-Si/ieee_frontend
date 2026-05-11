@@ -19,22 +19,27 @@ const navItems = [
 export default function SigninPage() {
   const router = useRouter();
   const [redirectUrl, setRedirectUrl] = useState('/dashboard');
-
-  useEffect(() => {
-    // Get redirect URL from query params
-    if (typeof window !== 'undefined') {
-      const params = new URLSearchParams(window.location.search);
-      const redirect = params.get('redirect');
-      if (redirect) {
-        setRedirectUrl(redirect);
-      }
-    }
-  }, []);
   const [form, setForm] = useState({ email: "", password: "" });
   const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [checking, setChecking] = useState(true);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    // Parse redirect param
+    const params = new URLSearchParams(window.location.search);
+    const redirect = params.get('redirect') || '/dashboard';
+    setRedirectUrl(redirect);
+
+    // If already authenticated, skip the signin page entirely
+    if (authService.isAuthenticated()) {
+      router.replace(redirect);
+      return;
+    }
+    setChecking(false);
+  }, [router]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -83,6 +88,15 @@ export default function SigninPage() {
       setLoading(false);
     }
   };
+
+  // While checking auth, render nothing to avoid flash
+  if (checking) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <Loader2 className="w-8 h-8 text-white/30 animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-black text-white">
