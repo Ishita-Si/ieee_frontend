@@ -569,7 +569,11 @@ const Dashboard = () => {
                       <div key={ev.slug} className="border border-white/10 rounded-lg overflow-hidden">
                         <div className="h-28 bg-white/5">
                           <img
-                            src={ev.banner_url?.startsWith('http') ? ev.banner_url : (ev.banner_url || '/images/posters/6.png')}
+                            src={(() => {
+                              const slugPosters = { 'devwave-2026': '/images/posters/devwave.png', 'codenex-3': '/images/posters/codenex.png' };
+                              if (ev.banner_url && !ev.banner_url.match(/\/images\/posters\/(?:4|6)\.png$/)) return ev.banner_url;
+                              return slugPosters[ev.slug] || '/images/posters/devwave.png';
+                            })()}
                             alt=""
                             className="w-full h-full object-cover opacity-80"
                           />

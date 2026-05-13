@@ -39,7 +39,7 @@ const navItems = [
 const announcements = [
   {
     id: 1,
-    image: "/images/posters/6.png",
+    image: "/images/posters/devwave.png",
     badge: "Bootcamp",
     title: "DEVWAVE 2026 — Now Open",
     description: "DEVWAVE 2026 is IEEE RGIPT's flagship full-stack development bootcamp. Learn modern web technologies, build real projects, and get mentored by senior developers and IEEE professionals.",
@@ -49,13 +49,13 @@ const announcements = [
   },
   {
     id: 2,
-    image: "/images/posters/4.png",
-    badge: "Announcement",
-    title: "Join Our Upcoming Event",
-    description: "We're excited to announce our upcoming IEEE event that brings together students, professionals, and innovators from across the region. This is an opportunity to network, learn, and be part of the future of technology.",
-    description2: "Don't miss out on this incredible opportunity to connect with industry leaders, participate in hands-on workshops, and explore cutting-edge technologies that are shaping tomorrow.",
-    primaryButton: { text: "Learn More", href: "/events" },
-    secondaryButton: { text: "Contact Us", href: "/contact" }
+    image: "/images/posters/codenex.png",
+    badge: "Bootcamp",
+    title: "CodeNex 3.0 — DSA Program",
+    description: "CodeNex 3.0 is IEEE RGIPT's 10-week structured DSA program designed to help you master data structures and algorithms from scratch to advanced, with weekly contests and interview-oriented practice.",
+    description2: "Sharpen your problem-solving skills, prepare for technical interviews, and compete in weekly coding contests. Open to all students — register now to join the program.",
+    primaryButton: { text: "Learn More", href: "/events/codenex-3" },
+    secondaryButton: { text: "Register Now", href: "/events/codenex-3" }
   },
   {
     id: 3,

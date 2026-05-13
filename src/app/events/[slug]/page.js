@@ -26,9 +26,15 @@ const navItems = [
   { label: "Contact", href: "/contact" },
 ];
 
-function bannerSrc(url) {
-  if (!url) return "/images/posters/6.png";
-  if (url.startsWith("http")) return url;
+const SLUG_POSTER_MAP = {
+  'devwave-2026': '/images/posters/devwave.png',
+  'codenex-3': '/images/posters/codenex.png',
+};
+
+function bannerSrc(url, slug) {
+  if (!url || url.match(/\/images\/posters\/(?:4|6)\.png$/)) {
+    return SLUG_POSTER_MAP[slug] || '/images/posters/devwave.png';
+  }
   return url;
 }
 
@@ -146,7 +152,7 @@ export default function BootcampEventPage() {
         <div className="rounded-2xl overflow-hidden border border-white/10 mb-10">
           <div className="aspect-[21/9] bg-white/5 relative">
             <img
-              src={bannerSrc(event.banner_url)}
+              src={bannerSrc(event.banner_url, slug)}
               alt=""
               className="w-full h-full object-cover"
             />

@@ -226,6 +226,17 @@ const formatBootcampDate = (event) => {
   return event.duration || 'Dates TBA';
 };
 
+const SLUG_POSTER_MAP = {
+  'devwave-2026': '/images/posters/devwave.png',
+  'codenex-3': '/images/posters/codenex.png',
+};
+
+const resolveEventImage = (event) => {
+  const url = event.banner_url;
+  if (url && !url.match(/\/images\/posters\/(?:4|6)\.png$/)) return url;
+  return SLUG_POSTER_MAP[event.slug] || '/images/posters/devwave.png';
+};
+
 const mapBootcampToEventCard = (event) => ({
   id: event.slug,
   event_slug: event.slug,
@@ -235,7 +246,7 @@ const mapBootcampToEventCard = (event) => ({
   time: event.duration || 'Self paced',
   description: event.short_description || event.tagline || event.description || 'Hands-on IEEE bootcamp program.',
   fullDescription: event.description || event.short_description || event.tagline || 'Hands-on IEEE bootcamp program.',
-  image: event.banner_url || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=1000&auto=format&fit=crop',
+  image: resolveEventImage(event),
   difficulty: 'Beginner',
   language: (event.topics || []).slice(0, 3).join(', ') || 'Multiple tracks',
   location: 'Online / IEEE RGIPT',
