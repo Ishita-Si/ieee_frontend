@@ -37,6 +37,7 @@ export default function BootcampEventPage() {
   const slug = typeof params?.slug === "string" ? params.slug : "";
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
+  const isSignedIn = !!user || authService.isAuthenticated();
   const [event, setEvent] = useState(null);
   const [loadError, setLoadError] = useState("");
   const [pageLoading, setPageLoading] = useState(true);
@@ -69,7 +70,7 @@ export default function BootcampEventPage() {
   useEffect(() => {
     if (!slug || authLoading) return;
     (async () => {
-      if (!user) {
+      if (!isSignedIn) {
         setRegistered(false);
         setUpdates([]);
         return;
@@ -85,10 +86,10 @@ export default function BootcampEventPage() {
         setUpdates([]);
       }
     })();
-  }, [slug, user, authLoading]);
+  }, [slug, user, authLoading, isSignedIn]);
 
   const handleRegister = async () => {
-    if (!user) {
+    if (!isSignedIn) {
       router.push(`/signin?redirect=${encodeURIComponent(`/events/${slug}`)}`);
       return;
     }
@@ -259,7 +260,7 @@ export default function BootcampEventPage() {
                   <Loader2 className="w-5 h-5 animate-spin mx-auto" />
                 ) : authLoading ? (
                   <Loader2 className="w-5 h-5 animate-spin mx-auto" />
-                ) : (user || authService.isAuthenticated()) ? (
+                ) : isSignedIn ? (
                   "Register now"
                 ) : (
                   "Sign in to register"

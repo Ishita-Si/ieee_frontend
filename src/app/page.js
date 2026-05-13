@@ -3,14 +3,12 @@
 import { Suspense, useRef, useState, useEffect, useCallback, useMemo } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import PillNav from "@/components/ui/PillNav";
 import Footer from "@/components/ui/Footer";
-import { authService } from "@/lib/auth";
 
 // Lazy load heavy components
-const Hero = dynamic(() => import("@/components/ui/animated-shader-hero"), { 
+const HeroGeometric = dynamic(() => import("@/components/ui/shape-landing-hero").then(mod => ({ default: mod.HeroGeometric })), {
   ssr: false,
   loading: () => <div className="min-h-screen" />
 });
@@ -121,7 +119,6 @@ const chapterCards = [
 ];
 
 export default function Home() {
-  const router = useRouter();
   const [isVideoMuted, setIsVideoMuted] = useState(true);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [isVideoHovered, setIsVideoHovered] = useState(false);
@@ -129,18 +126,6 @@ export default function Home() {
   const [currentAnnouncement, setCurrentAnnouncement] = useState(0);
   const announcementIntervalRef = useRef(null);
   const chaptersContainerRef = useRef(null);
-
-  const handleRegisterClick = () => {
-    if (!authService.isAuthenticated()) {
-      router.push('/signup');
-    } else {
-      router.push('/dashboard');
-    }
-  };
-
-  const handleEventsClick = () => {
-    router.push('/events');
-  };
 
   const toggleVideoAudio = () => {
     setIsVideoMuted((prev) => {
@@ -355,22 +340,9 @@ export default function Home() {
       <div className="relative z-10 w-full" style={{ backgroundColor: '#000000' }}>
         <PillNav items={navItems} />
 
-        <Hero
-          headline={{
-            line1: "IEEE",
-             line2: "Student Branch",
-          }}
-          subtitle="Rajiv Gandhi Institute Of Petroleum Technology"
-          buttons={{
-            primary: {
-              text: "Register as User",
-              onClick: handleRegisterClick,
-            },
-            secondary: {
-              text: "Explore Events",
-              onClick: handleEventsClick,
-            },
-          }}
+        <HeroGeometric
+          imageSrc="/ieee logo.png"
+          imageAlt="IEEE"
         />
 
         {/* Announcement Section - Slider with 9:16 Images */}

@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { authService } from '@/lib/auth';
 import { eventService } from '@/lib/events';
+import { bootcampService } from '@/lib/bootcamp';
 import { 
   Calendar, 
   Zap, 
@@ -164,11 +165,49 @@ const PAST_EVENTS = [
 
 const CATEGORIES = [
   { name: 'All', icon: Sparkles },
+  { name: 'Bootcamps', icon: Zap },
   { name: 'Competitions', icon: Trophy },
   { name: 'Hackathons', icon: Code },
   { name: 'Workshops', icon: Users },
   { name: 'Series', icon: Target }
 ];
+
+const formatBootcampDate = (event) => {
+  const start = event.start_date ? new Date(event.start_date) : null;
+  const end = event.end_date ? new Date(event.end_date) : null;
+  const opts = { month: 'short', day: 'numeric', year: 'numeric' };
+
+  if (start && !Number.isNaN(start.getTime()) && end && !Number.isNaN(end.getTime())) {
+    return `${start.toLocaleDateString('en-US', opts)} - ${end.toLocaleDateString('en-US', opts)}`;
+  }
+
+  if (start && !Number.isNaN(start.getTime())) {
+    return start.toLocaleDateString('en-US', opts);
+  }
+
+  return event.duration || 'Dates TBA';
+};
+
+const mapBootcampToEventCard = (event) => ({
+  id: event.slug,
+  event_slug: event.slug,
+  title: event.title,
+  category: 'Bootcamps',
+  date: formatBootcampDate(event),
+  time: event.duration || 'Self paced',
+  description: event.short_description || event.tagline || event.description || 'Hands-on IEEE bootcamp program.',
+  fullDescription: event.description || event.short_description || event.tagline || 'Hands-on IEEE bootcamp program.',
+  image: event.banner_url || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=1000&auto=format&fit=crop',
+  difficulty: 'Beginner',
+  language: (event.topics || []).slice(0, 3).join(', ') || 'Multiple tracks',
+  location: 'Online / IEEE RGIPT',
+  requirements: event.topics || event.highlights || [],
+  registrationOpen: true,
+  route: `/events/${event.slug}`,
+  seatsLimited: false,
+  registeredSeats: 0,
+  totalSeats: 0,
+});
 
 const EventCard = ({ event, onClick, index, isRegistered = false }) => {
   const isFull = event.seatsLimited && event.registeredSeats >= event.totalSeats;
@@ -425,19 +464,39 @@ const EventsPage = ({ isOpen, onClose, isFullPage = false }) => {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [myRegistrations, setMyRegistrations] = useState([]);
+  const [bootcampEvents, setBootcampEvents] = useState([]);
+  const [bootcampRegistrations, setBootcampRegistrations] = useState([]);
 
   useEffect(() => {
     setIsLoaded(true);
+    fetchBootcampEvents();
     fetchMyRegistrations();
   }, []);
+
+  const fetchBootcampEvents = async () => {
+    try {
+      const result = await bootcampService.listEvents();
+      if (result.success) {
+        setBootcampEvents((result.events || []).map(mapBootcampToEventCard));
+      }
+    } catch (error) {
+      console.error('Error fetching bootcamp events:', error);
+    }
+  };
 
   const fetchMyRegistrations = async () => {
     if (!authService.isAuthenticated()) return;
     
     try {
-      const result = await eventService.getMyRegistrations();
-      if (result.success) {
-        setMyRegistrations(result.registrations || []);
+      const [eventResult, bootcampResult] = await Promise.all([
+        eventService.getMyRegistrations(),
+        bootcampService.myRegistrations(),
+      ]);
+      if (eventResult.success) {
+        setMyRegistrations(eventResult.registrations || []);
+      }
+      if (bootcampResult.success) {
+        setBootcampRegistrations(bootcampResult.registrations || []);
       }
     } catch (error) {
       console.error('Error fetching registrations:', error);
@@ -446,8 +505,14 @@ const EventsPage = ({ isOpen, onClose, isFullPage = false }) => {
 
   // Check if user is registered for an event
   const isRegisteredForEvent = (eventId, eventRoute, eventSlug) => {
+    const isBootcampRegistered = bootcampRegistrations.some(reg => {
+      const slug = reg.event?.slug || reg.event_slug;
+      return slug && (slug === eventSlug || slug === eventId);
+    });
+    if (isBootcampRegistered) return true;
+
     if (!myRegistrations.length) return false;
-    
+
     // Match by event_slug (most reliable)
     if (eventSlug) {
       return myRegistrations.some(reg => reg.event_slug === eventSlug && reg.status !== 'cancelled');
@@ -462,7 +527,9 @@ const EventsPage = ({ isOpen, onClose, isFullPage = false }) => {
     });
   };
 
-  const filteredEvents = EVENTS_DATA.filter(event => {
+  const allEvents = [...bootcampEvents, ...EVENTS_DATA];
+
+  const filteredEvents = allEvents.filter(event => {
     // Show all events with open registrations (current and upcoming events)
     // Registration status takes priority over date filtering
     if (!event.registrationOpen) return false;
