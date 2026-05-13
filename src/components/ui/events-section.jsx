@@ -8,7 +8,7 @@ const events = [
   {
     name: 'DEVWAVE 2026',
     slug: 'devwave-2026',
-    image: '/images/posters/6.png',
+    image: '/images/posters/devwave.png',
     route: '/events/devwave-2026',
     color: '#7c3aed',
     tag: 'Bootcamp',
@@ -18,7 +18,7 @@ const events = [
   {
     name: 'CodeNex 3.0',
     slug: 'codenex-3',
-    image: '/images/posters/6.png',
+    image: '/images/posters/codenex.png',
     route: '/events/codenex-3',
     color: '#2563eb',
     tag: 'Bootcamp',
