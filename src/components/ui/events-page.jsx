@@ -91,8 +91,46 @@ const isTimelinePast = (dateString) => {
 
 // --- Events Data (Current & Upcoming) ---
 export const EVENTS_DATA = [
-  // Bootcamp events are shown via the /events/[slug] dynamic route
-  // Add upcoming events here when registration opens
+  {
+    id: 'codenex-3',
+    event_slug: 'codenex-3',
+    title: 'CodeNex 3.0',
+    category: 'Bootcamps',
+    date: '10 Week Program',
+    time: '10 Week Program',
+    description: 'A structured DSA learning program focused on problem-solving, coding logic, and interview preparation.',
+    fullDescription: 'A structured DSA learning program focused on problem-solving, coding logic, and interview preparation. Designed to build strong fundamentals and crack technical interviews.',
+    image: '/images/posters/codenex.png',
+    difficulty: 'Beginner',
+    language: 'DSA, Problem Solving, Interview Prep',
+    location: 'Online / IEEE RGIPT',
+    requirements: ['DSA', 'Problem Solving', 'Interview Prep'],
+    registrationOpen: true,
+    route: '/events/codenex-3',
+    seatsLimited: false,
+    registeredSeats: 0,
+    totalSeats: 0,
+  },
+  {
+    id: 'devwave-2026',
+    event_slug: 'devwave-2026',
+    title: 'DEVWAVE 2026',
+    category: 'Bootcamps',
+    date: 'Multi-week Bootcamp',
+    time: 'Multi-week Bootcamp',
+    description: 'A beginner-friendly hands-on bootcamp helping students explore UI/UX, frontend, backend, and React.',
+    fullDescription: 'A beginner-friendly hands-on bootcamp helping students explore UI/UX, frontend, backend, and React. Build real projects and gain practical development skills.',
+    image: '/images/posters/devwave.png',
+    difficulty: 'Beginner',
+    language: 'UI/UX, Frontend, Backend, React',
+    location: 'Online / IEEE RGIPT',
+    requirements: ['UI/UX', 'Frontend', 'Backend', 'React'],
+    registrationOpen: true,
+    route: '/events/devwave-2026',
+    seatsLimited: false,
+    registeredSeats: 0,
+    totalSeats: 0,
+  },
 ];
 
 // --- Past Events Data ---
@@ -464,7 +502,7 @@ const EventsPage = ({ isOpen, onClose, isFullPage = false }) => {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [myRegistrations, setMyRegistrations] = useState([]);
-  const [bootcampEvents, setBootcampEvents] = useState([]);
+  const [bootcampEvents, setBootcampEvents] = useState(EVENTS_DATA);
   const [bootcampRegistrations, setBootcampRegistrations] = useState([]);
 
   useEffect(() => {
@@ -476,11 +514,13 @@ const EventsPage = ({ isOpen, onClose, isFullPage = false }) => {
   const fetchBootcampEvents = async () => {
     try {
       const result = await bootcampService.listEvents();
-      if (result.success) {
-        setBootcampEvents((result.events || []).map(mapBootcampToEventCard));
+      // Only override static data if the API actually returns events
+      if (result.success && result.events && result.events.length > 0) {
+        setBootcampEvents(result.events.map(mapBootcampToEventCard));
       }
     } catch (error) {
       console.error('Error fetching bootcamp events:', error);
+      // Keep initial EVENTS_DATA static fallback
     }
   };
 
@@ -527,7 +567,8 @@ const EventsPage = ({ isOpen, onClose, isFullPage = false }) => {
     });
   };
 
-  const allEvents = [...bootcampEvents, ...EVENTS_DATA];
+  // API events take priority; if API is offline, bootcampEvents holds static EVENTS_DATA
+  const allEvents = [...bootcampEvents];
 
   const filteredEvents = allEvents.filter(event => {
     // Show all events with open registrations (current and upcoming events)
