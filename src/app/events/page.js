@@ -1,6 +1,10 @@
 "use client"
+import dynamic from "next/dynamic";
 import PillNav from "@/components/ui/PillNav";
-import EventsPage from "@/components/ui/events-page";
+
+const EventsPage = dynamic(() => import("@/components/ui/events-page"), {
+  ssr: false,
+});
 
 const navItems = [
   { label: "IEEE", href: "/" },
