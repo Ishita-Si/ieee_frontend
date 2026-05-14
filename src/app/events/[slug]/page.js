@@ -308,15 +308,17 @@ export default function BootcampEventPage() {
                     {latestUpdate.short_description && (
                       <p className="text-white/60 text-sm mt-1">{latestUpdate.short_description}</p>
                     )}
-                    <a
-                      href={latestUpdate.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 mt-3 text-sm text-purple-400 hover:text-purple-300"
-                    >
-                      {isYouTubeLink(latestUpdate.link) ? "Watch today’s video" : "Open today’s task"}{" "}
-                      <ExternalLink className="w-4 h-4" />
-                    </a>
+                    {latestUpdate.link && (
+                      <a
+                        href={latestUpdate.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 mt-3 text-sm text-purple-400 hover:text-purple-300"
+                      >
+                        {isYouTubeLink(latestUpdate.link) ? "Watch today’s video" : "Open today’s task"}{" "}
+                        <ExternalLink className="w-4 h-4" />
+                      </a>
+                    )}
                   </article>
 
                   {previousUpdates.length > 0 && (
@@ -332,15 +334,17 @@ export default function BootcampEventPage() {
                             {u.short_description && (
                               <p className="text-white/60 text-sm mt-1">{u.short_description}</p>
                             )}
-                            <a
-                              href={u.link}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center gap-2 mt-3 text-sm text-purple-400 hover:text-purple-300"
-                            >
-                              {isYouTubeLink(u.link) ? "Watch video" : "Open resource"}{" "}
-                              <ExternalLink className="w-4 h-4" />
-                            </a>
+                            {u.link && (
+                              <a
+                                href={u.link}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-2 mt-3 text-sm text-purple-400 hover:text-purple-300"
+                              >
+                                {isYouTubeLink(u.link) ? "Watch video" : "Open resource"}{" "}
+                                <ExternalLink className="w-4 h-4" />
+                              </a>
+                            )}
                           </li>
                         ))}
                       </ul>

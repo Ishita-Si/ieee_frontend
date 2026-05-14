@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import PillNav from "@/components/ui/PillNav";
@@ -23,19 +23,28 @@ export default function BootcampUpdatesAdminPage() {
   const [shortDescription, setShortDescription] = useState("");
   const [link, setLink] = useState("");
 
-  const load = async () => {
+  const fetchUpdates = useCallback(async () => {
     const token = authService.getToken();
     const res = await fetch(`${API()}/admin/bootcamp/events/${id}/updates`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     const data = await res.json();
-    setUpdates(data.updates || []);
-    setLoading(false);
-  };
+    return data.updates || [];
+  }, [id]);
 
   useEffect(() => {
-    load();
-  }, [id]);
+    let ignore = false;
+    (async () => {
+      const nextUpdates = await fetchUpdates();
+      if (!ignore) {
+        setUpdates(nextUpdates);
+        setLoading(false);
+      }
+    })();
+    return () => {
+      ignore = true;
+    };
+  }, [fetchUpdates]);
 
   const add = async (e) => {
     e.preventDefault();
@@ -49,7 +58,8 @@ export default function BootcampUpdatesAdminPage() {
       setTitle("");
       setShortDescription("");
       setLink("");
-      load();
+      const nextUpdates = await fetchUpdates();
+      setUpdates(nextUpdates);
     } else alert((await res.json().catch(() => ({}))).error || "Failed");
   };
 
@@ -60,7 +70,8 @@ export default function BootcampUpdatesAdminPage() {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` },
     });
-    load();
+    const nextUpdates = await fetchUpdates();
+    setUpdates(nextUpdates);
   };
 
   if (loading) {
