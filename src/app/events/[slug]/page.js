@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter, useParams } from "next/navigation";
 import PillNav from "@/components/ui/PillNav";
@@ -62,11 +62,15 @@ export default function BootcampEventPage() {
   const [regLoading, setRegLoading] = useState(false);
   const [updatesLoading, setUpdatesLoading] = useState(false);
   const [toast, setToast] = useState("");
-  const sortedUpdates = [...updates].sort((a, b) => {
-    const aTime = new Date(a?.createdAt || a?.updatedAt || 0).getTime();
-    const bTime = new Date(b?.createdAt || b?.updatedAt || 0).getTime();
-    return bTime - aTime;
-  });
+  const sortedUpdates = useMemo(
+    () =>
+      [...updates].sort((a, b) => {
+        const aTime = new Date(a?.createdAt || a?.updatedAt || 0).getTime();
+        const bTime = new Date(b?.createdAt || b?.updatedAt || 0).getTime();
+        return bTime - aTime;
+      }),
+    [updates]
+  );
   const latestUpdate = sortedUpdates[0] || null;
   const previousUpdates = sortedUpdates.slice(1);
 
