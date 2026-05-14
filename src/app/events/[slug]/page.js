@@ -307,7 +307,7 @@ export default function BootcampEventPage() {
                 <div className="space-y-6">
                   <article className="p-5 rounded-xl bg-black/40 border border-purple-500/30">
                     <h4 className="font-medium text-white">
-                      {latestUpdate.title || "Today's task"}
+                      {latestUpdate.title || "Today's task update"}
                     </h4>
                     {latestUpdate.short_description && (
                       <p className="text-white/60 text-sm mt-1">{latestUpdate.short_description}</p>
