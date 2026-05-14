@@ -42,7 +42,7 @@ function isYouTubeLink(url) {
   if (!url) return false;
   try {
     const parsed = new URL(url);
-    return /(^|\.)youtube\.com$/.test(parsed.hostname) || parsed.hostname === "youtu.be";
+    return /(^|.*\.)youtube\.com$/.test(parsed.hostname) || parsed.hostname === "youtu.be";
   } catch {
     return false;
   }
