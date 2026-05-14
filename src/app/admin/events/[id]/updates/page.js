@@ -77,31 +77,34 @@ export default function BootcampUpdatesAdminPage() {
       <Link href="/admin/events" className="text-sm text-purple-400 mb-6 inline-block">
         ← Programs
       </Link>
-      <h1 className="text-2xl font-bold mb-8">Program updates</h1>
+      <h1 className="text-2xl font-bold mb-8">Program task updates</h1>
 
       <form onSubmit={add} className="space-y-3 mb-10 p-4 rounded-xl border border-white/10">
         <input
           className="w-full px-3 py-2 rounded bg-white/5 border border-white/10"
-          placeholder="Title"
+          placeholder="Today's task title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           required
         />
         <input
           className="w-full px-3 py-2 rounded bg-white/5 border border-white/10"
-          placeholder="Short description"
+          placeholder="Task details for participants"
           value={shortDescription}
           onChange={(e) => setShortDescription(e.target.value)}
         />
         <input
           className="w-full px-3 py-2 rounded bg-white/5 border border-white/10"
-          placeholder="https://…"
+          placeholder="https://youtube.com/…"
           value={link}
           onChange={(e) => setLink(e.target.value)}
           required
         />
+        <p className="text-xs text-white/50">
+          Add the YouTube walkthrough link so registered participants can access today&apos;s video.
+        </p>
         <button type="submit" className="px-4 py-2 rounded-lg bg-purple-600 text-sm">
-          Add update
+          Add task update
         </button>
       </form>
 
