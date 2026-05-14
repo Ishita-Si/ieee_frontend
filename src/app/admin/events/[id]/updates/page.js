@@ -112,7 +112,7 @@ export default function BootcampUpdatesAdminPage() {
           required
         />
         <p className="text-xs text-white/50">
-          Add the YouTube walkthrough link so registered participants can access today&apos;s video.
+          Add a YouTube walkthrough link or any other resource URL for registered participants.
         </p>
         <button type="submit" className="px-4 py-2 rounded-lg bg-purple-600 text-sm">
           Add task update
