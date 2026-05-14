@@ -30,6 +30,9 @@ const SLUG_POSTER_MAP = {
   'devwave-2026': '/images/posters/devwave.png',
   'codenex-3': '/images/posters/codenex.png',
 };
+const DEVWAVE_TODAY_IMAGE_URL = "https://github.com/user-attachments/assets/c4036ce3-0e33-4730-8d29-ef648c6060bb";
+const DEVWAVE_TODAY_DATE = "14/05/2026";
+const DEVWAVE_TODAY_VIDEO_URL = "https://youtu.be/hHY7FyPxzzE?si=NzPr3yx3rmmna8uY";
 
 function bannerSrc(url, slug) {
   if (!url || url.match(/\/images\/posters\/(?:4|6)\.png$/)) {
@@ -299,6 +302,25 @@ export default function BootcampEventPage() {
           {registered && (
             <section className="mt-10 border-t border-white/10 pt-10">
               <h3 className="text-lg font-semibold mb-4">Today&apos;s task & video</h3>
+              {slug === "devwave-2026" && (
+                <article className="p-5 rounded-xl bg-black/40 border border-purple-500/30 mb-6">
+                  <img
+                    src={DEVWAVE_TODAY_IMAGE_URL}
+                    alt="DevWave today's task"
+                    className="w-full rounded-lg border border-white/10"
+                  />
+                  <p className="text-white/80 text-sm mt-4">{DEVWAVE_TODAY_DATE}</p>
+                  <a
+                    href={DEVWAVE_TODAY_VIDEO_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 mt-3 px-4 py-2 rounded-lg bg-purple-600 hover:bg-purple-500 text-sm font-medium"
+                  >
+                    Watch today&apos;s video
+                    <ExternalLink className="w-4 h-4" />
+                  </a>
+                </article>
+              )}
               {updatesLoading ? (
                 <Loader2 className="w-6 h-6 animate-spin text-purple-400" />
               ) : !latestUpdate ? (
