@@ -319,7 +319,7 @@ export default function BootcampEventPage() {
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-2 mt-3 text-sm text-purple-400 hover:text-purple-300"
                       >
-                        {isYouTubeLink(latestUpdate.link) ? "Watch video" : "Open task"}{" "}
+                        {isYouTubeLink(latestUpdate.link) ? "Watch video" : "Open resource"}{" "}
                         <ExternalLink className="w-4 h-4" />
                       </a>
                     )}
