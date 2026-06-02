@@ -6,6 +6,8 @@ import Loader from "@/components/ui/Loader";
 import { Linkedin, ArrowLeft, Mail, Award, Code, Users, Building2, Github, Instagram } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { TEAM_STRUCTURE } from "@/data/team-structure";
+import teamImagesMap from "@/data/team-images-map.json";
 
 const navItems = [
   { label: "IEEE", href: "/" },
@@ -38,18 +40,87 @@ export default function MemberDetailPage() {
           const data = await response.json();
           if (data.success && data.member) {
             setMember(data.member);
-          } else {
-            setError('Member not found');
-            setTimeout(() => router.push('/team'), 2000);
+            setLoading(false);
+            return;
           }
+        }
+        
+        throw new Error("Backend response not ok or member not found in backend");
+      } catch (err) {
+        console.warn('Backend unavailable, falling back to static data:', err);
+        
+        // STATIC DATA FALLBACK
+        const memberSlug = params.slug;
+        let foundMember = null;
+        let memberTeam = "";
+        let memberPos = "";
+
+        // Helper to check if slug matches
+        const checkMatch = (person, teamName, pos) => {
+          if (!person) return false;
+          // Simple slug generator for comparison
+          const slug = person.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+          // In team-data.js, officers might have '-cs' etc appended, but let's just do a basic match first
+          // Actually, if we just check if the slug matches the person name loosely:
+          if (slug === memberSlug || memberSlug.startsWith(slug)) {
+            foundMember = person;
+            memberTeam = teamName;
+            memberPos = person.position || pos;
+            return true;
+          }
+          return false;
+        };
+
+        // Search executive officers
+        if (TEAM_STRUCTURE.executive_officers) {
+          for (const exec of TEAM_STRUCTURE.executive_officers) {
+            if (checkMatch(exec, "Leaders", exec.position)) break;
+          }
+        }
+
+        // Search teams
+        if (!foundMember && TEAM_STRUCTURE.teams) {
+          for (const [teamKey, teamData] of Object.entries(TEAM_STRUCTURE.teams)) {
+            if (foundMember) break;
+            
+            // check officers
+            if (teamData.officers) {
+              for (const off of teamData.officers) {
+                if (checkMatch(off, teamKey, off.position)) break;
+              }
+            }
+            if (foundMember) break;
+            
+            // check head
+            if (teamData.heads_and_coheads?.head) {
+              if (checkMatch(teamData.heads_and_coheads.head, teamKey, "Head")) break;
+            }
+            if (foundMember) break;
+            
+            // check coheads
+            if (teamData.heads_and_coheads?.co_heads) {
+              for (const cohead of teamData.heads_and_coheads.co_heads) {
+                if (checkMatch(cohead, teamKey, "Co-Head")) break;
+              }
+            }
+          }
+        }
+
+        if (foundMember) {
+          const staticImage = teamImagesMap[foundMember.name] || teamImagesMap[foundMember.name.split(" ")[0]];
+          
+          setMember({
+            ...foundMember,
+            team: memberTeam,
+            position: memberPos,
+            image: staticImage || null,
+            bio: "IEEE Student Branch RGIPT Core Team Member.",
+            achievements: "Driving excellence and innovation in our student chapter.",
+          });
         } else {
           setError('Member not found');
           setTimeout(() => router.push('/team'), 2000);
         }
-      } catch (err) {
-        console.error('Error fetching member:', err);
-        setError('Failed to load member profile');
-        setTimeout(() => router.push('/team'), 2000);
       } finally {
         setLoading(false);
       }
