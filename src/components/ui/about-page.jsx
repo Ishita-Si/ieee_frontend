@@ -1,382 +1,405 @@
-"use client"
-import React, { useState, useEffect, useRef } from 'react';
-import Link from 'next/link'; // Using <a> for standalone compatibility
-import { Target, Users, Award, Lightbulb, TrendingUp, Code, BookOpen, Trophy, Calendar, Briefcase, Network, GraduationCap, ArrowRight, Sparkles, Zap, Heart, Rocket, Camera } from 'lucide-react';
+"use client";
 
-// --- Shared Components ---
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
+import {
+  HERO,
+  HERO_GALLERY,
+  MARQUEE_GALLERY,
+  MISSION,
+  OFFERINGS,
+  TIMELINE,
+  CTA,
+} from "@/data/about-data";
 
-const StatCard = ({ value, label, icon: Icon, delay = 0 }) => {
-  const [isVisible, setIsVisible] = useState(false);
-  const [count, setCount] = useState(0);
-  const [isHovered, setIsHovered] = useState(false);
-  const cardRef = useRef(null);
+const t = {
+  page: "min-h-screen bg-[#050505] text-white font-sans",
+  grain:
+    "fixed inset-0 opacity-[0.03] pointer-events-none z-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')]",
+  section: "py-16 px-4 sm:px-8 max-w-7xl mx-auto",
+  divider: "border-b border-white/10",
+  band: "bg-white/[0.02] border-y border-white/10",
+  label: "text-purple-400 text-xs font-bold uppercase tracking-[0.2em]",
+  h1: "text-4xl sm:text-5xl md:text-6xl font-black tracking-tight text-white leading-[1.05]",
+  h2: "text-3xl sm:text-4xl font-bold text-white",
+  body: "text-zinc-400 leading-relaxed",
+  primaryBtn:
+    "inline-flex items-center justify-center px-6 py-3 bg-white text-black font-bold rounded-xl hover:bg-purple-50 transition-colors",
+  secondaryBtn:
+    "inline-flex items-center justify-center gap-2 px-6 py-3 border border-white/20 text-white font-medium rounded-xl hover:bg-white/5 transition-colors",
+  statPill:
+    "px-4 py-2 rounded-full text-sm border border-white/10 bg-white/5 text-white inline-flex items-baseline gap-2",
+  statValue: "font-bold text-white",
+  statLabel: "text-zinc-400 text-xs uppercase tracking-wider",
+  timelineLine: "border-l border-white/10",
+  timelineDot:
+    "absolute left-[-5px] top-1 w-2.5 h-2.5 rounded-full bg-purple-500 border-2 border-[#050505] shadow-[0_0_0_4px_#050505]",
+  yearBadge:
+    "text-pink-400 font-mono text-xs border border-pink-500/20 px-2 py-0.5 rounded bg-pink-500/5",
+};
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting && !isVisible) {
-            setIsVisible(true);
-            const numericValue = parseInt(value.toString().replace(/\D/g, ''));
-            const duration = 2000;
-            const startTime = Date.now();
-            const startValue = 0;
+const blobStyles = `
+  @keyframes about-blob {
+    0% { transform: translate(0px, 0px) scale(1); }
+    33% { transform: translate(30px, -50px) scale(1.1); }
+    66% { transform: translate(-20px, 20px) scale(0.9); }
+    100% { transform: translate(0px, 0px) scale(1); }
+  }
+  .about-animate-blob {
+    animation: about-blob 20s infinite cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .about-animation-delay-2000 { animation-delay: 2s; }
+  .about-animation-delay-4000 { animation-delay: 4s; }
+`;
 
-            const animate = () => {
-              const now = Date.now();
-              const elapsed = (now - startTime) / 1000;
-              const progress = Math.min(elapsed / (duration / 1000), 1);
-              const easeOutQuart = 1 - Math.pow(1 - progress, 4);
-              const current = Math.floor(startValue + (numericValue - startValue) * easeOutQuart);
-              setCount(current);
-
-              if (progress < 1) {
-                requestAnimationFrame(animate);
-              } else {
-                setCount(numericValue);
-              }
-            };
-            animate();
-          }
-        });
-      },
-      { threshold: 0.3 }
-    );
-
-    if (cardRef.current) observer.observe(cardRef.current);
-    return () => {
-        if (cardRef.current) observer.unobserve(cardRef.current);
+const marqueeStyles = `
+  @keyframes about-marquee-scroll {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  .about-marquee-track {
+    display: flex;
+    width: max-content;
+    gap: 1rem;
+    animation: about-marquee-scroll 45s linear infinite;
+  }
+  .about-marquee-track:hover {
+    animation-play-state: paused;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .about-marquee-track {
+      animation: none;
+      flex-wrap: wrap;
+      width: 100%;
+      justify-content: center;
     }
-  }, [isVisible, value]);
+  }
+`;
 
-  const suffix = value.toString().includes('+') ? '+' : value.toString().includes('%') ? '%' : '';
-
+function AboutPhoto({ src, alt, className = "", priority = false }) {
   return (
-    <div
-      ref={cardRef}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      className="group relative overflow-hidden"
-      style={{
-        opacity: isVisible ? 1 : 0,
-        transform: isVisible ? 'translateY(0)' : 'translateY(30px)',
-        transition: `all 0.8s cubic-bezier(0.22, 1, 0.36, 1) ${delay}ms`
-      }}
-    >
-      {/* Main Card */}
-      <div className="relative bg-zinc-900/40 border border-white/10 rounded-xl p-6 backdrop-blur-sm transition-all duration-500 group-hover:bg-zinc-900/80 group-hover:border-purple-500/30 group-hover:shadow-[0_0_30px_-10px_rgba(168,85,247,0.15)]">
-        
-        <div className="flex items-end justify-between mb-4">
-            <div className="p-3 bg-purple-500/10 rounded-lg border border-purple-500/20 group-hover:bg-purple-500/20 transition-colors">
-                <Icon className="w-6 h-6 text-purple-400 group-hover:text-purple-300 transition-colors" />
-            </div>
-            <div className="text-4xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-br from-white via-purple-200 to-purple-400">
-                {count}{suffix}
-            </div>
-        </div>
-
-        {/* Label */}
-        <div className="relative z-10">
-          <p className="text-zinc-400 text-sm font-bold uppercase tracking-wider group-hover:text-white transition-colors">
-            {label}
-          </p>
-        </div>
-
-        {/* Hover Line */}
-        <div className="absolute bottom-0 left-0 w-full h-[2px] bg-gradient-to-r from-purple-500 via-pink-500 to-purple-500 scale-x-0 group-hover:scale-x-100 transition-transform duration-700" />
-      </div>
-    </div>
+    <img
+      src={src}
+      alt={alt}
+      className={className}
+      loading={priority ? "eager" : "lazy"}
+      decoding="async"
+    />
   );
-};
-
-const ValueCard = ({ title, description, icon: Icon, delay = 0, colorClass = "text-purple-400", bgClass = "bg-purple-500/10", borderHover = "group-hover:border-purple-500/50" }) => {
-  return (
-    <div
-      className={`group relative bg-black border border-white/10 p-8 hover:border-white/20 transition-all duration-500 overflow-hidden rounded-2xl ${borderHover}`}
-      style={{ animationDelay: `${delay}ms` }}
-    >
-      {/* Background Glow */}
-      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none">
-         <div className={`absolute -right-10 -top-10 w-32 h-32 rounded-full blur-[50px] opacity-20 ${bgClass.replace('/10', '/40')}`} />
-      </div>
-
-      <div className="relative z-10">
-        <div className={`w-12 h-12 mb-6 flex items-center justify-center rounded-xl ${bgClass} border border-white/5 group-hover:scale-110 transition-all duration-500`}>
-            <Icon className={`w-6 h-6 ${colorClass}`} />
-        </div>
-        <h3 className="text-xl font-bold text-white mb-3 tracking-tight group-hover:translate-x-2 transition-transform duration-500">
-          {title}
-        </h3>
-        <p className="text-zinc-400 text-sm leading-relaxed group-hover:text-zinc-300 transition-colors group-hover:translate-x-2 duration-500 delay-75">
-          {description}
-        </p>
-      </div>
-    </div>
-  );
-};
-
-const OfferCard = ({ title, description, icon: Icon, idx }) => {
-  return (
-    <div className="group relative border-b border-white/10 last:border-b-0 md:border-b-0 md:border-r md:last:border-r-0 border-dashed p-8 hover:bg-white/[0.02] transition-colors">
-        <div className="mb-6 inline-block p-3 rounded-lg bg-blue-500/5 border border-blue-500/10 group-hover:bg-blue-500/10 group-hover:border-blue-500/30 transition-all duration-500">
-            <Icon className="w-6 h-6 text-blue-400 group-hover:text-blue-300 transition-colors duration-500 group-hover:scale-110" />
-        </div>
-        <h3 className="text-lg font-bold text-white mb-3 flex items-center gap-2 group-hover:text-blue-300 transition-colors">
-            {title}
-            <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 text-blue-400" />
-        </h3>
-        <p className="text-zinc-500 text-sm leading-relaxed group-hover:text-zinc-300 transition-colors">
-            {description}
-        </p>
-    </div>
-  );
-};
-
-const AchievementTimeline = ({ year, title, description, delay = 0 }) => {
-  return (
-    <div className="relative pl-8 pb-12 border-l border-white/10 last:pb-0 group">
-      <div className="absolute left-[-5px] top-0 w-2.5 h-2.5 bg-black border-2 border-zinc-700 group-hover:border-pink-500 group-hover:bg-pink-500 transition-all duration-300 group-hover:scale-125 shadow-[0_0_0_4px_black]" />
-      
-      <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-2">
-        <span className="text-pink-400 font-mono text-xs border border-pink-500/20 px-2 py-0.5 rounded bg-pink-500/5 group-hover:bg-pink-500 group-hover:text-white transition-colors">
-            {year}
-        </span>
-        <h3 className="text-lg font-bold text-white group-hover:text-pink-200 transition-colors">
-            {title}
-        </h3>
-      </div>
-      <p className="text-zinc-500 text-sm max-w-md group-hover:text-zinc-300 transition-colors">{description}</p>
-    </div>
-  );
-};
-
-const ImageGallery = () => {
-  const images = [
-    "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=1000&auto=format&fit=crop", // Coding/Meeting
-    "https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=1000&auto=format&fit=crop", // Team High Five
-    "https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=1000&auto=format&fit=crop", // Workshop
-    "https://images.unsplash.com/photo-1504384764586-bb4cdc1707b0?q=80&w=1000&auto=format&fit=crop"  // Hackathon
-  ];
-
-  return (
-    <div className="mb-32">
-        <div className="flex items-center gap-4 mb-12">
-            <div className="h-px flex-1 bg-gradient-to-r from-transparent to-white/10" />
-            <div className="flex items-center gap-2 text-cyan-400 font-mono text-sm uppercase tracking-widest">
-                <Camera className="w-4 h-4" />
-                <span>Life at IEEE</span>
-            </div>
-            <div className="h-px flex-1 bg-gradient-to-r from-white/10 to-transparent" />
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {images.map((src, idx) => (
-            <div 
-                key={idx} 
-                className={`relative group overflow-hidden rounded-xl h-64 border border-white/10 hover:border-cyan-500/50 transition-colors duration-500 ${
-                    idx % 2 === 1 ? 'md:translate-y-8' : ''
-                }`}
-            >
-                <div className="absolute inset-0 bg-zinc-950/60 group-hover:bg-transparent transition-colors duration-500 z-10" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent z-10 opacity-80" />
-                
-                <img
-                    src={src}
-                    alt="IEEE Event"
-                    className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 transform group-hover:scale-110"
-                />
-                
-                {/* Overlay Info */}
-                <div className="absolute bottom-0 left-0 w-full p-4 z-20 translate-y-full group-hover:translate-y-0 transition-transform duration-500">
-                    <div className="text-xs font-bold text-cyan-400 uppercase tracking-wider mb-1">Gallery</div>
-                    <div className="text-white text-sm font-medium">Moment {idx + 1}</div>
-                </div>
-            </div>
-        ))}
-        </div>
-    </div>
-  )
 }
 
-const AboutPage = () => {
-  const [isLoaded, setIsLoaded] = useState(false);
-
-  useEffect(() => {
-    setIsLoaded(true);
-  }, []);
-
-  const values = [
-    { 
-        title: 'Innovation', 
-        description: 'Pushing boundaries with cutting-edge solutions.', 
-        icon: Lightbulb,
-        colorClass: "text-amber-400",
-        bgClass: "bg-amber-500/10",
-        borderHover: "group-hover:border-amber-500/50"
-    },
-    { 
-        title: 'Collaboration', 
-        description: 'Building a community of shared knowledge.', 
-        icon: Network,
-        colorClass: "text-blue-400",
-        bgClass: "bg-blue-500/10",
-        borderHover: "group-hover:border-blue-500/50"
-    },
-    { 
-        title: 'Excellence', 
-        description: 'Striving for the highest technical standards.', 
-        icon: Award,
-        colorClass: "text-purple-400",
-        bgClass: "bg-purple-500/10",
-        borderHover: "group-hover:border-purple-500/50"
-    },
-    { 
-        title: 'Leadership', 
-        description: 'Forging the next generation of tech leaders.', 
-        icon: TrendingUp,
-        colorClass: "text-rose-400",
-        bgClass: "bg-rose-500/10",
-        borderHover: "group-hover:border-rose-500/50"
-    }
-  ];
-
-  const offers = [
-    { title: 'Technical Workshops', description: 'Master modern stacks and tools.', icon: Code },
-    { title: 'Guest Lectures', description: 'Insights from industry veterans.', icon: BookOpen },
-    { title: 'Hackathons', description: 'Solve real problems, win big.', icon: Trophy },
-    { title: 'Research', description: 'Contribute to global innovation.', icon: Rocket },
-    { title: 'Networking', description: 'Connect with peers and pros.', icon: Users },
-    { title: 'Certifications', description: 'Validate your skills globally.', icon: GraduationCap }
-  ];
-
-  const stats = [
-    { value: '300+', label: 'Members', icon: Users },
-    { value: '75+', label: 'Events', icon: Calendar },
-    { value: '20+', label: 'Awards', icon: Trophy },
-    { value: '100%', label: 'Growth', icon: TrendingUp },
-  ];
-
-  const achievements = [
-    { year: '2025', title: 'National Hackathon Winner', description: 'First place in the All-India Code Fest among 500+ teams.' },
-    { year: '2024', title: 'Best Student Branch', description: 'Awarded for outstanding activity and member engagement.' },
-    { year: '2022', title: 'Research Excellence', description: 'Published 15+ papers in IEEE international conferences.' }
-  ];
-
+function AboutBackground() {
   return (
-    <div className="min-h-screen bg-[#050505] text-white font-sans selection:bg-purple-500/30 selection:text-purple-200">
-      
-      {/* Grainy Texture Overlay */}
-      <div className="fixed inset-0 opacity-[0.03] pointer-events-none z-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
+    <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
+      <style>{blobStyles}</style>
+      <div className="absolute inset-0 bg-black" />
+      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-100 contrast-150" />
+      <div className="absolute top-0 -left-4 w-96 h-96 bg-purple-600 rounded-full mix-blend-multiply filter blur-[128px] opacity-40 about-animate-blob" />
+      <div className="absolute top-0 -right-4 w-96 h-96 bg-pink-600 rounded-full mix-blend-multiply filter blur-[128px] opacity-40 about-animate-blob about-animation-delay-2000" />
+      <div className="absolute -bottom-32 left-20 w-96 h-96 bg-blue-600 rounded-full mix-blend-multiply filter blur-[128px] opacity-40 about-animate-blob about-animation-delay-4000" />
+    </div>
+  );
+}
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32">
-        
-        {/* Header */}
-        <div className={`mb-24 md:mb-32 transition-all duration-1000 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 border-b border-white/10 pb-12">
-            <div className="max-w-2xl">
-                <div className="flex items-center gap-3 mb-6">
-                    <div className="h-px w-8 bg-purple-500" />
-                    <span className="text-purple-400 text-xs font-bold uppercase tracking-[0.2em]">Who We Are</span>
-                </div>
-                <h1 className="text-5xl md:text-7xl font-black tracking-tighter leading-[0.95] mb-6 text-white">
-                    Engineering <br/>
-                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-zinc-500 via-purple-400 to-pink-500">The Future.</span>
-                </h1>
-                <p className="text-zinc-400 text-lg leading-relaxed max-w-lg">
-                    IEEE RGIPT is where ambition meets opportunity. We are a collective of innovators, builders, and leaders dedicated to advancing technology for humanity.
-                </p>
-            </div>
-            
-            {/* Stats Row */}
-            <div className="grid grid-cols-2 gap-4 w-full md:w-auto">
-                {stats.slice(0,2).map((stat, idx) => (
-                    <div key={idx} className="p-4 border-l border-white/10">
-                        <div className="text-2xl font-bold text-white">{stat.value}</div>
-                        <div className="text-xs text-purple-400 uppercase tracking-wider font-bold">{stat.label}</div>
-                    </div>
-                ))}
-            </div>
+function SectionLabel({ children }) {
+  return <p className={`${t.label} mb-3`}>{children}</p>;
+}
+
+function SectionShell({ children, className = "", band = false, divider = true }) {
+  return (
+    <section
+      className={[
+        band ? t.band : "",
+        divider && !band ? t.divider : "",
+        className,
+      ]
+        .filter(Boolean)
+        .join(" ")}
+    >
+      <div className={t.section}>{children}</div>
+    </section>
+  );
+}
+
+function HeroSection() {
+  return (
+    <SectionShell divider>
+      <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+        <div>
+          <p className={`${t.label} mb-4`}>{HERO.eyebrow}</p>
+          <h1 className={`${t.h1} mb-6`}>{HERO.title}</h1>
+          <p className={`${t.body} text-lg max-w-xl mb-8`}>{HERO.subtitle}</p>
+
+          <div className="flex flex-wrap gap-4 mb-10">
+            <Link href={HERO.primaryCta.href} className={t.primaryBtn}>
+              {HERO.primaryCta.label}
+            </Link>
+            <Link href={HERO.secondaryCta.href} className={t.secondaryBtn}>
+              {HERO.secondaryCta.label}
+              <ArrowRight className="w-4 h-4" aria-hidden="true" />
+            </Link>
+          </div>
+
+          <div className="flex flex-wrap gap-3">
+            {HERO.stats.map((stat) => (
+              <div key={stat.label} className={t.statPill}>
+                <span className={t.statValue}>{stat.value}</span>
+                <span className={t.statLabel}>{stat.label}</span>
+              </div>
+            ))}
           </div>
         </div>
 
-        {/* Image Gallery Section */}
-        <ImageGallery />
-
-        {/* Mission Statement */}
-        <div className="grid md:grid-cols-12 gap-12 mb-32 items-center">
-            <div className="md:col-span-4">
-                <h2 className="text-3xl font-bold text-white mb-4">Our Mission</h2>
-                <div className="w-12 h-1 bg-gradient-to-r from-purple-500 to-pink-500 mb-6" />
-                <p className="text-zinc-400 leading-relaxed">
-                    To foster a culture of <span className="text-white font-medium">technical excellence</span> and <span className="text-white font-medium">professional growth</span>. We provide the resources, mentorship, and platform for students to transform theoretical knowledge into impactful reality.
-                </p>
+        <div className="grid grid-cols-2 gap-4">
+          {HERO_GALLERY.map((item) => (
+            <div
+              key={item.src}
+              className="relative aspect-[4/3] overflow-hidden rounded-xl border border-white/10 bg-zinc-900"
+            >
+              <AboutPhoto
+                src={item.src}
+                alt={item.alt}
+                className="h-full w-full object-cover"
+                priority
+              />
             </div>
-            <div className="md:col-span-8 grid sm:grid-cols-2 gap-4">
-                {values.map((value, idx) => (
-                    <ValueCard key={idx} {...value} delay={idx * 100} />
-                ))}
-            </div>
+          ))}
         </div>
-
-        {/* Offerings - Grid Lines Layout */}
-        <div className="mb-32">
-            <div className="flex items-end justify-between mb-12">
-                <h2 className="text-3xl md:text-4xl font-bold text-white">What We Offer</h2>
-                <a href="/events" className="text-sm text-blue-400 hover:text-blue-300 flex items-center gap-2 transition-colors group">
-                    View Calendar <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </a>
-            </div>
-            <div className="bg-zinc-900/20 border border-white/10 rounded-2xl overflow-hidden">
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-dashed divide-white/10">
-                    {offers.map((offer, idx) => (
-                        <OfferCard key={idx} {...offer} idx={idx} />
-                    ))}
-                </div>
-            </div>
-        </div>
-
-        {/* Achievements Timeline */}
-        <div className="grid md:grid-cols-2 gap-16">
-            <div>
-                <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">Legacy of <br/> <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-500">Success</span></h2>
-                <p className="text-zinc-400 text-lg mb-8 max-w-sm">
-                    Our journey is marked by continuous growth and recognition on national and international platforms.
-                </p>
-                <div className="p-6 bg-gradient-to-br from-purple-500/5 to-pink-500/5 border border-purple-500/10 rounded-xl">
-                    <div className="text-4xl font-black text-white mb-2">15+</div>
-                    <div className="text-sm text-purple-400 font-bold uppercase tracking-wider">Years of Excellence</div>
-                </div>
-            </div>
-            <div className="pt-8">
-                {achievements.map((achievement, idx) => (
-                    <AchievementTimeline key={idx} {...achievement} delay={idx * 100} />
-                ))}
-            </div>
-        </div>
-
-        {/* Final CTA */}
-        <div className="mt-32 pt-20 border-t border-white/10 text-center relative overflow-hidden">
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-1 bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-50" />
-            
-            <h2 className="text-4xl md:text-6xl font-black text-white mb-6 tracking-tight">
-                Ready to shape the future?
-            </h2>
-            <p className="text-zinc-400 mb-10 max-w-xl mx-auto text-lg">
-                Join a community that values innovation and impact. Your journey starts here.
-            </p>
-            <div className="flex justify-center gap-4">
-                <a href="/contact" className="px-8 py-4 bg-white text-black font-bold hover:bg-purple-50 transition-colors rounded-xl shadow-[0_0_30px_-5px_rgba(255,255,255,0.3)]">
-                    Join IEEE RGIPT
-                </a>
-                <a href="/team" className="px-8 py-4 border border-white/20 text-white hover:bg-white/5 transition-colors rounded-xl">
-                    Meet the Team
-                </a>
-            </div>
-        </div>
-
       </div>
+    </SectionShell>
+  );
+}
+
+function GallerySlide({ src, alt }) {
+  return (
+    <div className="relative flex-shrink-0 w-72 sm:w-80 h-52 sm:h-56 overflow-hidden rounded-xl border border-white/10 bg-zinc-900">
+      <AboutPhoto src={src} alt={alt} className="h-full w-full object-cover" />
     </div>
   );
-};
+}
 
-export default AboutPage;
+function GallerySection() {
+  const slides = [...MARQUEE_GALLERY, ...MARQUEE_GALLERY];
+
+  return (
+    <SectionShell divider className="overflow-hidden">
+      <style>{marqueeStyles}</style>
+      <SectionLabel>LIFE AT IEEE</SectionLabel>
+      <h2 className={`${t.h2} mb-8`}>Moments from our events</h2>
+
+      <div className="relative -mx-4 sm:-mx-8 overflow-hidden">
+        <div className="absolute left-0 top-0 bottom-0 w-12 sm:w-20 bg-gradient-to-r from-[#050505] to-transparent z-10 pointer-events-none" />
+        <div className="absolute right-0 top-0 bottom-0 w-12 sm:w-20 bg-gradient-to-l from-[#050505] to-transparent z-10 pointer-events-none" />
+
+        <div className="about-marquee-track py-2">
+          {slides.map((item, index) => (
+            <GallerySlide
+              key={`${item.src}-${index}`}
+              src={item.src}
+              alt={item.alt}
+            />
+          ))}
+        </div>
+      </div>
+    </SectionShell>
+  );
+}
+
+function PillarCard({ title, description, accent, glow, badge, ring }) {
+  return (
+    <article
+      className={`group relative overflow-hidden rounded-2xl border border-white/10 bg-zinc-900/50 p-6 sm:p-7 ring-1 ring-white/5 transition-all duration-300 hover:-translate-y-1 hover:border-white/20 hover:shadow-2xl ${glow} ${ring}`}
+    >
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.06),transparent_55%)] opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+      <div
+        className={`absolute left-0 top-0 right-0 h-0.5 bg-gradient-to-r ${badge} opacity-70 group-hover:opacity-100 transition-opacity`}
+      />
+      <div
+        className={`absolute left-0 top-0 bottom-0 w-1 ${accent} opacity-70 group-hover:w-1.5 transition-all`}
+      />
+
+      <div className="relative pl-3">
+        <h3 className="mb-2 text-xl font-bold tracking-tight text-white transition-colors group-hover:text-purple-100">
+          {title}
+        </h3>
+        <p className={`${t.body} text-sm leading-relaxed`}>{description}</p>
+      </div>
+
+      <div
+        className={`pointer-events-none absolute -right-10 -bottom-10 h-28 w-28 rounded-full ${accent} opacity-[0.12] blur-3xl group-hover:opacity-25 transition-opacity`}
+      />
+    </article>
+  );
+}
+
+function MissionSection() {
+  return (
+    <SectionShell divider>
+      <div className="grid lg:grid-cols-12 gap-10 lg:gap-14 items-start">
+        <div className="lg:col-span-4 lg:sticky lg:top-32">
+          <SectionLabel>{MISSION.label}</SectionLabel>
+          <h2 className={`${t.h2} mb-4`}>{MISSION.title}</h2>
+          <p className={t.body}>{MISSION.description}</p>
+          <div className="mt-8 flex flex-wrap gap-2">
+            {["Excellence", "Community", "Impact"].map((chip) => (
+              <span
+                key={chip}
+                className="rounded-full border border-purple-500/25 bg-purple-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-purple-300"
+              >
+                {chip}
+              </span>
+            ))}
+          </div>
+          <div className="mt-6 h-px w-full max-w-[12rem] bg-gradient-to-r from-purple-500 via-pink-500 to-transparent" />
+        </div>
+
+        <div className="lg:col-span-8 grid sm:grid-cols-2 gap-5">
+          {MISSION.pillars.map((pillar) => (
+            <PillarCard key={pillar.title} {...pillar} />
+          ))}
+        </div>
+      </div>
+    </SectionShell>
+  );
+}
+
+function ProgramCard({ title, description, tag, stripe, tint }) {
+  return (
+    <article
+      className="group relative flex min-h-[200px] flex-col overflow-hidden rounded-2xl border border-white/10 bg-zinc-900/60 p-6 transition-all duration-300 hover:-translate-y-1 hover:border-white/25 hover:shadow-xl hover:shadow-purple-500/10"
+    >
+      <div className={`absolute inset-0 bg-gradient-to-br ${tint} opacity-80`} />
+      <div
+        className={`absolute left-0 right-0 top-0 h-1 bg-gradient-to-r ${stripe}`}
+      />
+
+      <div className="relative flex flex-1 flex-col">
+        <span className="mb-4 inline-flex w-fit rounded-full border border-white/10 bg-black/40 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-white/80">
+          {tag}
+        </span>
+        <h3 className="mb-3 text-xl font-bold leading-snug text-white">
+          {title}
+        </h3>
+        <p className={`${t.body} mb-6 flex-1 text-sm leading-relaxed`}>
+          {description}
+        </p>
+        <Link
+          href="/events"
+          className="inline-flex items-center gap-2 text-sm font-semibold text-purple-300 transition-colors hover:text-white"
+        >
+          Explore events
+          <ArrowRight
+            className="h-4 w-4 transition-transform group-hover:translate-x-1"
+            aria-hidden="true"
+          />
+        </Link>
+      </div>
+
+      <div className="pointer-events-none absolute -bottom-6 -right-6 h-24 w-24 rounded-full bg-purple-500/20 blur-2xl opacity-0 transition-opacity group-hover:opacity-100" />
+    </article>
+  );
+}
+
+function OfferingsSection() {
+  return (
+    <SectionShell band divider={false}>
+      <div className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <SectionLabel>{OFFERINGS.label}</SectionLabel>
+          <h2 className={t.h2}>{OFFERINGS.title}</h2>
+        </div>
+        <p className={`${t.body} max-w-sm text-sm sm:text-right`}>
+          Workshops, hackathons, lectures, and IEEE programs built for every
+          stage of your journey at RGIPT.
+        </p>
+      </div>
+
+      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        {OFFERINGS.programs.map((program) => (
+          <ProgramCard key={program.title} {...program} />
+        ))}
+      </div>
+    </SectionShell>
+  );
+}
+
+function TimelineEntry({ year, title, description, isLast }) {
+  return (
+    <div
+      className={`relative pl-8 ${isLast ? "pb-0" : "pb-12"} ${t.timelineLine}`}
+    >
+      <div className={t.timelineDot} />
+      <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-2">
+        <span className={t.yearBadge}>{year}</span>
+        <h3 className="text-lg font-bold text-white">{title}</h3>
+      </div>
+      <p className={`${t.body} text-sm max-w-xl`}>{description}</p>
+    </div>
+  );
+}
+
+function TimelineSection() {
+  return (
+    <SectionShell divider>
+      <div className="grid md:grid-cols-2 gap-12 md:gap-16 items-start">
+        <div>
+          <SectionLabel>{TIMELINE.label}</SectionLabel>
+          <h2 className={t.h2}>{TIMELINE.title}</h2>
+          <p className={`${t.body} mt-4 max-w-md`}>
+            Our journey is marked by continuous growth and recognition on
+            national and international platforms.
+          </p>
+        </div>
+
+        <div className="pt-2">
+          {TIMELINE.entries.map((entry, idx) => (
+            <TimelineEntry
+              key={entry.year}
+              {...entry}
+              isLast={idx === TIMELINE.entries.length - 1}
+            />
+          ))}
+        </div>
+      </div>
+    </SectionShell>
+  );
+}
+
+function CTASection() {
+  return (
+    <SectionShell band divider={false}>
+      <div className="text-center max-w-2xl mx-auto">
+        <SectionLabel>{CTA.label}</SectionLabel>
+        <h2 className={`${t.h2} mb-4`}>{CTA.title}</h2>
+        <p className={`${t.body} mb-10`}>{CTA.description}</p>
+
+        <div className="flex flex-wrap justify-center gap-4">
+          <Link href={CTA.primaryCta.href} className={t.primaryBtn}>
+            {CTA.primaryCta.label}
+          </Link>
+          <Link href={CTA.secondaryCta.href} className={t.secondaryBtn}>
+            {CTA.secondaryCta.label}
+            <ArrowRight className="w-4 h-4" aria-hidden="true" />
+          </Link>
+        </div>
+      </div>
+    </SectionShell>
+  );
+}
+
+export default function AboutPage() {
+  return (
+    <div className={t.page}>
+      <AboutBackground />
+      <div className={t.grain} />
+      <main className="relative z-10 pt-20 md:pt-24 pb-16">
+        <HeroSection />
+        <GallerySection />
+        <MissionSection />
+        <OfferingsSection />
+        <TimelineSection />
+        <CTASection />
+      </main>
+    </div>
+  );
+}
