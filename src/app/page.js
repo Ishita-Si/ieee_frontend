@@ -110,7 +110,7 @@ const chapterCards = [
   {
     id: "comsic",
     title: "IEEE COMSOC",
-    subtitle: "Comms & Signal Society",
+    subtitle: "Communication Society",
     description:
       "Deep dives into SDR, radar labs, and futuristic comms challenges across the COMSOC stack.",
     accent: "from-emerald-400/80 via-teal-400/80 to-sky-400/80",
