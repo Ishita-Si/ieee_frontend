@@ -16,10 +16,10 @@ const Footer = () => {
   ];
 
   const chapters = [
-    { label: "IEEE RAS", href: "/chapters/ras" },
+    { label: "Robotics & Automation Society", href: "/chapters/ras" },
     { label: "Computer Society", href: "/chapters/code-club" },
-    { label: "IEEE WIE", href: "/about#wie" },
-    { label: "IEEE COMSOC", href: "/events#comsic" },
+    { label: "Women in Engineering", href: "/chapters/women" },
+    { label: "Communication Society", href: "/chapters/comsoc" },
   ];
 
   const socialLinks = [
@@ -165,7 +165,7 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="border-t border-white/10 pt-6 sm:pt-8 mt-8 sm:mt-10">
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4 sm:gap-6">
-            <p className="text-xs sm:text-sm text-white/50 text-center sm:text-left">
+            <p suppressHydrationWarning className="text-xs sm:text-sm text-white/50 text-center sm:text-left">
               © {currentYear} IEEE Student Branch RGIPT. All rights reserved.
             </p>
             <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-xs sm:text-sm text-white/50">
