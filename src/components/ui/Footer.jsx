@@ -23,10 +23,10 @@ const Footer = () => {
   ];
 
   const socialLinks = [
-    { icon: Linkedin, href: "httpas://www.linkedin.com/company/ieeergipt", label: "LinkedIn" },
-    { icon: Github, href: "#", label: "GitHub" },
+    { icon: Linkedin, href: "https://www.linkedin.com/company/ieeergipt", label: "LinkedIn" },
+    { icon: Github, href: "https://github.com/ieeergiptsb", label: "GitHub" },
     { icon: Twitter, href: "#", label: "Twitter" },
-    { icon: Instagram, href: "#", label: "Instagram" },
+    { icon: Instagram, href: "https://www.instagram.com/ieee_rgipt", label: "Instagram" },
     { icon: Facebook, href: "#", label: "Facebook" },
   ];
 
