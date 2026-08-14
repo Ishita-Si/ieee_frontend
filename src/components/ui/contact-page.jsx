@@ -224,10 +224,10 @@ const ContactPage = () => {
             <div className="p-6 rounded-2xl glass-panel">
               <h3 className="text-sm font-medium text-white/50 mb-4 uppercase tracking-wider">Connect on Socials</h3>
               <div className="flex gap-4">
-                <SocialButton icon={Linkedin} href="#" color="bg-blue-600" />
-                <SocialButton icon={Instagram} href="#" color="bg-pink-600" />
+                <SocialButton icon={Linkedin} href="https://www.linkedin.com/company/ieeergipt" color="bg-blue-600" />
+                <SocialButton icon={Instagram} href="https://www.instagram.com/ieee_rgipt" color="bg-pink-600" />
                 <SocialButton icon={Twitter} href="#" color="bg-sky-500" />
-                <SocialButton icon={Github} href="#" color="bg-zinc-700" />
+                <SocialButton icon={Github} href="https://github.com/ieeergiptsb" color="bg-zinc-700" />
                 <SocialButton icon={Globe} href="#" color="bg-emerald-600" />
               </div>
             </div>
