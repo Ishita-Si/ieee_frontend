@@ -53,28 +53,40 @@ const SponsorsSection = ({ sponsors = [] }) => {
                     href={sponsor.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="group w-full h-full flex items-center justify-center p-3 sm:p-4 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-colors"
+                    className="group relative w-full h-full flex flex-col items-center justify-center rounded-2xl bg-white/[0.02] border border-white/[0.05] hover:bg-white/[0.05] hover:border-white/[0.1] hover:shadow-[0_0_30px_rgba(255,255,255,0.05)] overflow-hidden backdrop-blur-sm transition-all duration-500"
                     aria-label={`Visit ${sponsor.name}`}
                   >
-                    <Image
-                      src={sponsor.logo}
-                      alt={sponsor.name}
-                      width={160}
-                      height={80}
-                      className="object-contain max-w-[85%] max-h-[85%] w-auto h-auto grayscale group-hover:grayscale-0 transition-all opacity-70 group-hover:opacity-100"
-                      loading="lazy"
-                    />
+                    <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+                    <div className="flex-1 flex items-center justify-center p-5 sm:p-6 w-full relative z-10">
+                      <Image
+                        src={sponsor.logo}
+                        alt={sponsor.name}
+                        width={160}
+                        height={160}
+                        className="object-contain w-full h-full rounded-xl transition-transform duration-500 group-hover:scale-110 drop-shadow-lg"
+                        loading="lazy"
+                      />
+                    </div>
+                    <div className="w-full py-3 px-4 bg-white/[0.03] border-t border-white/[0.05] flex items-center justify-center relative z-10 backdrop-blur-md transition-colors group-hover:bg-white/[0.06]">
+                      <span className="text-sm sm:text-base font-medium tracking-wide text-white/70 group-hover:text-white transition-colors">{sponsor.name}</span>
+                    </div>
                   </a>
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center p-3 sm:p-4 rounded-lg bg-white/5 border border-white/10">
-                    <Image
-                      src={sponsor.logo}
-                      alt={sponsor.name}
-                      width={160}
-                      height={80}
-                      className="object-contain max-w-[85%] max-h-[85%] w-auto h-auto grayscale opacity-70"
-                      loading="lazy"
-                    />
+                  <div className="group relative w-full h-full flex flex-col items-center justify-center rounded-2xl bg-white/[0.02] border border-white/[0.05] hover:bg-white/[0.05] hover:border-white/[0.1] hover:shadow-[0_0_30px_rgba(255,255,255,0.05)] overflow-hidden backdrop-blur-sm transition-all duration-500">
+                    <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+                    <div className="flex-1 flex items-center justify-center p-5 sm:p-6 w-full relative z-10">
+                      <Image
+                        src={sponsor.logo}
+                        alt={sponsor.name}
+                        width={160}
+                        height={160}
+                        className="object-contain w-full h-full rounded-xl transition-transform duration-500 group-hover:scale-110 drop-shadow-lg"
+                        loading="lazy"
+                      />
+                    </div>
+                    <div className="w-full py-3 px-4 bg-white/[0.03] border-t border-white/[0.05] flex items-center justify-center relative z-10 backdrop-blur-md transition-colors group-hover:bg-white/[0.06]">
+                      <span className="text-sm sm:text-base font-medium tracking-wide text-white/70 group-hover:text-white transition-colors">{sponsor.name}</span>
+                    </div>
                   </div>
                 )}
               </div>
@@ -96,8 +108,8 @@ const SponsorsSection = ({ sponsors = [] }) => {
           }
           .sponsors-item {
             flex-shrink: 0;
-            width: clamp(140px, 20vw, 200px);
-            height: clamp(80px, 12vw, 120px);
+            width: clamp(160px, 20vw, 220px);
+            height: clamp(200px, 25vw, 260px);
           }
           @keyframes sponsors-scroll {
             from { transform: translateX(0); }
