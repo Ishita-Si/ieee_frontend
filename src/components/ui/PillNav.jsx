@@ -279,7 +279,8 @@ const PillNav = ({
   };
 
   return (
-    <div className="pill-nav-container">
+    <>
+      <div className="pill-nav-container">
       <nav className={`pill-nav ${className}`} aria-label="Primary" style={cssVars}>
         {/* IEEE Logo */}
         {ieeeItem && (
@@ -471,7 +472,8 @@ const PillNav = ({
         </ul>
       </div>
     </div>
-  );
+  </>
+);
 };
 
 export default PillNav;

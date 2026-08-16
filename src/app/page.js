@@ -39,43 +39,33 @@ const navItems = [
 const announcements = [
   {
     id: 1,
-    image: "/images/posters/devwave.png",
-    badge: "Bootcamp",
-    title: "DEVWAVE 2026 — Now Open",
-    description: "DEVWAVE 2026 is IEEE RGIPT's flagship full-stack development bootcamp. Learn modern web technologies, build real projects, and get mentored by senior developers and IEEE professionals.",
-    description2: "Open to all undergraduate students. Limited seats available. Register now to secure your spot and get access to exclusive study material, live sessions, and project reviews.",
-    primaryButton: { text: "Learn More", href: "/events/devwave-2026" },
-    secondaryButton: { text: "Register Now", href: "/events/devwave-2026" }
+    image: "/images/posters/robotics-workshop.png",
+    badge: "Workshop",
+    title: "Introduction to Robotics — Hands-On Workshop",
+    description: "An interactive, hands-on introduction to Robotics & Automation for newly admitted First-Year Students at RGIPT. Learn how sensors, electronics, programming, microcontrollers, and control logic come together to build functional Line Following Robots (LFR).",
+    description2: "Organized by IEEE RGIPT Student Branch in collaboration with Science & Technology (S&T) Council, RGIPT. Date: 22 August 2026 (tentative, subject to institute approval).",
+    primaryButton: { text: "Learn More", href: "/events/robotics-workshop-2026" },
+    secondaryButton: { text: "View Details", href: "/events/robotics-workshop-2026" }
   },
   {
     id: 2,
-    image: "/images/posters/codenex.png",
-    badge: "Bootcamp",
-    title: "CodeNex 3.0 — DSA Program",
-    description: "CodeNex 3.0 is IEEE RGIPT's 10-week structured DSA program designed to help you master data structures and algorithms from scratch to advanced, with weekly contests and interview-oriented practice.",
-    description2: "Sharpen your problem-solving skills, prepare for technical interviews, and compete in weekly coding contests. Open to all students — register now to join the program.",
-    primaryButton: { text: "Learn More", href: "/events/codenex-3" },
-    secondaryButton: { text: "Register Now", href: "/events/codenex-3" }
+    image: "/images/posters/devwave.png",
+    badge: "Completed",
+    title: "DEVWAVE 2026 — Full-Stack Bootcamp",
+    description: "DEVWAVE 2026 is IEEE RGIPT's flagship full-stack development bootcamp. Students explored UI/UX, frontend, backend, and React development with mentorship from senior developers.",
+    description2: "Check out project highlights and past recordings in our event archive.",
+    primaryButton: { text: "View Past Highlights", href: "/events" },
+    secondaryButton: { text: "Explore Events", href: "/events" }
   },
   {
     id: 3,
-    image: "/images/posters/9.png",
-    badge: "Workshop",
-    title: "Technical Workshop Series",
-    description: "Join us for an intensive technical workshop series covering the latest trends in robotics, AI, and automation. Learn from industry experts and get hands-on experience with cutting-edge technologies.",
-    description2: "Our workshops are designed for all skill levels, from beginners to advanced practitioners. Register now to secure your spot!",
-    primaryButton: { text: "Register Now", href: "/events" },
-    secondaryButton: { text: "View Schedule", href: "/events" }
-  },
-  {
-    id: 4,
-    image: "/images/posters/2.png",
-    badge: "Competition",
-    title: "IEEE Robotics Competition 2025",
-    description: "Showcase your robotics skills in our annual competition. Compete with teams from across the region and win exciting prizes. Registration is now open!",
-    description2: "This year's competition features new challenges and categories. Whether you're a beginner or an expert, there's a category for you.",
-    primaryButton: { text: "Register", href: "/events" },
-    secondaryButton: { text: "Learn More", href: "/events" }
+    image: "/images/posters/codenex.png",
+    badge: "Completed",
+    title: "CodeNex 3.0 — DSA Program",
+    description: "CodeNex 3.0 is IEEE RGIPT's 10-week structured DSA program designed to master data structures and algorithms from scratch to advanced level with interview preparation.",
+    description2: "Check out past problem sets and archives in our event portal.",
+    primaryButton: { text: "View Past Highlights", href: "/events" },
+    secondaryButton: { text: "Explore Events", href: "/events" }
   },
 ];
 

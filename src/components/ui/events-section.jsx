@@ -3,27 +3,17 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 
-// Bootcamp events — DEVWAVE 2026 and CodeNex 3.0 (current active events)
+// Active upcoming events — Introduction to Robotics Workshop
 const events = [
   {
-    name: 'DEVWAVE 2026',
-    slug: 'devwave-2026',
-    image: '/images/posters/devwave.png',
-    route: '/events/devwave-2026',
-    color: '#7c3aed',
-    tag: 'Bootcamp',
-    attendees: '100+',
-    timeline: 'Jun 2026',
-  },
-  {
-    name: 'CodeNex 3.0',
-    slug: 'codenex-3',
-    image: '/images/posters/codenex.png',
-    route: '/events/codenex-3',
-    color: '#2563eb',
-    tag: 'Bootcamp',
-    attendees: '80+',
-    timeline: 'Jul 2026',
+    name: 'Introduction to Robotics',
+    slug: 'robotics-workshop-2026',
+    image: '/images/posters/robotics-workshop.png',
+    route: '/events/robotics-workshop-2026',
+    color: '#06b6d4',
+    tag: 'Workshop',
+    attendees: '1st-Year Students',
+    timeline: '22 Aug 2026',
   },
 ];
 
@@ -100,6 +90,7 @@ const EventsSection = () => {
   }, []);
 
   const getPosition = (index) => {
+    if (events.length === 1) return index === 0 ? 'active' : 'hidden';
     if (index === currentIndex) return 'active';
     if (index === (currentIndex - 1 + events.length) % events.length) return 'prev';
     if (index === (currentIndex + 1) % events.length) return 'next';
