@@ -1,9 +1,70 @@
+.site-header-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  pointer-events: none;
+  z-index: 109;
+}
+
+.top-right-logo-container {
+  position: absolute;
+  top: 1rem;
+  right: 2.25rem;
+  z-index: 110;
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+}
+
+.top-right-logo-container a {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.top-right-logo-img {
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.6));
+  transition: transform 0.25s ease, filter 0.25s ease;
+}
+
+.rgipt-ieee-img {
+  height: 68px;
+  max-width: 250px;
+}
+
+.top-right-logo-img:hover {
+  transform: scale(1.06);
+  filter: drop-shadow(0 6px 18px rgba(255, 255, 255, 0.25));
+}
+
+@media (max-width: 1280px) {
+  .top-right-logo-container {
+    right: 1.5rem;
+    top: 0.875rem;
+  }
+
+  .rgipt-ieee-img {
+    height: 54px;
+    max-width: 190px;
+  }
+}
+
+@media (max-width: 900px) {
+  .top-right-logo-container {
+    display: none;
+  }
+}
+
 .pill-nav-container {
   position: fixed;
   top: 1em;
   left: 50%;
   transform: translateX(-50%);
   z-index: 109;
+  pointer-events: auto;
 }
 
 @media (max-width: 768px) {

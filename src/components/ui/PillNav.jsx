@@ -279,7 +279,19 @@ const PillNav = ({
   };
 
   return (
-    <div className="pill-nav-container">
+    <div className="site-header-wrapper">
+      {/* Static Top Right Header Logo (IEEE RGIPT) */}
+      <div className="top-right-logo-container">
+        <Link href="/" aria-label="IEEE RGIPT Student Branch Home">
+          <img
+            src="/images/rgipt-ieee-logo.png"
+            alt="IEEE RGIPT Logo"
+            className="top-right-logo-img rgipt-ieee-img"
+          />
+        </Link>
+      </div>
+
+      <div className="pill-nav-container">
       <nav className={`pill-nav ${className}`} aria-label="Primary" style={cssVars}>
         {/* IEEE Logo */}
         {ieeeItem && (
@@ -471,7 +483,8 @@ const PillNav = ({
         </ul>
       </div>
     </div>
-  );
+  </div>
+);
 };
 
 export default PillNav;
