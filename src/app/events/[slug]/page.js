@@ -27,8 +27,74 @@ const navItems = [
 ];
 
 const SLUG_POSTER_MAP = {
+  'robotics-workshop-2026': '/images/posters/robotics-workshop.png',
   'devwave-2026': '/images/posters/devwave.png',
   'codenex-3': '/images/posters/codenex.png',
+};
+
+const STATIC_EVENTS_MAP = {
+  'robotics-workshop-2026': {
+    slug: 'robotics-workshop-2026',
+    title: 'Introduction to Robotics',
+    category: 'Workshop',
+    tagline: 'Hands-On Robotics Workshop for First-Year RGIPT Students',
+    duration: '22 August 2026 (Tentative)',
+    banner_url: '/images/posters/robotics-workshop.png',
+    short_description: 'An interactive, hands-on introduction to Robotics & Automation, giving first-year students practical exposure to how sensors, electronics, programming, microcontrollers and control logic come together to build a functional Line Following Robot (LFR) system.',
+    description: 'An interactive, hands-on introduction to Robotics & Automation, giving first-year students practical exposure to how sensors, electronics, programming, microcontrollers and control logic come together to build a functional robotic system.\n\nOrganized by IEEE RGIPT Student Branch in collaboration with Science & Technology (S&T) Council, RGIPT.\nFor: Newly admitted First-Year Students, RGIPT.',
+    highlights: [
+      'Robotics Fundamentals & Basic Robotic Components',
+      'Line Following Robots (LFR) Architecture',
+      'Sensors & Microcontrollers Integration',
+      'Control Logic, Electronics & Programming',
+      'Hands-on experience with working LFR robots',
+      'Mentorship from IEEE RGIPT & S&T Council members'
+    ],
+    topics: ['Robotics', 'Automation', 'Sensors', 'Microcontrollers', 'LFR', 'Electronics', 'Control Logic'],
+    registrationDisabled: true,
+    isUpcoming: true,
+    statusNote: 'Registration Opening Soon — Details will be announced by IEEE RGIPT & S&T Council.'
+  },
+  'devwave-2026': {
+    slug: 'devwave-2026',
+    title: 'DEVWAVE 2026',
+    category: 'Bootcamp',
+    tagline: 'Full-Stack Development & UI/UX Bootcamp',
+    duration: 'May 2026',
+    banner_url: '/images/posters/devwave.png',
+    short_description: 'IEEE RGIPT\'s flagship full-stack development bootcamp exploring UI/UX, frontend, backend, and React.',
+    description: 'DEVWAVE 2026 was IEEE RGIPT\'s flagship full-stack development bootcamp. Students explored UI/UX, frontend, backend, and React development with mentorship from senior developers.',
+    highlights: [
+      'UI/UX Design Principles',
+      'Modern Frontend Development (React / Next.js)',
+      'Backend APIs & Database Architecture',
+      'Hands-On Project Mentorship'
+    ],
+    topics: ['Full-Stack', 'React', 'Node.js', 'UI/UX', 'Web Development'],
+    registrationDisabled: true,
+    isCompleted: true,
+    statusNote: 'Event Completed — Check out past highlights in the event archive.'
+  },
+  'codenex-3': {
+    slug: 'codenex-3',
+    title: 'CodeNex 3.0',
+    category: 'Bootcamp',
+    tagline: 'Master Data Structures & Algorithms Step by Step',
+    duration: 'May 2026 (10-Week Program)',
+    banner_url: '/images/posters/codenex.png',
+    short_description: 'A 10-week structured DSA learning program focused on problem-solving, coding logic, interview preparation, contests, and guided practice.',
+    description: 'CodeNex 3.0 was IEEE RGIPT\'s 10-week structured DSA program designed to master data structures and algorithms with weekly contests and interview preparation.',
+    highlights: [
+      'Weekly Coding Contests',
+      'Practice Problems & Solution Guides',
+      'Interview Preparation & Mock Sessions',
+      'Data Structures & Algorithms Mastery'
+    ],
+    topics: ['DSA', 'Algorithms', 'Competitive Programming', 'Interview Prep', 'C++ / Java / Python'],
+    registrationDisabled: true,
+    isCompleted: true,
+    statusNote: 'Event Completed — Check out past archives in the event portal.'
+  }
 };
 
 function bannerSrc(url, slug) {
@@ -60,8 +126,13 @@ export default function BootcampEventPage() {
       const r = await bootcampService.getEventBySlug(slug);
       if (cancelled) return;
       if (!r.success) {
-        setLoadError(r.error || "Program not found");
-        setEvent(null);
+        if (STATIC_EVENTS_MAP[slug]) {
+          setEvent(STATIC_EVENTS_MAP[slug]);
+          setLoadError("");
+        } else {
+          setLoadError(r.error || "Program not found");
+          setEvent(null);
+        }
       } else {
         setEvent(r.event);
         setLoadError("");
@@ -239,7 +310,32 @@ export default function BootcampEventPage() {
         )}
 
         <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-8 mb-16">
-          {registered ? (
+          {event.registrationDisabled ? (
+            event.isCompleted ? (
+              <div>
+                <h3 className="font-semibold text-lg text-purple-300">Event Completed</h3>
+                <p className="text-white/60 text-sm mt-1">
+                  {event.statusNote || "This program has concluded. Check out our active events and past highlights."}
+                </p>
+              </div>
+            ) : (
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                  <h3 className="font-semibold text-lg text-cyan-300">Registration Opening Soon</h3>
+                  <p className="text-white/60 text-sm mt-1">
+                    {event.statusNote || "Registration details will be announced soon by IEEE RGIPT & S&T Council."}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  disabled
+                  className="px-6 py-3 rounded-xl bg-white/10 border border-white/20 text-white/60 font-semibold cursor-not-allowed text-sm min-w-[180px]"
+                >
+                  Registration Opening Soon
+                </button>
+              </div>
+            )
+          ) : registered ? (
             <div>
               <p className="text-green-400 font-semibold mb-2 flex items-center gap-2">
                 <CheckCircle2 className="w-5 h-5" /> Registered successfully

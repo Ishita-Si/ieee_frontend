@@ -69,6 +69,15 @@ export default function RootLayout({ children }) {
       >
 				<SessionProvider>
 					<SmoothScrollInit />
+					<div className="absolute top-4 right-6 lg:right-10 z-[9999] pointer-events-auto hidden md:flex items-center">
+						<a href="/" aria-label="IEEE RGIPT Student Branch Home">
+							<img
+								src="/images/rgipt-ieee-logo.png"
+								alt="IEEE RGIPT Logo"
+								className="h-[54px] xl:h-[68px] w-auto object-contain drop-shadow-[0_4px_12px_rgba(0,0,0,0.6)] hover:scale-[1.06] hover:drop-shadow-[0_6px_18px_rgba(255,255,255,0.25)] transition-all duration-300"
+							/>
+						</a>
+					</div>
 					{children}
 				</SessionProvider>
 				<Analytics />

@@ -92,49 +92,45 @@ const isTimelinePast = (dateString) => {
 // --- Events Data (Current & Upcoming) ---
 export const EVENTS_DATA = [
   {
-    id: 'codenex-3',
-    event_slug: 'codenex-3',
-    title: 'CodeNex 3.0',
-    category: 'Bootcamps',
-    date: '10 Week Program',
-    time: '10 Week Program',
-    description: 'A structured DSA learning program focused on problem-solving, coding logic, and interview preparation.',
-    fullDescription: 'A structured DSA learning program focused on problem-solving, coding logic, and interview preparation. Designed to build strong fundamentals and crack technical interviews.',
-    image: '/images/posters/codenex.png',
+    id: 'robotics-workshop-2026',
+    event_slug: 'robotics-workshop-2026',
+    title: 'Introduction to Robotics',
+    category: 'Workshops',
+    date: '22 August 2026',
+    time: '22 Aug 2026 (Tentative)',
+    description: 'An interactive, hands-on introduction to Robotics & Automation for newly admitted First-Year Students, RGIPT.',
+    fullDescription: 'An interactive, hands-on introduction to Robotics & Automation, giving first-year students practical exposure to how sensors, electronics, programming, microcontrollers and control logic come together to build a functional Line Following Robot (LFR) system.',
+    image: '/images/posters/robotics-workshop.png',
     difficulty: 'Beginner',
-    language: 'DSA, Problem Solving, Interview Prep',
-    location: 'Online / IEEE RGIPT',
-    requirements: ['DSA', 'Problem Solving', 'Interview Prep'],
-    registrationOpen: true,
-    route: '/events/codenex-3',
-    seatsLimited: false,
+    language: 'Robotics, LFR, Microcontrollers, Sensors',
+    location: 'RGIPT Campus (S&T Council)',
+    requirements: ['Microcontrollers & Sensors', 'Control Logic & Programming', 'Line Following Robots (LFR)'],
+    registrationOpen: false,
+    route: '/events/robotics-workshop-2026',
+    seatsLimited: true,
     registeredSeats: 0,
-    totalSeats: 0,
-  },
-  {
-    id: 'devwave-2026',
-    event_slug: 'devwave-2026',
-    title: 'DEVWAVE 2026',
-    category: 'Bootcamps',
-    date: 'Multi-week Bootcamp',
-    time: 'Multi-week Bootcamp',
-    description: 'A beginner-friendly hands-on bootcamp helping students explore UI/UX, frontend, backend, and React.',
-    fullDescription: 'A beginner-friendly hands-on bootcamp helping students explore UI/UX, frontend, backend, and React. Build real projects and gain practical development skills.',
-    image: '/images/posters/devwave.png',
-    difficulty: 'Beginner',
-    language: 'UI/UX, Frontend, Backend, React',
-    location: 'Online / IEEE RGIPT',
-    requirements: ['UI/UX', 'Frontend', 'Backend', 'React'],
-    registrationOpen: true,
-    route: '/events/devwave-2026',
-    seatsLimited: false,
-    registeredSeats: 0,
-    totalSeats: 0,
+    totalSeats: 100,
   },
 ];
 
 // --- Past Events Data ---
 const PAST_EVENTS = [
+  {
+    id: 'devwave-2026',
+    title: 'DEVWAVE 2026',
+    category: 'Bootcamp',
+    date: 'May 2026',
+    description: 'IEEE RGIPT\'s flagship full-stack development bootcamp exploring UI/UX, frontend, backend, and React with hands-on projects.',
+    image: '/images/posters/devwave.png'
+  },
+  {
+    id: 'codenex-3',
+    title: 'CodeNex 3.0',
+    category: 'Bootcamp',
+    date: 'May 2026',
+    description: 'A 10-week structured DSA learning program focused on problem-solving, coding logic, and technical interview preparation.',
+    image: '/images/posters/codenex.png'
+  },
   {
     id: 'codeforher',
     title: 'CodeForHer Hackathon 2025',
@@ -241,15 +237,15 @@ const mapBootcampToEventCard = (event) => ({
   id: event.slug,
   event_slug: event.slug,
   title: event.title,
-  category: 'Bootcamps',
+  category: event.category === 'workshop' ? 'Workshops' : 'Bootcamps',
   date: formatBootcampDate(event),
-  time: event.duration || 'Self paced',
-  description: event.short_description || event.tagline || event.description || 'Hands-on IEEE bootcamp program.',
-  fullDescription: event.description || event.short_description || event.tagline || 'Hands-on IEEE bootcamp program.',
+  time: event.duration || 'Scheduled Event',
+  description: event.short_description || event.tagline || event.description || 'IEEE program.',
+  fullDescription: event.description || event.short_description || event.tagline || 'IEEE program.',
   image: resolveEventImage(event),
   difficulty: 'Beginner',
   language: (event.topics || []).slice(0, 3).join(', ') || 'Multiple tracks',
-  location: 'Online / IEEE RGIPT',
+  location: 'RGIPT Campus (S&T Council)',
   requirements: event.topics || event.highlights || [],
   registrationOpen: true,
   route: `/events/${event.slug}`,
@@ -582,9 +578,8 @@ const EventsPage = ({ isOpen, onClose, isFullPage = false }) => {
   const allEvents = [...bootcampEvents];
 
   const filteredEvents = allEvents.filter(event => {
-    // Show all events with open registrations (current and upcoming events)
-    // Registration status takes priority over date filtering
-    if (!event.registrationOpen) return false;
+    // Exclude completed past bootcamps from upcoming list
+    if (event.slug === 'devwave-2026' || event.slug === 'codenex-3' || event.isCompleted) return false;
     
     // Apply category and search filters
     const matchesCategory = selectedCategory === 'All' || event.category === selectedCategory;
