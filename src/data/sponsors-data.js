@@ -46,6 +46,11 @@ export const sponsorsData = [
     id: 7,
     name: 'Roostoo',
     logo: '/sponsors/roostoo.png',
+  },
+  {
+    id: 8,
+    name: 'Love for Life',
+    logo: '/sponsors/Love for Life.jpeg',
   }
 ];
 
