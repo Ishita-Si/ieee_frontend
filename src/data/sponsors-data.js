@@ -12,19 +12,45 @@
  */
 
 export const sponsorsData = [
-  // Example sponsors - Replace with your actual sponsors
-  // {
-  //   id: 1,
-  //   name: 'Sponsor Company 1',
-  //   logo: '/images/sponsors/sponsor1.png',
-  //   url: 'https://sponsor1.com'
-  // },
-  // {
-  //   id: 2,
-  //   name: 'Sponsor Company 2',
-  //   logo: '/images/sponsors/sponsor2.png',
-  //   url: 'https://sponsor2.com'
-  // },
-  // Add more sponsors here...
+  {
+    id: 1,
+    name: 'Jane Street',
+    logo: '/sponsors/jane street.jpeg',
+  },
+  {
+    id: 2,
+    name: 'Optiver',
+    logo: '/sponsors/optiver.jpeg',
+  },
+  {
+    id: 3,
+    name: 'Coca Cola',
+    logo: '/sponsors/coca cola.png',
+  },
+  {
+    id: 4,
+    name: 'Grab On',
+    logo: '/sponsors/grab on.png',
+  },
+  {
+    id: 5,
+    name: 'Rabbitt AI',
+    logo: '/sponsors/rabbitt ai.jpeg',
+  },
+  {
+    id: 6,
+    name: 'Prodigal AI',
+    logo: '/sponsors/prodigal ai.png',
+  },
+  {
+    id: 7,
+    name: 'Roostoo',
+    logo: '/sponsors/roostoo.png',
+  },
+  {
+    id: 8,
+    name: 'Love for Life',
+    logo: '/sponsors/Love for Life.jpeg',
+  }
 ];
 
