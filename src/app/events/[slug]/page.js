@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter, useParams } from "next/navigation";
 import PillNav from "@/components/ui/PillNav";
@@ -31,6 +31,9 @@ const SLUG_POSTER_MAP = {
   'devwave-2026': '/images/posters/devwave.png',
   'codenex-3': '/images/posters/codenex.png',
 };
+const DEVWAVE_TODAY_IMAGE_URL = "https://github.com/user-attachments/assets/c4036ce3-0e33-4730-8d29-ef648c6060bb";
+const DEVWAVE_TODAY_DATE = "14/05/2026";
+const DEVWAVE_TODAY_VIDEO_URL = "https://youtu.be/hHY7FyPxzzE?si=NzPr3yx3rmmna8uY";
 
 const STATIC_EVENTS_MAP = {
   'robotics-workshop-2026': {
@@ -104,6 +107,16 @@ function bannerSrc(url, slug) {
   return url;
 }
 
+function isYouTubeLink(url) {
+  if (!url) return false;
+  try {
+    const parsed = new URL(url);
+    return /(^|[\w-]+\.)youtube\.com$/.test(parsed.hostname) || parsed.hostname === "youtu.be";
+  } catch {
+    return false;
+  }
+}
+
 export default function BootcampEventPage() {
   const params = useParams();
   const slug = typeof params?.slug === "string" ? params.slug : "";
@@ -118,6 +131,17 @@ export default function BootcampEventPage() {
   const [regLoading, setRegLoading] = useState(false);
   const [updatesLoading, setUpdatesLoading] = useState(false);
   const [toast, setToast] = useState("");
+  const sortedUpdates = useMemo(
+    () =>
+      [...updates].sort((a, b) => {
+        const aTime = new Date(a?.createdAt || a?.updatedAt || 0).getTime();
+        const bTime = new Date(b?.createdAt || b?.updatedAt || 0).getTime();
+        return bTime - aTime;
+      }),
+    [updates]
+  );
+  const latestUpdate = sortedUpdates[0] || null;
+  const previousUpdates = sortedUpdates.slice(1);
 
   useEffect(() => {
     let cancelled = false;
@@ -373,33 +397,82 @@ export default function BootcampEventPage() {
 
           {registered && (
             <section className="mt-10 border-t border-white/10 pt-10">
-              <h3 className="text-lg font-semibold mb-4">Program updates</h3>
+              <h3 className="text-lg font-semibold mb-4">Today&apos;s task & video</h3>
+              {slug === "devwave-2026" && (
+                <article className="p-5 rounded-xl bg-black/40 border border-purple-500/30 mb-6">
+                  <img
+                    src={DEVWAVE_TODAY_IMAGE_URL}
+                    alt="DevWave today's task"
+                    className="w-full rounded-lg border border-white/10"
+                  />
+                  <p className="text-white/80 text-sm mt-4">{DEVWAVE_TODAY_DATE}</p>
+                  <a
+                    href={DEVWAVE_TODAY_VIDEO_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 mt-3 px-4 py-2 rounded-lg bg-purple-600 hover:bg-purple-500 text-sm font-medium"
+                  >
+                    Watch today&apos;s video
+                    <ExternalLink className="w-4 h-4" />
+                  </a>
+                </article>
+              )}
               {updatesLoading ? (
                 <Loader2 className="w-6 h-6 animate-spin text-purple-400" />
-              ) : updates.length === 0 ? (
+              ) : !latestUpdate ? (
                 <p className="text-white/50 text-sm">No updates posted yet.</p>
               ) : (
-                <ul className="space-y-4">
-                  {updates.map((u) => (
-                    <li
-                      key={u._id}
-                      className="p-4 rounded-xl bg-black/40 border border-white/10"
-                    >
-                      <h4 className="font-medium text-white">{u.title}</h4>
-                      {u.short_description && (
-                        <p className="text-white/60 text-sm mt-1">{u.short_description}</p>
-                      )}
+                <div className="space-y-6">
+                  <article className="p-5 rounded-xl bg-black/40 border border-purple-500/30">
+                    <h4 className="font-medium text-white">
+                      {latestUpdate.title || "Today's task update"}
+                    </h4>
+                    {latestUpdate.short_description && (
+                      <p className="text-white/60 text-sm mt-1">{latestUpdate.short_description}</p>
+                    )}
+                    {latestUpdate.link && (
                       <a
-                        href={u.link}
+                        href={latestUpdate.link}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-2 mt-3 text-sm text-purple-400 hover:text-purple-300"
                       >
-                        Open resource <ExternalLink className="w-4 h-4" />
+                        {isYouTubeLink(latestUpdate.link) ? "Watch video" : "Open resource"}
+                        <ExternalLink className="w-4 h-4" />
                       </a>
-                    </li>
-                  ))}
-                </ul>
+                    )}
+                  </article>
+
+                  {previousUpdates.length > 0 && (
+                    <div>
+                      <h4 className="text-sm text-white/60 mb-3">Previous updates</h4>
+                      <ul className="space-y-4">
+                        {previousUpdates.map((u) => (
+                          <li
+                            key={u._id}
+                            className="p-4 rounded-xl bg-black/40 border border-white/10"
+                          >
+                            <h5 className="font-medium text-white">{u.title}</h5>
+                            {u.short_description && (
+                              <p className="text-white/60 text-sm mt-1">{u.short_description}</p>
+                            )}
+                            {u.link && (
+                              <a
+                                href={u.link}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-2 mt-3 text-sm text-purple-400 hover:text-purple-300"
+                              >
+                                {isYouTubeLink(u.link) ? "Watch video" : "Open resource"}
+                                <ExternalLink className="w-4 h-4" />
+                              </a>
+                            )}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
               )}
             </section>
           )}
